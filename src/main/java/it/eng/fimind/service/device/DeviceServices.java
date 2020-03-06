@@ -22,14 +22,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-//import com.siemens.mindsphere.sdk.core.exception.MindsphereException;
-//import com.siemens.mindsphere.sdk.iot.asset.model.AspectTypeDto;
-//import com.siemens.mindsphere.sdk.iot.asset.model.AspectVariable;
-import com.siemens.mindsphere.sdk.iot.asset.model.Assets;
-//import com.siemens.mindsphere.sdk.iot.asset.model.CategoryEnum;
-//import com.siemens.mindsphere.sdk.iot.asset.model.DataTypeEnum;
-//import com.siemens.mindsphere.sdk.iot.asset.model.ScopeEnum;
-import com.siemens.mindsphere.sdk.iot.timeseries.model.TimeseriesData;
+
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.device.Device;
 import it.eng.fimind.util.MindSphereGateway;
@@ -60,28 +55,28 @@ public class DeviceServices {
 	}
 	
 	private boolean createMindSphereTimeSeriesFromDevice(Device device) {
-		MindSphereGateway mindSphereGateway=MindSphereGateway.getMindSphereGateway();
-		Assets assets=mindSphereGateway.getFilteredAssets("ASC", "%7B%22name%22%3A%22"+device.getId()+"Asset%22%7D");
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+device.getId()+"Asset\"}");
 		try {
-			List<TimeseriesData> timeSeriesList=new ArrayList<TimeseriesData>();
-			Date now=new Date();
+			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
+			Date now = new Date();
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 			String instant = df.format(now);
-			TimeseriesData timeseriesPoint=new TimeseriesData();
-			timeseriesPoint.getData().put("_time", instant);
+			Timeseries timeseriesPoint=new Timeseries();
+			timeseriesPoint.getFields().put("_time", instant);
 			Pattern pattern = Pattern.compile("[+-]?([0-9]*[.])?[0-9]+");
 			Matcher matcher = pattern.matcher(device.getValue());
-			List<String> values=new ArrayList<String>();
+			List<String> values = new ArrayList<String>();
 			while (matcher.find()) {
 				values.add(matcher.group());
 			}
 			for (int i=0; i<device.getControlledProperty().size(); i++) {
-				String property=device.getControlledProperty().get(i);
-				String value=values.get(i);
-				timeseriesPoint.getData().put(property,value);
+				String property = device.getControlledProperty().get(i);
+				String value = values.get(i);
+				timeseriesPoint.getFields().put(property,value);
 			}
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.createTimeseries(assets.getEmbedded().getAssets().get(0).getAssetId(), device.getId()+"AspectType", timeSeriesList, true);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), device.getId()+"AspectType", timeSeriesList);
 		} catch (Exception e) {
 			// Exception handling
 			e.printStackTrace();

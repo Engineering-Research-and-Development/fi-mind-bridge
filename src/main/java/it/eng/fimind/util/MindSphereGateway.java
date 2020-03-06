@@ -8,31 +8,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.siemens.mindsphere.sdk.auth.model.MindsphereCredentials;
+import com.siemens.mindsphere.sdk.assetmanagement.apiclient.AspecttypeClient;
+import com.siemens.mindsphere.sdk.assetmanagement.apiclient.AssetsClient;
+import com.siemens.mindsphere.sdk.assetmanagement.apiclient.AssettypeClient;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectTypeResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetListResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetType;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetType.ScopeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetTypeAspects;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetTypeResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.GetAspectTypeRequest;
+import com.siemens.mindsphere.sdk.assetmanagement.model.GetAssetTypeRequest;
+import com.siemens.mindsphere.sdk.assetmanagement.model.GetRootAssetRequest;
+import com.siemens.mindsphere.sdk.assetmanagement.model.ListAssetsRequest;
+import com.siemens.mindsphere.sdk.assetmanagement.model.RootAssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.SaveAspectTypeRequest;
+import com.siemens.mindsphere.sdk.assetmanagement.model.SaveAssetTypeRequest;
+import com.siemens.mindsphere.sdk.core.MindsphereCredentials;
 import com.siemens.mindsphere.sdk.core.RestClientConfig;
 import com.siemens.mindsphere.sdk.core.exception.MindsphereException;
-import com.siemens.mindsphere.sdk.iot.asset.apiclient.AspectTypeClient;
-import com.siemens.mindsphere.sdk.iot.asset.apiclient.AssetClient;
-import com.siemens.mindsphere.sdk.iot.asset.apiclient.AssetTypeClient;
-import com.siemens.mindsphere.sdk.iot.asset.model.AspectTypeDto;
-import com.siemens.mindsphere.sdk.iot.asset.model.AspectTypeResource;
-import com.siemens.mindsphere.sdk.iot.asset.model.AssetDto;
-import com.siemens.mindsphere.sdk.iot.asset.model.AssetResource;
-import com.siemens.mindsphere.sdk.iot.asset.model.AssetTypeDto;
-import com.siemens.mindsphere.sdk.iot.asset.model.AssetTypeDtoAspects;
-import com.siemens.mindsphere.sdk.iot.asset.model.AssetTypeResource;
-import com.siemens.mindsphere.sdk.iot.asset.model.Assets;
-import com.siemens.mindsphere.sdk.iot.asset.model.ScopeEnum;
-import com.siemens.mindsphere.sdk.iot.timeseries.apiclient.TimeseriesClient;
-import com.siemens.mindsphere.sdk.iot.timeseries.model.TimeseriesData;
+import com.siemens.mindsphere.sdk.timeseries.apiclient.TimeSeriesClient;
+import com.siemens.mindsphere.sdk.timeseries.model.GetTimeseriesRequest;
+import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 public class MindSphereGateway {
 	private static MindSphereGateway instance = null;
 
-	private TimeseriesClient timeseriesClient;
-	private AspectTypeClient aspecttypeClient;
-	private AssetTypeClient assetTypeClient;
-	private AssetClient assetClient;
+	private TimeSeriesClient timeSeriesClient;
+	private AspecttypeClient aspectTypeClient;
+	private AssettypeClient assetTypeClient;
+	private AssetsClient assetsClient;
 	private MindSphereGateway(){
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
@@ -49,7 +57,7 @@ public class MindSphereGateway {
 					.connectionTimeoutInSeconds(100)
 					.build();
 
-			MindsphereCredentials credentials = MindsphereCredentials.builder()
+			MindsphereCredentials credentials = MindsphereCredentials.tenantCredentialsBuilder()
 					.clientId(prop.getProperty("client-id"))
 					.clientSecret(prop.getProperty("client-secret"))
 					.tenant(prop.getProperty("tenant"))
@@ -57,25 +65,25 @@ public class MindSphereGateway {
 
 
 
-			timeseriesClient = TimeseriesClient.builder()
+			timeSeriesClient = TimeSeriesClient.builder()
 					.mindsphereCredentials(credentials)
 					.restClientConfig(config)
 					.build();
 			
 			
 			// Construct the AspecttypeClient object
-			aspecttypeClient = AspectTypeClient.builder()
+			aspectTypeClient = AspecttypeClient.builder()
 			                                        .mindsphereCredentials(credentials)
 			                                        .restClientConfig(config)
 			                                        .build();
 			
 			// Construct the AssettypeClient object
-			assetTypeClient = AssetTypeClient.builder()
+			assetTypeClient = AssettypeClient.builder()
 			                                      .mindsphereCredentials(credentials)
 			                                      .restClientConfig(config)
 			                                      .build();
 			// Construct the AssetClient object
-			assetClient = AssetClient.builder()
+			assetsClient = AssetsClient.builder()
 			                              .mindsphereCredentials(credentials)
 			                              .restClientConfig(config)
 			                              .build();
@@ -97,25 +105,40 @@ public class MindSphereGateway {
 	}
 
 	
-	public boolean putTimeSeries(String entity,
-			String propertySetName,
-			List<TimeseriesData> timeSeriesList,
-			Boolean sync){
+	public List<Timeseries> getTimeSeries(String entity, String propertySetName){
+		List<Timeseries> timeSeries = null;
+		GetTimeseriesRequest requestObject = new GetTimeseriesRequest();
+		requestObject.setEntity(entity);
+		requestObject.setPropertysetname(propertySetName);
 		try {
-			return timeseriesClient.putTimeseries(entity, propertySetName, timeSeriesList, sync);
+			timeSeries = timeSeriesClient.getTimeseries(requestObject);
 		} catch (MindsphereException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return false;
+		return timeSeries;
+	}
+	
+	public boolean putTimeSeries(String entity, String propertySetName, List<Timeseries> timeSeries){
+		Boolean success = false;
+		try {
+			timeSeriesClient.putTimeseries(entity, propertySetName, timeSeries);
+			success = true;
+		} catch (MindsphereException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			success = false;
+		}
+		return success;
 	}
 
 	
 	private String getRootAsset() {
 		//Create client object "assetClient" as shown above
-		AssetResource assetResource = null;
+		RootAssetResource assetResource = null;
+		GetRootAssetRequest requestObject = new GetRootAssetRequest();
 		try{
-		    assetResource = assetClient.getRootAsset();
+		    assetResource = assetsClient.getRootAsset(requestObject);
 		} catch (MindsphereException e) {
 		    // Exception handling
 			return null;
@@ -123,46 +146,40 @@ public class MindSphereGateway {
 		return assetResource.getAssetId();
 	}
 	
-	
+	public List<AssetResource> getAssets(){
+		AssetListResource assetListResource = null;
+		ListAssetsRequest  requestObject = new ListAssetsRequest();
 
-	public boolean createTimeseries(String assetId, String aspectId,  List<TimeseriesData>  timeSeriesList, boolean sync) {
 		try {
-			timeseriesClient.putTimeseries(assetId, aspectId, timeSeriesList, true);
-		} catch (MindsphereException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	
-	public Assets getAssets(){
-		Assets assets = null;
-		try {
-			assets = assetClient.getAssets();
+			assetListResource = assetsClient.listAssets(requestObject);
+			 
 		}catch (MindsphereException e) {
 		    // Exception handling
 			e.printStackTrace();
 		}
-		return assets;
+		return assetListResource.getEmbedded().getAssets();
 	}
 	
-	public Assets getFilteredAssets(String order, String filter){
-		Assets assets = null;
+	public List<AssetResource> getFilteredAssets(String order, String filter){
+		AssetListResource assetListResource = null;
+		ListAssetsRequest  requestObject = new ListAssetsRequest();
+		requestObject.setSort(order);
+		requestObject.setFilter(filter);
 		try {
-			assets = assetClient.getAssets(order, filter);
+			assetListResource = assetsClient.listAssets(requestObject);
 		}catch (MindsphereException e) {
 		    // Exception handling
 			e.printStackTrace();
 		}
-		return assets;
+		return assetListResource.getEmbedded().getAssets();
 	}
 	
 	public AspectTypeResource getAspectById(String id){
 		AspectTypeResource aspect = null;
+		GetAspectTypeRequest requestObject = new GetAspectTypeRequest();
+		requestObject.setId(id);
 		try {
-			aspect = aspecttypeClient.getAspectTypeById(id);
+			aspect = aspectTypeClient.getAspectType(requestObject);
 		}catch (MindsphereException e) {
 		    // Exception handling
 			e.printStackTrace();
@@ -172,8 +189,11 @@ public class MindSphereGateway {
 	
 	public AssetTypeResource getAssetTypeById(String id){
 		AssetTypeResource assetType = null;
+		GetAssetTypeRequest requestObject = new GetAssetTypeRequest();
+		requestObject.setId(id);
+
 		try {
-			assetType = assetTypeClient.getAssetTypeById(id);
+			assetType = assetTypeClient.getAssetType(requestObject);
 		}catch (MindsphereException e) {
 		    // Exception handling
 			e.printStackTrace();
@@ -181,37 +201,47 @@ public class MindSphereGateway {
 		return assetType;
 	}
 	
-	public boolean createAsset(String id,
-            AspectTypeDto aspecttype) {
-		
-
-
+	public boolean createAsset(String id, AspectType aspectType) {
 		try {
+
+			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
+			saveAspectTypeRequest.setId("engineer."+id+"AspectType");
+			saveAspectTypeRequest.setAspecttype(aspectType);
+			aspectTypeClient.saveAspectType(saveAspectTypeRequest);
 			
-			aspecttypeClient.createAspectType("engineer."+id+"AspectType", aspecttype);
-		    AssetTypeDto assettype=new AssetTypeDto();
-		    List<AssetTypeDtoAspects> aspects=new ArrayList<>();
-		   
-		    AssetTypeDtoAspects assetTypeDtoAspects=new AssetTypeDtoAspects();
-		    assetTypeDtoAspects.setAspectTypeId("engineer."+id+"AspectType");
-		    assetTypeDtoAspects.setName(id+"AspectType");
+	
+			List<AssetTypeAspects> aspects = new ArrayList<>();
+		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
+		    assetTypeAspects.setAspectTypeId("engineer."+id+"AspectType");
+		    assetTypeAspects.setName(id+"AspectType");	    
+		    aspects.add(assetTypeAspects);
+			
 		    
-		    aspects.add(assetTypeDtoAspects);
-			assettype.setAspects(aspects);
-			assettype.setScope(ScopeEnum.PRIVATE);
-			assettype.setName(id+"AssetType");
-			assettype.setParentTypeId("core.basicasset");
-			assetTypeClient.createAssetType("engineer."+id+"AssetType", assettype);
+			AssetType assetType = new AssetType();
+		    assetType.setAspects(aspects);
+		    assetType.setScope(ScopeEnum.PRIVATE);
+		    assetType.setName(id+"AssetType");
+		    assetType.setParentTypeId("core.basicasset");
+		    
+		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
+		    saveAssetTypeRequest.setId("engineer."+id+"AssetType");
+		    saveAssetTypeRequest.setAssettype(assetType);
+			assetTypeClient.saveAssetType(saveAssetTypeRequest);
 		    
 			
-			AssetDto assetDto=new AssetDto();
-		    assetDto.setName(id+"Asset");
+			Asset asset = new Asset();
+			asset.setName(id+"Asset");
 		    
-		    assetDto.setParentId(getRootAsset());
-		    assetDto.setTypeId("engineer."+id+"AssetType");
+			asset.setParentId(getRootAsset());
+			asset.setTypeId("engineer."+id+"AssetType");
 		    
-			assetClient. createAsset(assetDto);
+			assetsClient.addAsset(asset);
 		} 
+		catch (MindsphereException e) {
+			// Exception handling
+			System.out.println(e.getMessage());;
+			return false;
+		}
 		catch (Exception e) {
 			// Exception handling
 			e.printStackTrace();

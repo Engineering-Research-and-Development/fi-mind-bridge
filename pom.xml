@@ -79,10 +79,23 @@
 			<artifactId>jersey-media-json-binding</artifactId> </dependency> -->
 		<!-- Version 1.2.0 onwards -->
 		<dependency>
-			<groupId>com.siemens.mindsphere</groupId>
-			<artifactId>mindsphere-sdk</artifactId>
-			<version>1.2.1</version>
+		    <groupId>com.siemens.mindsphere</groupId>
+		    <artifactId>mindsphere-sdk-java-core</artifactId>
+		    <version>2.3.1</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>com.siemens.mindsphere</groupId>
+		    <artifactId>assetmanagement-sdk</artifactId>
+		    <version>3.9.5</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.siemens.mindsphere</groupId>
+		    <artifactId>timeseries-sdk</artifactId>
+		    <version>3.2.5</version>
+		</dependency>		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>

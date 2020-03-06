@@ -14,11 +14,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import com.siemens.mindsphere.sdk.iot.asset.model.AspectTypeDto;
-import com.siemens.mindsphere.sdk.iot.asset.model.AspectVariable;
-import com.siemens.mindsphere.sdk.iot.asset.model.CategoryEnum;
-import com.siemens.mindsphere.sdk.iot.asset.model.DataTypeEnum;
-import com.siemens.mindsphere.sdk.iot.asset.model.ScopeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
 
 import it.eng.fimind.model.fiware.device.DeviceModelNormalized;
 import it.eng.fimind.util.MindSphereGateway;
@@ -40,7 +40,7 @@ public class DeviceModelNormalizedServices {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@Valid DeviceModelNormalized deviceModel) { 
-		ServiceResult serviceResult=new ServiceResult();
+		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+deviceModel.getId());
 		createMindSphereAssetFromDeviceModel(deviceModel);
 		serviceResult.setResult("OK");
@@ -48,8 +48,8 @@ public class DeviceModelNormalizedServices {
 	}
 	
 	private boolean createMindSphereAssetFromDeviceModel(DeviceModelNormalized deviceModel) {
-		MindSphereGateway mindSphereGateway=MindSphereGateway.getMindSphereGateway();
-		AspectTypeDto aspectTypeDto=new AspectTypeDto();
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		AspectType aspectTypeDto=new AspectType();
 		
 		aspectTypeDto.setName((String) deviceModel.getId()+"Aspect");
 		aspectTypeDto.setDescription((String) deviceModel.getDescription().getValue());
@@ -58,18 +58,18 @@ public class DeviceModelNormalizedServices {
 		List<AspectVariable> variables=new ArrayList<AspectVariable>();
 
 		for (int i=0; i<deviceModel.getControlledProperty().getValue().size();i++) {
-			String property=(String) deviceModel.getControlledProperty().getValue().get(i);
-			String uom="";
+			String property = (String) deviceModel.getControlledProperty().getValue().get(i);
+			String uom = "";
 			if (deviceModel.getSupportedUnits()!=null)
 				if (deviceModel.getSupportedUnits().getValue().get(i)!=null)
-					uom=(String) deviceModel.getSupportedUnits().getValue().get(i);
+					uom = (String) deviceModel.getSupportedUnits().getValue().get(i);
 			AspectVariable var=new AspectVariable();
 			var.setName(property);
 			var.setDataType(DataTypeEnum.STRING);
 			var.setLength(20);
 			var.setUnit(uom);
 			var.setSearchable(true);
-			var.setQualitycode(true);
+			var.setQualityCode(true);
 			variables.add(var);
 		}
 		

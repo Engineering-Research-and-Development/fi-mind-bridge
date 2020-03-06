@@ -15,11 +15,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import com.siemens.mindsphere.sdk.iot.asset.model.AspectTypeDto;
-import com.siemens.mindsphere.sdk.iot.asset.model.AspectVariable;
-import com.siemens.mindsphere.sdk.iot.asset.model.CategoryEnum;
-import com.siemens.mindsphere.sdk.iot.asset.model.DataTypeEnum;
-import com.siemens.mindsphere.sdk.iot.asset.model.ScopeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
 
 import it.eng.fimind.model.fiware.device.DeviceModel;
 import it.eng.fimind.util.MindSphereGateway;
@@ -51,13 +51,14 @@ public class DeviceModelServices {
 	}
 	
 	private boolean createMindSphereAssetFromDeviceModel(DeviceModel deviceModel) {
-		MindSphereGateway mindSphereGateway=MindSphereGateway.getMindSphereGateway();
-		AspectTypeDto aspectTypeDto=new AspectTypeDto();
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		AspectType aspectType = new AspectType();
 		
-		aspectTypeDto.setName(deviceModel.getId()+"Aspect");
-		aspectTypeDto.setDescription(deviceModel.getDescription());
-		aspectTypeDto.setScope(ScopeEnum.PRIVATE);
-		aspectTypeDto.setCategory(CategoryEnum.DYNAMIC);
+		aspectType.setName(deviceModel.getId()+"Aspect");
+		aspectType.setDescription(deviceModel.getDescription());
+		aspectType.setScope(ScopeEnum.PRIVATE);
+		aspectType.setCategory(CategoryEnum.DYNAMIC);
+		
 		List<AspectVariable> variables=new ArrayList<AspectVariable>();
 
 		for (int i=0; i<deviceModel.getControlledProperty().size();i++) {
@@ -72,12 +73,12 @@ public class DeviceModelServices {
 			var.setLength(20);
 			var.setUnit(uom);
 			var.setSearchable(true);
-			var.setQualitycode(true);
+			var.setQualityCode(true);
 			variables.add(var);
 		}
 		
-		aspectTypeDto.setVariables(variables);
-		mindSphereGateway.createAsset(deviceModel.getId(), aspectTypeDto);
+		aspectType.setVariables(variables);
+		mindSphereGateway.createAsset(deviceModel.getId(), aspectType);
 		logger.debug("Asset created");
 		return true;
 	}
