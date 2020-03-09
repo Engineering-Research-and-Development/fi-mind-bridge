@@ -18,13 +18,13 @@ public class AlertNormalized {
 	@NotNull(message = "{alert.null.category}")
 	@Pattern(message = "{alert.wrong.category}", regexp = "traffic|naturalDisaster|weather|environment|health|security|agriculture", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute category;
-	@Pattern(message = "{alert.wrong.subCategory}", regexp = "trafficJam| carAccident| carWrongDirection| carStopped|pothole|roadClosed|roadWorks|hazardOnRoad|injuredBiker,"
-			+ "												flood|tsunami|coastalEvent|earthquake,"
-			+ "												rainfall|highTemperature|lowTemperature|heatWave|coldWave|ice|snow|wind|fog|tornado|tropicalCyclone|hurricane|snow|ice|thunderstorms|fireRisk|avalancheRisk|floodRisk,"
-			+ "												airPollution|waterPollution|pollenConcentration,"
-			+ "												asthmaAttack|bumpedPatient|fallenPatient|heartAttack,"
-			+ "												suspiciousAction|robbery|assault|civilDisorder|buildingFire|forestFire,"
-			+ "												noxiousWeed|snail|insect|rodent|bacteria|microbe|fungus,mite|virus|nematodes|irrigation|fertilisation", flags=Pattern.Flag.CASE_INSENSITIVE)
+	@Pattern(message = "{alert.wrong.subCategory}", regexp = "trafficJam| carAccident| carWrongDirection| carStopped|pothole|roadClosed|roadWorks|hazardOnRoad|injuredBiker|"
+			+ "												flood|tsunami|coastalEvent|earthquake|"
+			+ "												rainfall|highTemperature|lowTemperature|heatWave|coldWave|ice|snow|wind|fog|tornado|tropicalCyclone|hurricane|snow|ice|thunderstorms|fireRisk|avalancheRisk|floodRisk|"
+			+ "												airPollution|waterPollution|pollenConcentration|"
+			+ "												asthmaAttack|bumpedPatient|fallenPatient|heartAttack|"
+			+ "												suspiciousAction|robbery|assault|civilDisorder|buildingFire|forestFire|"
+			+ "												noxiousWeed|snail|insect|rodent|bacteria|microbe|fungus|mite|virus|nematodes|irrigation|fertilisation", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute suCategory;
 	private LocationNormalized loation;
 	private AddressNormalized address;

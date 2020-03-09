@@ -53,17 +53,17 @@ public class AssetAdministrationShellServices {
 	public Response createDataInJSON(@Valid AssetAdministrationShell aas) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+aas.getId());
-		if(aasDoesAlreadyExist(aas)) {
-			getAllFromAAS(aas);
-			createMindSphereTimeSeriesFromAAS(aas);
-		}
-		else
+		if(!aasDoesAlreadyExist(aas)) {
 			createMindSphereAssetFromAAS(aas);
+		}
+		createMindSphereTimeSeriesFromAAS(aas);
+		getEverythingFromAAS(aas);
+		
 		serviceResult.setResult("OK");
 		return Response.status(201).entity(serviceResult).build();
 	}
 	
-	private void getAllFromAAS(AssetAdministrationShell aas) {
+	private void getEverythingFromAAS(AssetAdministrationShell aas) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"Asset\"}");
 		System.out.println(assets.get(0));
@@ -141,6 +141,7 @@ public class AssetAdministrationShellServices {
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), aas.getId()+"AspectType", timeSeriesList);
 			logger.debug("AssetAdministrationShell updated");
+		
 		} catch (Exception e) {
 			// Exception handling
 			e.printStackTrace();
