@@ -48,7 +48,7 @@ public class WeatherForecastNormalizedServices {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@Valid WeatherForecastNormalized weatherForecast) { 
-		ServiceResult serviceResult=new ServiceResult();
+		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+weatherForecast.getId());
 		if(!weatherForecastDoesAlreadyExist(weatherForecast)) {
 			createMindSphereAssetFromWeatherForecast(weatherForecast);
@@ -71,7 +71,7 @@ public class WeatherForecastNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		AspectType aspectType = new AspectType();
 		
-		aspectType.setName(weatherForecast.getId()+"Aspect");
+		aspectType.setName((String) weatherForecast.getId()+"Aspect");
 		//aspectType.setDescription(aas.getDescription());
 		aspectType.setScope(ScopeEnum.PRIVATE);
 		aspectType.setCategory(CategoryEnum.DYNAMIC);
@@ -109,20 +109,20 @@ public class WeatherForecastNormalizedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
-			timeseriesPoint.getFields().put("WeatherType",weatherForecast.getWeatherType().getValue());
-			timeseriesPoint.getFields().put("Visibility",weatherForecast.getVisibility().getValue());
-			timeseriesPoint.getFields().put("Temperature",weatherForecast.getTemperature().getValue());
-			timeseriesPoint.getFields().put("FeelsLikeTemperature",weatherForecast.getFeelsLikeTemperature().getValue());
-			timeseriesPoint.getFields().put("RelativeHumidity",weatherForecast.getRelativeHumidity().getValue());
-			timeseriesPoint.getFields().put("PrecipitationProbability",weatherForecast.getPrecipitationProbability().getValue());
-			timeseriesPoint.getFields().put("WindDirection",weatherForecast.getWindDirection().getValue());
-			timeseriesPoint.getFields().put("WindSpeed",weatherForecast.getWindSpeed().getValue());
-			timeseriesPoint.getFields().put("MinTemperature",weatherForecast.getDayMinimum().getTemperature().getValue());
-			timeseriesPoint.getFields().put("MinFeelsLikeTemperature",weatherForecast.getDayMinimum().getFeelsLikeTemperature().getValue());
-			timeseriesPoint.getFields().put("MinRelativeHumidity",weatherForecast.getDayMinimum().getRelativeHumidity().getValue());
-			timeseriesPoint.getFields().put("MaxTemperature",weatherForecast.getDayMaximum().getTemperature().getValue());
-			timeseriesPoint.getFields().put("MaxFeelsLikeTemperature",weatherForecast.getDayMaximum().getFeelsLikeTemperature().getValue());
-			timeseriesPoint.getFields().put("MaxRelativeHumidity",weatherForecast.getDayMaximum().getRelativeHumidity().getValue());
+			timeseriesPoint.getFields().put("WeatherType",(String) weatherForecast.getWeatherType().getValue());
+			timeseriesPoint.getFields().put("Visibility",(String) weatherForecast.getVisibility().getValue());
+			timeseriesPoint.getFields().put("Temperature",(Double) weatherForecast.getTemperature().getValue());
+			timeseriesPoint.getFields().put("FeelsLikeTemperature",(Double) weatherForecast.getFeelsLikeTemperature().getValue());
+			timeseriesPoint.getFields().put("RelativeHumidity",(Double) weatherForecast.getRelativeHumidity().getValue());
+			timeseriesPoint.getFields().put("PrecipitationProbability",(Double) weatherForecast.getPrecipitationProbability().getValue());
+			timeseriesPoint.getFields().put("WindDirection",(Double) weatherForecast.getWindDirection().getValue());
+			timeseriesPoint.getFields().put("WindSpeed",(Double) weatherForecast.getWindSpeed().getValue());
+			timeseriesPoint.getFields().put("MinTemperature",(Double) weatherForecast.getDayMinimum().getTemperature().getValue());
+			timeseriesPoint.getFields().put("MinFeelsLikeTemperature",(Double) weatherForecast.getDayMinimum().getFeelsLikeTemperature().getValue());
+			timeseriesPoint.getFields().put("MinRelativeHumidity",(Double) weatherForecast.getDayMinimum().getRelativeHumidity().getValue());
+			timeseriesPoint.getFields().put("MaxTemperature",(Double) weatherForecast.getDayMaximum().getTemperature().getValue());
+			timeseriesPoint.getFields().put("MaxFeelsLikeTemperature",(Double) weatherForecast.getDayMaximum().getFeelsLikeTemperature().getValue());
+			timeseriesPoint.getFields().put("MaxRelativeHumidity",(Double) weatherForecast.getDayMaximum().getRelativeHumidity().getValue());
 
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), weatherForecast.getId()+"AspectType", timeSeriesList);

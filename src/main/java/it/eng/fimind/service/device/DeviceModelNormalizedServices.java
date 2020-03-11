@@ -49,12 +49,12 @@ public class DeviceModelNormalizedServices {
 	
 	private boolean createMindSphereAssetFromDeviceModel(DeviceModelNormalized deviceModel) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectTypeDto=new AspectType();
+		AspectType aspectType=new AspectType();
 		
-		aspectTypeDto.setName((String) deviceModel.getId()+"Aspect");
-		aspectTypeDto.setDescription((String) deviceModel.getDescription().getValue());
-		aspectTypeDto.setScope(ScopeEnum.PRIVATE);
-		aspectTypeDto.setCategory(CategoryEnum.DYNAMIC);
+		aspectType.setName((String) deviceModel.getId()+"Aspect");
+		aspectType.setDescription((String) deviceModel.getDescription().getValue());
+		aspectType.setScope(ScopeEnum.PRIVATE);
+		aspectType.setCategory(CategoryEnum.DYNAMIC);
 		List<AspectVariable> variables=new ArrayList<AspectVariable>();
 
 		for (int i=0; i<deviceModel.getControlledProperty().getValue().size();i++) {
@@ -73,8 +73,8 @@ public class DeviceModelNormalizedServices {
 			variables.add(var);
 		}
 		
-		aspectTypeDto.setVariables(variables);
-		mindSphereGateway.createAsset(deviceModel.getId(), aspectTypeDto);
+		aspectType.setVariables(variables);
+		mindSphereGateway.createAsset(deviceModel.getId(), aspectType);
 		logger.debug("Asset created");
 		return true;
 	}

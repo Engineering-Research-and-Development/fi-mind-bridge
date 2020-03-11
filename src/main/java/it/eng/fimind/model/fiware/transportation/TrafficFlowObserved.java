@@ -38,7 +38,7 @@ public class TrafficFlowObserved {
 	private Double averageHeadwayTime;
 	private Double averageGapDistance;
 	private String laneDirection;
-	private Double reversedLane;
+	private Boolean reversedLane;
 	
 	public String getId() {
 		return id;
@@ -190,10 +190,10 @@ public class TrafficFlowObserved {
 	public void setLaneDirection(String laneDirection) {
 		this.laneDirection = laneDirection;
 	}
-	public Double getReversedLane() {
+	public Boolean getReversedLane() {
 		return reversedLane;
 	}
-	public void setReversedLane(Double reversedLane) {
+	public void setReversedLane(Boolean reversedLane) {
 		this.reversedLane = reversedLane;
 	}
 

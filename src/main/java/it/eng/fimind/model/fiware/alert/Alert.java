@@ -24,7 +24,7 @@ public class Alert {
 			+ "												asthmaAttack|bumpedPatient|fallenPatient|heartAttack|"
 			+ "												suspiciousAction|robbery|assault|civilDisorder|buildingFire|forestFire|"
 			+ "												noxiousWeed|snail|insect|rodent|bacteria|microbe|fungus|mite|virus|nematodes|irrigation|fertilisation", flags=Pattern.Flag.CASE_INSENSITIVE)
-	private String suCategory;
+	private String subCategory;
 	private Location loation;
 	private Address address;
 	@NotNull(message = "{alert.null.dateIssued}")
@@ -68,11 +68,11 @@ public class Alert {
 	public void setCategory(String category) {
 		this.category = category;
 	}
-	public String getSuCategory() {
-		return suCategory;
+	public String getSubCategory() {
+		return subCategory;
 	}
-	public void setSuCategory(String suCategory) {
-		this.suCategory = suCategory;
+	public void setSubCategory(String subCategory) {
+		this.subCategory = subCategory;
 	}
 	public Location getLoation() {
 		return loation;

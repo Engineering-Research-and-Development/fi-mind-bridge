@@ -35,7 +35,7 @@ public class Vehicle {
 	private String dateVehicleFirstRegistered;
 	private String dateFirstUsed;
 	private String purchaseDate;
-	private String mileageFromOdometer;
+	private Double mileageFromOdometer;
 	private String vehicleConfiguration;
 	private String color;
 	private String owner;
@@ -163,10 +163,10 @@ public class Vehicle {
 	public void setPurchaseDate(String purchaseDate) {
 		this.purchaseDate = purchaseDate;
 	}
-	public String getMileageFromOdometer() {
+	public Double getMileageFromOdometer() {
 		return mileageFromOdometer;
 	}
-	public void setMileageFromOdometer(String mileageFromOdometer) {
+	public void setMileageFromOdometer(Double mileageFromOdometer) {
 		this.mileageFromOdometer = mileageFromOdometer;
 	}
 	public String getVehicleConfiguration() {

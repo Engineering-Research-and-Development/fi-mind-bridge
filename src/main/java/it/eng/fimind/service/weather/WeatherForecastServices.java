@@ -71,7 +71,7 @@ public class WeatherForecastServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		AspectType aspectType = new AspectType();
 		
-		aspectType.setName(weatherForecast.getId()+"Aspect");
+		aspectType.setName((String) weatherForecast.getId()+"Aspect");
 		//aspectType.setDescription(aas.getDescription());
 		aspectType.setScope(ScopeEnum.PRIVATE);
 		aspectType.setCategory(CategoryEnum.DYNAMIC);

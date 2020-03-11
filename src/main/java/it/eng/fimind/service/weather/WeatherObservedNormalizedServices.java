@@ -72,7 +72,7 @@ public class WeatherObservedNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		AspectType aspectType = new AspectType();
 		
-		aspectType.setName(weatherObserved.getId()+"Aspect");
+		aspectType.setName((String) weatherObserved.getId()+"Aspect");
 		//aspectType.setDescription(aas.getDescription());
 		aspectType.setScope(ScopeEnum.PRIVATE);
 		aspectType.setCategory(CategoryEnum.DYNAMIC);
@@ -110,20 +110,20 @@ public class WeatherObservedNormalizedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
-			timeseriesPoint.getFields().put("WeatherType",weatherObserved.getWeatherType().getValue());
-			timeseriesPoint.getFields().put("DewPoint",weatherObserved.getDewPoint().getValue());
-			timeseriesPoint.getFields().put("Visibility",weatherObserved.getVisibility().getValue());
-			timeseriesPoint.getFields().put("Temperature",weatherObserved.getTemperature().getValue());
-			timeseriesPoint.getFields().put("RelativeHumidity",weatherObserved.getRelativeHumidity().getValue());
-			timeseriesPoint.getFields().put("Precipitation",weatherObserved.getPrecipitation().getValue());
-			timeseriesPoint.getFields().put("WindDirection",weatherObserved.getWindDirection().getValue());
-			timeseriesPoint.getFields().put("WindSpeed",weatherObserved.getWindSpeed().getValue());
-			timeseriesPoint.getFields().put("AtmosphericPressure",weatherObserved.getAtmosphericPressure().getValue());
-			timeseriesPoint.getFields().put("PressureTendency",weatherObserved.getPressureTendency().getValue());
-			timeseriesPoint.getFields().put("SolarRadiation",weatherObserved.getSolarRadiation().getValue());
-			timeseriesPoint.getFields().put("Illuminance",weatherObserved.getIlluminance().getValue());
-			timeseriesPoint.getFields().put("StreamGauge",weatherObserved.getStreamGauge().getValue());
-			timeseriesPoint.getFields().put("SnowHeight",weatherObserved.getSnowHeight().getValue());
+			timeseriesPoint.getFields().put("WeatherType",(String) weatherObserved.getWeatherType().getValue());
+			timeseriesPoint.getFields().put("DewPoint",(Double) weatherObserved.getDewPoint().getValue());
+			timeseriesPoint.getFields().put("Visibility",(String) weatherObserved.getVisibility().getValue());
+			timeseriesPoint.getFields().put("Temperature",(Double) weatherObserved.getTemperature().getValue());
+			timeseriesPoint.getFields().put("RelativeHumidity",(Double) weatherObserved.getRelativeHumidity().getValue());
+			timeseriesPoint.getFields().put("Precipitation",(Double) weatherObserved.getPrecipitation().getValue());
+			timeseriesPoint.getFields().put("WindDirection",(Double) weatherObserved.getWindDirection().getValue());
+			timeseriesPoint.getFields().put("WindSpeed",(Double) weatherObserved.getWindSpeed().getValue());
+			timeseriesPoint.getFields().put("AtmosphericPressure",(Double) weatherObserved.getAtmosphericPressure().getValue());
+			timeseriesPoint.getFields().put("PressureTendency",(String) weatherObserved.getPressureTendency().getValue());
+			timeseriesPoint.getFields().put("SolarRadiation",(Double) weatherObserved.getSolarRadiation().getValue());
+			timeseriesPoint.getFields().put("Illuminance",(Double) weatherObserved.getIlluminance().getValue());
+			timeseriesPoint.getFields().put("StreamGauge",(Double) weatherObserved.getStreamGauge().getValue());
+			timeseriesPoint.getFields().put("SnowHeight",(Double) weatherObserved.getSnowHeight().getValue());
 
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), weatherObserved.getId()+"AspectType", timeSeriesList);

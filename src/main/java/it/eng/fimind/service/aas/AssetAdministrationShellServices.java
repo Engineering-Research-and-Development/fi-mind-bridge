@@ -82,7 +82,7 @@ public class AssetAdministrationShellServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		AspectType aspectType = new AspectType();
 		
-		aspectType.setName(aas.getId()+"Aspect");
+		aspectType.setName((String) aas.getId()+"Aspect");
 		//aspectType.setDescription(aas.getDescription());
 		aspectType.setScope(ScopeEnum.PRIVATE);
 		aspectType.setCategory(CategoryEnum.DYNAMIC);

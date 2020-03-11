@@ -25,7 +25,7 @@ public class AlertNormalized {
 			+ "												asthmaAttack|bumpedPatient|fallenPatient|heartAttack|"
 			+ "												suspiciousAction|robbery|assault|civilDisorder|buildingFire|forestFire|"
 			+ "												noxiousWeed|snail|insect|rodent|bacteria|microbe|fungus|mite|virus|nematodes|irrigation|fertilisation", flags=Pattern.Flag.CASE_INSENSITIVE)
-	private Attribute suCategory;
+	private Attribute subCategory;
 	private LocationNormalized loation;
 	private AddressNormalized address;
 	@NotNull(message = "{alert.null.dateIssued}")
@@ -69,11 +69,11 @@ public class AlertNormalized {
 	public void setCategory(Attribute category) {
 		this.category = category;
 	}
-	public Attribute getSuCategory() {
-		return suCategory;
+	public Attribute getSubCategory() {
+		return subCategory;
 	}
-	public void setSuCategory(Attribute suCategory) {
-		this.suCategory = suCategory;
+	public void setSubCategory(Attribute subCategory) {
+		this.subCategory = subCategory;
 	}
 	public LocationNormalized getLoation() {
 		return loation;
