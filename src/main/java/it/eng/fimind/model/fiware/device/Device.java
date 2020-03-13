@@ -20,6 +20,11 @@ public class Device {
 	@Pattern(message = "{device.wrong.category}", regexp = "sensor|actuator|meter|HVAC|network|multimedia|implement|irrSystem|irrSection|endgun", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private List<String> category;
 	@NotNull(message = "{device.null.controlledProperty}")
+	@Pattern(message = "{device.wrong.controlledProperty}", regexp = "temperature|humidity|light|motion|fillingLevel|occupancy|power|pressure|smoke|"
+			+ "															energy|airPollution|noiseLevel|weatherConditions|precipitation|windSpeed|windDirection|"
+			+ "															atmosphericPressure|solarRadiation|depth|pH|conductivity|conductance|tss|tds|turbidity|"
+			+ "															salinity|orp|cdom|waterPollution|location|speed|heading|weight|waterConsumption|gasComsumption|"
+			+ "															electricityConsumption|soilMoisture|trafficFlow|eatingActivity|milking|movementActivity", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private List<String> controlledProperty;
 	private List<String> controlledAsset;
 	private String mnc;

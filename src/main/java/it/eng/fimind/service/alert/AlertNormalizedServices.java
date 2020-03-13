@@ -20,15 +20,15 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.alert.AlertNormalized;
 import it.eng.fimind.util.MindSphereGateway;
+import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
 
 
@@ -51,9 +51,10 @@ public class AlertNormalizedServices {
 	public Response createDataInJSON(@Valid AlertNormalized alert) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+alert.getId());
-		if(!alertDoesAlreadyExist(alert)) {
-			createMindSphereAssetFromAlert(alert);
-		}
+		
+		if(!alertDoesAlreadyExist(alert)) 
+			saveMindSphereAsset(createMindSphereAssetFromAlert(alert));
+		
 		createMindSphereTimeSeriesFromAlert(alert);
 		
 		serviceResult.setResult("OK");
@@ -67,37 +68,53 @@ public class AlertNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private boolean createMindSphereAssetFromAlert(AlertNormalized alert) {
+	private Asset createMindSphereAssetFromAlert(AlertNormalized alert) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectType = new AspectType();
-		
-		aspectType.setName((String) alert.getId()+"Aspect");
-		aspectType.setDescription((String) alert.getDescription().getValue());
-		aspectType.setScope(ScopeEnum.PRIVATE);
-		aspectType.setCategory(CategoryEnum.DYNAMIC);
-		
-		List<AspectVariable> variables=new ArrayList<AspectVariable>();
+		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 
-		List<String> properties = Stream.of("Category", "SubCategory", "Severity").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Empiric Data", "Empiric Data", "Empiric Data").collect(Collectors.toList());
-
-		for(int i=0; i<properties.size();i++) {
-			AspectVariable var = new AspectVariable();
-			var.setName(properties.get(i));
-			var.setDataType(DataTypeEnum.STRING);
-			var.setLength(20);
-			var.setUnit(uoms.get(i));
-			var.setSearchable(true);
-			var.setQualityCode(true);
-			variables.add(var);
-		}
-				
-		aspectType.setVariables(variables);
-		mindSphereGateway.createAsset(alert.getId(), aspectType);
-		logger.debug("AlertNormalized created");
-		return true;
+		Location mindSphereLocation = null;
+		if(alert.getLocation().getType().equals("Point")) 
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(alert.getLocation().getValue());
+		else 
+			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(alert.getAddress().getValue());
+		
+		
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+		keys.add("Source");
+		values.add((String) alert.getSource().getValue());
+		keys.add("DataProvider");
+		values.add((String) alert.getDataProvider().getValue());
+		keys.add("Category");
+		values.add((String) alert.getCategory().getValue());
+		keys.add("SubCategory");
+		values.add((String) alert.getSubCategory().getValue());
+		keys.add("DateIssued");
+		values.add((String) alert.getDateIssued().getValue());
+		keys.add("ValidFrom");
+		values.add((String) alert.getValidFrom().getValue());
+		keys.add("ValidTo");
+		values.add((String) alert.getValidTo().getValue());
+		keys.add("AlertSource");
+		values.add((String) alert.getAlertSource().getValue());
+		keys.add("Data");
+		values.add((String) alert.getData().getValue());
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		
+	
+		List<String> properties = Stream.of("Severity").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Dimensionless").collect(Collectors.toList());
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), (String) alert.getDescription().getValue(), properties, uoms);
+		
+		
+		return mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariables, aspectType);
 	}
 
+	private boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		logger.debug("AlertNormalized created");
+		return mindSphereGateway.saveAsset(asset);
+	}
 	
 	private boolean createMindSphereTimeSeriesFromAlert(AlertNormalized alert) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();

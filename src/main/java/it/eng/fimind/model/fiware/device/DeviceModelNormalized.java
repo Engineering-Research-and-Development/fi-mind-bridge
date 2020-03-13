@@ -15,7 +15,6 @@ public class DeviceModelNormalized {
 	private Attribute source;
 	private Attribute dataProvider;
 	@NotNull(message = "{device.null.category}")
-	@Pattern(message = "{device.wrong.category}", regexp = "sensor|actuator|meter|HVAC|network|multimedia|implement|irrSystem|irrSection|endgun", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private MultiAttribute category;
 	private Attribute deviceClass;
 	@NotNull(message = "{device.null.controlledProperty}")

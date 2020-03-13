@@ -12,8 +12,8 @@ public class WeatherForecast {
 	@Pattern(message = "{weatherforecast.wrong.type}", regexp = "WeatherForecast", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String type;
 	private String dataProvider;
-	private String dataModified;
-	private String dataCreated;
+	private String dateModified;
+	private String dateCreated;
 	private String name;
 	private Location location;
 	private Address address;
@@ -58,17 +58,17 @@ public class WeatherForecast {
 	public void setDataProvider(String dataProvider) {
 		this.dataProvider = dataProvider;
 	}
-	public String getDataModified() {
-		return dataModified;
+	public String getDateModified() {
+		return dateModified;
 	}
-	public void setDataModified(String dataModified) {
-		this.dataModified = dataModified;
+	public void setDateModified(String dateModified) {
+		this.dateModified = dateModified;
 	}
-	public String getDataCreated() {
-		return dataCreated;
+	public String getDateCreated() {
+		return dateCreated;
 	}
-	public void setDataCreated(String dataCreated) {
-		this.dataCreated = dataCreated;
+	public void setDateCreated(String dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 	public String getName() {
 		return name;

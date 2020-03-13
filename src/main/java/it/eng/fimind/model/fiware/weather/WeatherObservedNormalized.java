@@ -13,8 +13,8 @@ public class WeatherObservedNormalized {
 	@Pattern(message = "{weatherobserved.wrong.type}", regexp = "WeatherObserved", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String type;
 	private Attribute dataProvider;
-	private Attribute dataModified;
-	private Attribute dataCreated;
+	private Attribute dateModified;
+	private Attribute dateCreated;
 	private Attribute name;
 	private LocationNormalized location;
 	private AddressNormalized address;
@@ -23,10 +23,8 @@ public class WeatherObservedNormalized {
 	private Attribute source;
 	private Attribute refDevice;
 	private Attribute refPointOfInterest;
-	@Pattern(message = "{weatherobserved.wrong.weatherType}", regexp = "clearNight|sunnyDay|slightlyCloudy|partlyCloudy|mist|fog|highClouds|cloudy|veryCloudy|overcast|lightRainShower|drizzle|lightRain|heavyRainShower|heavyRain|sleetShower|sleet|hailShower|hail|shower|lightSnow|snow|heavySnowShower|heavySnow|thunderShower|thunder", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute weatherType;
 	private Attribute dewPoint;
-	@Pattern(message = "{weatherobserved.wrong.visibility}", regexp = "veryPoor|poor|moderate|good|veryGood|excellent", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute visibility;
 	private Attribute temperature;
 	private Attribute relativeHumidity;
@@ -59,17 +57,17 @@ public class WeatherObservedNormalized {
 	public void setDataProvider(Attribute dataProvider) {
 		this.dataProvider = dataProvider;
 	}
-	public Attribute getDataModified() {
-		return dataModified;
+	public Attribute getDateModified() {
+		return dateModified;
 	}
-	public void setDataModified(Attribute dataModified) {
-		this.dataModified = dataModified;
+	public void setDateModified(Attribute dateModified) {
+		this.dateModified = dateModified;
 	}
-	public Attribute getDataCreated() {
-		return dataCreated;
+	public Attribute getDateCreated() {
+		return dateCreated;
 	}
-	public void setDataCreated(Attribute dataCreated) {
-		this.dataCreated = dataCreated;
+	public void setDateCreated(Attribute dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 	public Attribute getName() {
 		return name;

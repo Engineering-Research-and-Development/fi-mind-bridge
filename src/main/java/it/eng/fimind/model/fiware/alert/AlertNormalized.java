@@ -26,7 +26,7 @@ public class AlertNormalized {
 			+ "												suspiciousAction|robbery|assault|civilDisorder|buildingFire|forestFire|"
 			+ "												noxiousWeed|snail|insect|rodent|bacteria|microbe|fungus|mite|virus|nematodes|irrigation|fertilisation", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute subCategory;
-	private LocationNormalized loation;
+	private LocationNormalized location;
 	private AddressNormalized address;
 	@NotNull(message = "{alert.null.dateIssued}")
 	private Attribute dateIssued;
@@ -75,11 +75,11 @@ public class AlertNormalized {
 	public void setSubCategory(Attribute subCategory) {
 		this.subCategory = subCategory;
 	}
-	public LocationNormalized getLoation() {
-		return loation;
+	public LocationNormalized getLocation() {
+		return location;
 	}
-	public void setLoation(LocationNormalized loation) {
-		this.loation = loation;
+	public void setLocation(LocationNormalized location) {
+		this.location = location;
 	}
 	public AddressNormalized getAddress() {
 		return address;

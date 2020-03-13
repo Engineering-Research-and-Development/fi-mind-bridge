@@ -29,7 +29,8 @@ public class Building {
 	private List<String> occupier ;
 	private Integer  floorsAboveGround;
 	private Integer floorsBelowGround ;
-	private String mapUrl;
+	private String refMap;
+
 	private List<OpeningHours> openingHours;
 	
 	public String getId() {
@@ -122,11 +123,11 @@ public class Building {
 	public void setFloorsBelowGround(Integer floorsBelowGround) {
 		this.floorsBelowGround = floorsBelowGround;
 	}
-	public String getMapUrl() {
-		return mapUrl;
+	public String getRefMap() {
+		return refMap;
 	}
-	public void setMapUrl(String mapUrl) {
-		this.mapUrl = mapUrl;
+	public void setRefMap(String refMap) {
+		this.refMap = refMap;
 	}
 	public List<OpeningHours> getOpeningHours() {
 		return openingHours;

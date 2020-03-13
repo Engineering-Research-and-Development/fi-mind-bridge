@@ -16,13 +16,13 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 
 import it.eng.fimind.model.fiware.device.DeviceModel;
 import it.eng.fimind.util.MindSphereGateway;
+import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
 
 /**
@@ -45,43 +45,82 @@ public class DeviceModelServices {
 	public Response createDataInJSON(@Valid DeviceModel deviceModel) { 
 		ServiceResult serviceResult=new ServiceResult();
 		logger.debug("Id ="+deviceModel.getId());
-		createMindSphereAssetFromDeviceModel(deviceModel);
+		
+		if(!deviceModelDoesAlreadyExist(deviceModel)) 
+			saveMindSphereAsset(createMindSphereAssetFromDeviceModel(deviceModel));
+		
 		serviceResult.setResult("OK");
 		return Response.status(201).entity(serviceResult).build();
 	}
 	
-	private boolean createMindSphereAssetFromDeviceModel(DeviceModel deviceModel) {
+	private Boolean deviceModelDoesAlreadyExist(DeviceModel deviceModel)
+	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectType = new AspectType();
-		
-		aspectType.setName(deviceModel.getId()+"Aspect");
-		aspectType.setDescription(deviceModel.getDescription());
-		aspectType.setScope(ScopeEnum.PRIVATE);
-		aspectType.setCategory(CategoryEnum.DYNAMIC);
-		
-		List<AspectVariable> variables=new ArrayList<AspectVariable>();
-
-		for (int i=0; i<deviceModel.getControlledProperty().size();i++) {
-			String property=deviceModel.getControlledProperty().get(i);
-			String uom="";
-			if (deviceModel.getSupportedUnits()!=null)
-				if (deviceModel.getSupportedUnits().get(i)!=null)
-					uom=deviceModel.getSupportedUnits().get(i);
-			AspectVariable var=new AspectVariable();
-			var.setName(property);
-			var.setDataType(DataTypeEnum.STRING);
-			var.setLength(20);
-			var.setUnit(uom);
-			var.setSearchable(true);
-			var.setQualityCode(true);
-			variables.add(var);
-		}
-		
-		aspectType.setVariables(variables);
-		mindSphereGateway.createAsset(deviceModel.getId(), aspectType);
-		logger.debug("Asset created");
-		return true;
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+deviceModel.getId()+"Asset\"}");
+		return assets.size()>0;
 	}
-
+	
+	private Asset createMindSphereAssetFromDeviceModel(DeviceModel deviceModel) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		MindSphereMapper mindSphereMapper = new MindSphereMapper();
+		
+		
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+		keys.add("Source");
+		values.add(deviceModel.getSource());
+		keys.add("DataProvider");
+		values.add(deviceModel.getDataProvider());
+		keys.add("Category");
+		values.add(deviceModel.getCategory().toString());
+		keys.add("DeviceClass");
+		values.add(deviceModel.getDeviceClass());
+		keys.add("Function");
+		values.add(deviceModel.getFunction().toString());
+		keys.add("SupportedProtocol");
+		values.add(deviceModel.getSupportedProtocol().toString());
+		keys.add("SupportedUnits");
+		values.add(deviceModel.getSupportedUnits().toString());
+		keys.add("EnergyLimitationClass");
+		values.add(deviceModel.getEnergyLimitationClass());
+		keys.add("BrandName");
+		values.add(deviceModel.getBrandName());
+		keys.add("ModelName");
+		values.add(deviceModel.getModelName());
+		keys.add("ManufacturerName");
+		values.add(deviceModel.getManufacturerName());
+		keys.add("Name");
+		values.add(deviceModel.getName());
+		keys.add("Documentation");
+		values.add(deviceModel.getDocumentation());
+		keys.add("Image");
+		values.add(deviceModel.getDocumentation());
+		keys.add("DateModified");
+		values.add(deviceModel.getDateModified());
+		keys.add("DateCreated");
+		values.add(deviceModel.getDateCreated());
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		
+	
+		List<String> properties = new ArrayList<String>();
+		List<String> uoms = new ArrayList<String>();
+		for (int i=0; i<deviceModel.getControlledProperty().size(); i++) {
+			String property = deviceModel.getControlledProperty().get(i);
+			String uom = deviceModel.getSupportedUnits().get(i);
+			properties.add(property);
+			uoms.add(uom);
+		}
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(deviceModel.getId(), deviceModel.getDescription(), properties, uoms);
+		
+		
+		return mindSphereGateway.createAsset(deviceModel.getId(), assetVariables, aspectType);
+	}
+	
+	private boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		logger.debug("DeviceModel created");
+		return mindSphereGateway.saveAsset(asset);
+	}
+	
 	
 }

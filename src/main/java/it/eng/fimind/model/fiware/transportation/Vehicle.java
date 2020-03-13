@@ -41,6 +41,7 @@ public class Vehicle {
 	private String owner;
 	private List<String> feature;
 	private List<String> serviceProvided;
+	@Pattern(message = "{vehicle.wrong.vehicleSpecialUsage}", regexp = "taxi|ambulance|police|fireBrigade|schoolTransportation|military", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String vehicleSpecialUsage;
 	private String refVehicleModel;
 	private String areaServed;

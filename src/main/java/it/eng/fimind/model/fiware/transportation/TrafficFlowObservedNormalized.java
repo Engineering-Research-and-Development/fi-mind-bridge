@@ -15,14 +15,12 @@ public class TrafficFlowObservedNormalized {
 	private String type;
 	private Attribute source;
 	@NotNull(message = "{trafficflowobserved.null.vehicleType}")
-	@Pattern(message = "{trafficflowobserved.wrong.vehicleType}", regexp = "agriculturalVehicle|bicycle|bus|minibus|car|caravan|tram|tanker|carWithCaravan|carWithTrailer|lorry|moped|tanker|motorcycle|motorcycleWithSideCar|motorscooter|trailer|van|caravan|constructionOrMaintenanceVehicle"
-			+ 			"trolley|binTrolley|sweepingMachine|cleaningTrolley", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute vehicleType;
 	private Attribute vehicleSubType;
 	private Attribute dataProvider;
 	private LocationNormalized location;
 	private AddressNormalized address;
-	private RoadSegmentNormalized refRoadSegment;
+	private Attribute refRoadSegment;
 	private Attribute dateModified;
 	private Attribute laneId;
 	private Attribute dateObserved;
@@ -89,10 +87,10 @@ public class TrafficFlowObservedNormalized {
 	public void setAddress(AddressNormalized address) {
 		this.address = address;
 	}
-	public RoadSegmentNormalized getRefRoadSegment() {
+	public Attribute getRefRoadSegment() {
 		return refRoadSegment;
 	}
-	public void setRefRoadSegment(RoadSegmentNormalized refRoadSegment) {
+	public void setRefRoadSegment(Attribute refRoadSegment) {
 		this.refRoadSegment = refRoadSegment;
 	}
 	public Attribute getDateModified() {

@@ -18,7 +18,6 @@ public class DeviceNormalized {
 	private Attribute source;
 	private Attribute dataProvider;
 	@NotNull(message = "{device.null.category}")
-	@Pattern(message = "{device.wrong.category}", regexp = "sensor|actuator|meter|HVAC|network|multimedia|implement|irrSystem|irrSection|endgun", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private MultiAttribute category;
 	@NotNull(message = "{device.null.controlledProperty}")
 	private MultiAttribute controlledProperty;
@@ -27,7 +26,7 @@ public class DeviceNormalized {
 	private Attribute mcc;
 	private MultiAttribute macAddress;
 	private MultiAttribute ipAddress;
-	private String supportedProtocol;
+	private MultiAttribute supportedProtocol;
 	private Attribute configuration;
 	private LocationNormalized location;
 	private Attribute name;
@@ -122,10 +121,10 @@ public class DeviceNormalized {
 	public void setIpAddress(MultiAttribute ipAddress) {
 		this.ipAddress = ipAddress;
 	}
-	public String getSupportedProtocol() {
+	public MultiAttribute getSupportedProtocol() {
 		return supportedProtocol;
 	}
-	public void setSupportedProtocol(String supportedProtocol) {
+	public void setSupportedProtocol(MultiAttribute supportedProtocol) {
 		this.supportedProtocol = supportedProtocol;
 	}
 	public Attribute getConfiguration() {

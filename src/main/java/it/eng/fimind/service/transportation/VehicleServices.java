@@ -20,15 +20,14 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.transportation.Vehicle;
 import it.eng.fimind.util.MindSphereGateway;
+import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
 
 /**
@@ -50,9 +49,10 @@ public class VehicleServices {
 	public Response createDataInJSON(@Valid Vehicle vehicle) { 
 		ServiceResult serviceResult=new ServiceResult();
 		logger.debug("Id ="+vehicle.getId());
-		if(!vehicleDoesAlreadyExist(vehicle)) {
-			createMindSphereAssetFromVehicle(vehicle);
-		}
+
+		if(!vehicleDoesAlreadyExist(vehicle)) 
+			saveMindSphereAsset(createMindSphereAssetFromVehicle(vehicle));
+		
 		createMindSphereTimeSeriesFromVehicle(vehicle);
 		
 		serviceResult.setResult("OK");
@@ -67,35 +67,70 @@ public class VehicleServices {
 		return assets.size()>0;
 	}
 	
-	private boolean createMindSphereAssetFromVehicle(Vehicle vehicle) {
+	private Asset createMindSphereAssetFromVehicle(Vehicle vehicle) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectType = new AspectType();
+		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		aspectType.setName((String) vehicle.getId()+"Aspect");
-		aspectType.setDescription((String) vehicle.getDescription());
-		aspectType.setScope(ScopeEnum.PRIVATE);
-		aspectType.setCategory(CategoryEnum.DYNAMIC);
 		
-		List<AspectVariable> variables=new ArrayList<AspectVariable>();
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+		keys.add("Source");
+		values.add(vehicle.getSource());
+		keys.add("DataProvider");
+		values.add(vehicle.getDataProvider());
+		keys.add("Name");
+		values.add(vehicle.getName());
+		keys.add("VehicleType");
+		values.add(vehicle.getVehicleType());
+		keys.add("Category");
+		values.add(vehicle.getCategory());
+		keys.add("VehicleIdentificationNumber");
+		values.add(vehicle.getVehicleIdentificationNumber());
+		keys.add("VehiclePlateIdentifier");
+		values.add(vehicle.getVehiclePlateIdentifier());
+		keys.add("FleetVehicleId");
+		values.add(vehicle.getFleetVehicleId());
+		keys.add("DateVehicleFirstRegistered");
+		values.add(vehicle.getDateVehicleFirstRegistered());
+		keys.add("DateFirstUsed");
+		values.add(vehicle.getDateFirstUsed());
+		keys.add("PurchaseDate");
+		values.add(vehicle.getPurchaseDate());
+		keys.add("VehicleConfiguration");
+		values.add(vehicle.getVehicleConfiguration());
+		keys.add("Color");
+		values.add(vehicle.getColor());
+		keys.add("Owner");
+		values.add(vehicle.getOwner());
+		keys.add("Feature");
+		values.add(vehicle.getFeature().toString());
+		keys.add("ServiceProvided");
+		values.add(vehicle.getServiceProvided().toString());
+		keys.add("VehicleSpecialUsage");
+		values.add(vehicle.getVehicleSpecialUsage());
+		keys.add("RefVehicleModel");
+		values.add(vehicle.getRefVehicleModel());
+		keys.add("AreaServed");
+		values.add(vehicle.getAreaServed());
+		keys.add("DateModified");
+		values.add(vehicle.getDateModified());
+		keys.add("DateCreated");
+		values.add(vehicle.getDateCreated());
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		
 
-		List<String> properties = Stream.of("Speed", "Heading", "MileageFromOdometer").collect(Collectors.toList());
-		List<String> uoms = Stream.of("km/h", "°", "km").collect(Collectors.toList());
-
-		for(int i=0; i<properties.size();i++) {
-			AspectVariable var = new AspectVariable();
-			var.setName(properties.get(i));
-			var.setDataType(DataTypeEnum.STRING);
-			var.setLength(20);
-			var.setUnit(uoms.get(i));
-			var.setSearchable(true);
-			var.setQualityCode(true);
-			variables.add(var);
-		}
+		List<String> properties = Stream.of("Location", "PreviousLocation", "Speed", "Heading", "MileageFromOdometer","ServiceStatus").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Coordinates","Coordinates","km/h", "°", "km","Dimensionless").collect(Collectors.toList());
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), vehicle.getDescription(), properties, uoms);
 		
-		aspectType.setVariables(variables);
-		mindSphereGateway.createAsset(vehicle.getId(), aspectType);
+		
+		return mindSphereGateway.createAsset(vehicle.getId(), assetVariables, aspectType);
+	}
+	
+	private boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		logger.debug("Vehicle created");
-		return true;
+		return mindSphereGateway.saveAsset(asset);
 	}
 	
 	private boolean createMindSphereTimeSeriesFromVehicle(Vehicle vehicle) {
@@ -109,9 +144,15 @@ public class VehicleServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
+			String curr_location = vehicle.getLocation().getCoordinates().get(0) + "," +  vehicle.getLocation().getCoordinates().get(1);
+			String prev_location = vehicle.getPreviousLocation().getCoordinates().get(0) + "," +  vehicle.getPreviousLocation().getCoordinates().get(1);
+
+			timeseriesPoint.getFields().put("Location",curr_location);
+			timeseriesPoint.getFields().put("PreviousLocation",prev_location);
 			timeseriesPoint.getFields().put("Speed",vehicle.getSpeed());
 			timeseriesPoint.getFields().put("Heading",vehicle.getHeading());
 			timeseriesPoint.getFields().put("MileageFromOdometer",vehicle.getMileageFromOdometer());
+			timeseriesPoint.getFields().put("ServiceStatus",vehicle.getServiceStatus());
 
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), vehicle.getId()+"AspectType", timeSeriesList);

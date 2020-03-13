@@ -21,7 +21,7 @@ public class TrafficFlowObserved {
 	private String dataProvider;
 	private Location location;
 	private Address address;
-	private RoadSegment refRoadSegment;
+	private String refRoadSegment;
 	private String dateModified;
 	private Integer laneId;
 	private String dateObserved;
@@ -88,10 +88,10 @@ public class TrafficFlowObserved {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	public RoadSegment getRefRoadSegment() {
+	public String getRefRoadSegment() {
 		return refRoadSegment;
 	}
-	public void setRefRoadSegment(RoadSegment refRoadSegment) {
+	public void setRefRoadSegment(String refRoadSegment) {
 		this.refRoadSegment = refRoadSegment;
 	}
 	public String getDateModified() {

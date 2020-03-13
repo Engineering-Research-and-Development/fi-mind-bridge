@@ -20,15 +20,14 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.transportation.VehicleModelNormalized;
 import it.eng.fimind.util.MindSphereGateway;
+import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
 
 /**
@@ -50,9 +49,10 @@ public class VehicleModelNormalizedServices {
 	public Response createDataInJSON(@Valid VehicleModelNormalized vehicleModel) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+vehicleModel.getId());
-		if(!vehicleModelDoesAlreadyExist(vehicleModel)) {
-			createMindSphereAssetFromVehicleModel(vehicleModel);
-		}
+		
+		if(!vehicleModelDoesAlreadyExist(vehicleModel)) 
+			saveMindSphereAsset(createMindSphereAssetFromVehicleModel(vehicleModel));
+		
 		createMindSphereTimeSeriesFromVehicleModel(vehicleModel);
 		
 		serviceResult.setResult("OK");
@@ -67,35 +67,60 @@ public class VehicleModelNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private boolean createMindSphereAssetFromVehicleModel(VehicleModelNormalized vehicleModel) {
+	private Asset createMindSphereAssetFromVehicleModel(VehicleModelNormalized vehicleModel) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectType = new AspectType();
+MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		aspectType.setName((String) vehicleModel.getId()+"Aspect");
-		aspectType.setDescription((String) vehicleModel.getDescription().getValue().toString());
-		aspectType.setScope(ScopeEnum.PRIVATE);
-		aspectType.setCategory(CategoryEnum.DYNAMIC);
 		
-		List<AspectVariable> variables=new ArrayList<AspectVariable>();
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+		keys.add("Source");
+		values.add((String) vehicleModel.getSource().getValue());
+		keys.add("DataProvider");
+		values.add((String) vehicleModel.getDataProvider().getValue());
+		keys.add("Name");
+		values.add((String) vehicleModel.getName().getValue());
+		keys.add("VehicleType");
+		values.add((String) vehicleModel.getVehicleType().getValue());
+		keys.add("BrandName");
+		values.add((String) vehicleModel.getBrandName().getValue());
+		keys.add("ModelName");
+		values.add((String) vehicleModel.getModelName().getValue());
+		keys.add("ManufacturerName");
+		values.add((String) vehicleModel.getManufacturerName().getValue());
+		keys.add("VehicleModelDate");
+		values.add((String) vehicleModel.getVehicleModelDate().getValue());
+		keys.add("CargoVolume");
+		values.add((String) vehicleModel.getCargoVolume().getValue());
+		keys.add("FuelType");
+		values.add((String) vehicleModel.getFuelType().getValue());
+		keys.add("FuelConsumption");
+		values.add((String) vehicleModel.getFuelConsumption().getValue());
+		keys.add("Height");
+		values.add((String) vehicleModel.getHeight().getValue());
+		keys.add("Width");
+		values.add((String) vehicleModel.getWidth().getValue());
+		keys.add("Depth");
+		values.add((String) vehicleModel.getDepth().getValue());
+		keys.add("Weight");
+		values.add((String) vehicleModel.getWeight().getValue());
+		keys.add("VehicleEngine");
+		values.add((String) vehicleModel.getVehicleEngine().getValue());
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		
 
 		List<String> properties = Stream.of("FuelConsumption").collect(Collectors.toList());
 		List<String> uoms = Stream.of("l/100km").collect(Collectors.toList());
-
-		for(int i=0; i<properties.size();i++) {
-			AspectVariable var = new AspectVariable();
-			var.setName(properties.get(i));
-			var.setDataType(DataTypeEnum.STRING);
-			var.setLength(20);
-			var.setUnit(uoms.get(i));
-			var.setSearchable(true);
-			var.setQualityCode(true);
-			variables.add(var);
-		}
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), (String) vehicleModel.getDescription().getValue(), properties, uoms);
 		
-		aspectType.setVariables(variables);
-		mindSphereGateway.createAsset(vehicleModel.getId(), aspectType);
-		logger.debug("VehicleModelNormalized created");
-		return true;
+		
+		return mindSphereGateway.createAsset(vehicleModel.getId(), assetVariables, aspectType);
+	}
+	
+	private boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		logger.debug("TrafficFlowObserved created");
+		return mindSphereGateway.saveAsset(asset);
 	}
 	
 	private boolean createMindSphereTimeSeriesFromVehicleModel(VehicleModelNormalized vehicleModel) {

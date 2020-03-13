@@ -20,15 +20,15 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.weather.WeatherForecast;
 import it.eng.fimind.util.MindSphereGateway;
+import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
 
 /**
@@ -50,9 +50,10 @@ public class WeatherForecastServices {
 	public Response createDataInJSON(@Valid WeatherForecast weatherForecast) { 
 		ServiceResult serviceResult=new ServiceResult();
 		logger.debug("Id ="+weatherForecast.getId());
-		if(!weatherForecastDoesAlreadyExist(weatherForecast)) {
-			createMindSphereAssetFromWeatherForecast(weatherForecast);
-		}
+		
+		if(!weatherForecastDoesAlreadyExist(weatherForecast))
+			saveMindSphereAsset(createMindSphereAssetFromWeatherForecast(weatherForecast));
+		
 		createMindSphereTimeSeriesFromWeatherForecast(weatherForecast);
 		
 		serviceResult.setResult("OK");
@@ -67,35 +68,55 @@ public class WeatherForecastServices {
 		return assets.size()>0;
 	}
 	
-	private boolean createMindSphereAssetFromWeatherForecast(WeatherForecast weatherForecast) {
+	private Asset createMindSphereAssetFromWeatherForecast(WeatherForecast weatherForecast) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectType = new AspectType();
+		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		aspectType.setName((String) weatherForecast.getId()+"Aspect");
-		//aspectType.setDescription(aas.getDescription());
-		aspectType.setScope(ScopeEnum.PRIVATE);
-		aspectType.setCategory(CategoryEnum.DYNAMIC);
+		Location mindSphereLocation = null;
+		if(weatherForecast.getLocation().getType().equals("Point")) 
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(weatherForecast.getLocation());
+		else 
+			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(weatherForecast.getAddress());
 		
-		List<AspectVariable> variables=new ArrayList<AspectVariable>();
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+		keys.add("DataProvider");
+		values.add(weatherForecast.getDataProvider());
+		keys.add("DateModified");
+		values.add(weatherForecast.getDateModified());
+		keys.add("DateCreated");
+		values.add(weatherForecast.getDateCreated());
+		keys.add("Name");
+		values.add(weatherForecast.getName());
+		keys.add("DateRetrieved");
+		values.add(weatherForecast.getDateRetrieved());
+		keys.add("DateIssued");
+		values.add(weatherForecast.getDateIssued());
+		keys.add("Validity");
+		values.add(weatherForecast.getValidity());
+		keys.add("ValidFrom");
+		values.add(weatherForecast.getValidFrom());
+		keys.add("ValidTo");
+		values.add(weatherForecast.getValidTo());
+		keys.add("Source");
+		values.add(weatherForecast.getSource());
+		keys.add("RefPointOfInterest");
+		values.add(weatherForecast.getRefPointOfInterest());
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
 
+		
 		List<String> properties = Stream.of("WeatherType", "Visibility", "Temperature", "FeelsLikeTemperature", "RelativeHumidity", "PrecipitationProbability", "WindDirection", "WindSpeed", "MinTemperature", "MinFeelsLikeTemperature", "MinRelativeHumidity", "MaxTemperature", "MaxFeelsLikeTemperature", "MaxRelativeHumidity").collect(Collectors.toList());
 		List<String> uoms = Stream.of("Empiric Data", "Empiric Data", "c°", "c°", "%", "%/100", "°", "m/s", "c°", "c°", "%", "c°", "c°", "%").collect(Collectors.toList());
-
-		for(int i=0; i<properties.size();i++) {
-			AspectVariable var = new AspectVariable();
-			var.setName(properties.get(i));
-			var.setDataType(DataTypeEnum.STRING);
-			var.setLength(20);
-			var.setUnit(uoms.get(i));
-			var.setSearchable(true);
-			var.setQualityCode(true);
-			variables.add(var);
-		}
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherForecast.getId(), "None", properties, uoms);
 		
-		aspectType.setVariables(variables);
-		mindSphereGateway.createAsset(weatherForecast.getId(), aspectType);
+		
+		return mindSphereGateway.createAsset(weatherForecast.getId(), mindSphereLocation, assetVariables, aspectType);
+	}
+	
+	private boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		logger.debug("WeatherForecast created");
-		return true;
+		return mindSphereGateway.saveAsset(asset);
 	}
 	
 	private boolean createMindSphereTimeSeriesFromWeatherForecast(WeatherForecast weatherForecast) {

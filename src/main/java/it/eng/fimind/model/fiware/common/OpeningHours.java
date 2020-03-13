@@ -31,4 +31,8 @@ public class OpeningHours {
 		this.opens = opens;
 	}
 	
+	@Override
+    public String toString() { 
+        return String.format(dayOfWeek + ":" + opens + "-" + closes); 
+    } 
 }

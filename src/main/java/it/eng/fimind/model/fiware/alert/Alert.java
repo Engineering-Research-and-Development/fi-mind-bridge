@@ -25,7 +25,7 @@ public class Alert {
 			+ "												suspiciousAction|robbery|assault|civilDisorder|buildingFire|forestFire|"
 			+ "												noxiousWeed|snail|insect|rodent|bacteria|microbe|fungus|mite|virus|nematodes|irrigation|fertilisation", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String subCategory;
-	private Location loation;
+	private Location location;
 	private Address address;
 	@NotNull(message = "{alert.null.dateIssued}")
 	private String dateIssued;
@@ -74,11 +74,11 @@ public class Alert {
 	public void setSubCategory(String subCategory) {
 		this.subCategory = subCategory;
 	}
-	public Location getLoation() {
-		return loation;
+	public Location getLocation() {
+		return location;
 	}
-	public void setLoation(Location loation) {
-		this.loation = loation;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 	public Address getAddress() {
 		return address;

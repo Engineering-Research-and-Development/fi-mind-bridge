@@ -20,15 +20,15 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.transportation.TrafficFlowObserved;
 import it.eng.fimind.util.MindSphereGateway;
+import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
 
 /**
@@ -50,9 +50,10 @@ public class TrafficFlowObservedServices {
 	public Response createDataInJSON(@Valid TrafficFlowObserved trafficFlowObserved) { 
 		ServiceResult serviceResult=new ServiceResult();
 		logger.debug("Id ="+trafficFlowObserved.getId());
-		if(!trafficFlowObservedDoesAlreadyExist(trafficFlowObserved)) {
-			createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved);
-		}
+		
+		if(!trafficFlowObservedDoesAlreadyExist(trafficFlowObserved)) 
+			saveMindSphereAsset(createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved));
+		
 		createMindSphereTimeSeriesFromTrafficFlowObserved(trafficFlowObserved);
 		
 		serviceResult.setResult("OK");
@@ -67,35 +68,63 @@ public class TrafficFlowObservedServices {
 		return assets.size()>0;
 	}
 	
-	private boolean createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved) {
+	private Asset createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved) 
+	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectType = new AspectType();
+		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		aspectType.setName((String) trafficFlowObserved.getId()+"Aspect");
-		aspectType.setDescription((String) trafficFlowObserved.getDescription());
-		aspectType.setScope(ScopeEnum.PRIVATE);
-		aspectType.setCategory(CategoryEnum.DYNAMIC);
+		Location mindSphereLocation = null;
+		if(trafficFlowObserved.getLocation().getType().equals("Point")) 
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(trafficFlowObserved.getLocation());
+		else 
+			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(trafficFlowObserved.getAddress());
 		
-		List<AspectVariable> variables=new ArrayList<AspectVariable>();
+		
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+		keys.add("Source");
+		values.add(trafficFlowObserved.getSource());
+		keys.add("VehicleType");
+		values.add(trafficFlowObserved.getVehicleType());
+		keys.add("VehicleSubType");
+		values.add(trafficFlowObserved.getVehicleSubType());
+		keys.add("DataProvider");
+		values.add(trafficFlowObserved.getDataProvider());
+		keys.add("RefRoadSegment");
+		values.add(trafficFlowObserved.getRefRoadSegment());
+		keys.add("DateModified");
+		values.add(trafficFlowObserved.getDateModified());
+		keys.add("LaneId");
+		values.add(trafficFlowObserved.getLaneId().toString());
+		keys.add("LaneDirection");
+		values.add(trafficFlowObserved.getLaneDirection());
+		keys.add("ReversedLane");
+		values.add(trafficFlowObserved.getReversedLane().toString());
+		keys.add("DateObserved");
+		values.add(trafficFlowObserved.getDateObserved());
+		keys.add("DateObservedFrom");
+		values.add(trafficFlowObserved.getDateObservedFrom());
+		keys.add("DateObservedTo");
+		values.add(trafficFlowObserved.getDateObservedTo());
+		keys.add("DateCreated");
+		values.add(trafficFlowObserved.getDateCreated());
+		keys.add("Name");
+		values.add(trafficFlowObserved.getName());
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		
 
-		List<String> properties = Stream.of("Speed", "Heading", "MileageFromOdometer").collect(Collectors.toList());
-		List<String> uoms = Stream.of("km/h", "°", "km").collect(Collectors.toList());
-
-		for(int i=0; i<properties.size();i++) {
-			AspectVariable var = new AspectVariable();
-			var.setName(properties.get(i));
-			var.setDataType(DataTypeEnum.STRING);
-			var.setLength(20);
-			var.setUnit(uoms.get(i));
-			var.setSearchable(true);
-			var.setQualityCode(true);
-			variables.add(var);
-		}
+		List<String> properties = Stream.of("Intensity","Occupancy", "AverageVehicleSpeed", "AverageVehicleLength", "Congested", "AverageHeadwayTime", "AverageGapDistance").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "km/h", "m", "Dimensionless", "s", "m").collect(Collectors.toList());
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), trafficFlowObserved.getDescription(), properties, uoms);
 		
-		aspectType.setVariables(variables);
-		mindSphereGateway.createAsset(trafficFlowObserved.getId(), aspectType);
+		
+		return mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariables, aspectType);
+	}
+	
+	private boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		logger.debug("TrafficFlowObserved created");
-		return true;
+		return mindSphereGateway.saveAsset(asset);
 	}
 	
 	private boolean createMindSphereTimeSeriesFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved) {
@@ -116,7 +145,6 @@ public class TrafficFlowObservedServices {
 			timeseriesPoint.getFields().put("Congested",(Boolean) trafficFlowObserved.getCongested());
 			timeseriesPoint.getFields().put("AverageHeadwayTime",(Double) trafficFlowObserved.getAverageHeadwayTime());
 			timeseriesPoint.getFields().put("AverageGapDistance",(Double) trafficFlowObserved.getAverageGapDistance());
-			timeseriesPoint.getFields().put("ReversedLane",(Boolean) trafficFlowObserved.getReversedLane());
 
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), trafficFlowObserved.getId()+"AspectType", timeSeriesList);

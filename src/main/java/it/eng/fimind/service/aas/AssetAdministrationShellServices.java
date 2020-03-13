@@ -20,9 +20,11 @@ import org.apache.log4j.Logger;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.zvei.aas.AssetAdministrationShell;
@@ -31,6 +33,7 @@ import it.eng.fimind.model.zvei.aas.EmbeddedDataSpecificationsElement;
 import it.eng.fimind.model.zvei.aas.KeysElement;
 
 import it.eng.fimind.util.MindSphereGateway;
+import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
 
 
@@ -54,7 +57,7 @@ public class AssetAdministrationShellServices {
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+aas.getId());
 		if(!aasDoesAlreadyExist(aas)) {
-			createMindSphereAssetFromAAS(aas);
+			saveMindSphereAsset(createMindSphereAssetFromAAS(aas));
 		}
 		createMindSphereTimeSeriesFromAAS(aas);
 		getEverythingFromAAS(aas);
@@ -78,42 +81,34 @@ public class AssetAdministrationShellServices {
 		return assets.size()>0;
 	}
 	
-	private boolean createMindSphereAssetFromAAS(AssetAdministrationShell aas) {
+	private Asset createMindSphereAssetFromAAS(AssetAdministrationShell aas) 
+	{	
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		AspectType aspectType = new AspectType();
-		
-		aspectType.setName((String) aas.getId()+"Aspect");
-		//aspectType.setDescription(aas.getDescription());
-		aspectType.setScope(ScopeEnum.PRIVATE);
-		aspectType.setCategory(CategoryEnum.DYNAMIC);
-		
-		List<AspectVariable> variables=new ArrayList<AspectVariable>();
+		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(new ArrayList<String>(), new ArrayList<String>());
+
+		List<String> properties = new ArrayList<String>();
+		List<String> uoms = new ArrayList<String>();
 		for (int i=0; i<aas.getConceptDescriptions().size();i++) {
 			ConceptDescriptionsObjects current_conceptDescription = aas.getConceptDescriptions().get(i);
 			for (int j=0; j<current_conceptDescription.getEmbeddedDataSpecifications().size();j++) {
 				EmbeddedDataSpecificationsElement current_embeddedDataSpecification = current_conceptDescription.getEmbeddedDataSpecifications().get(j);
 				
-				String property = current_embeddedDataSpecification.getDataSpecificationContent().getShortName();
-				String uom = current_embeddedDataSpecification.getDataSpecificationContent().getPreferredName().getText();
-				
-				AspectVariable var = new AspectVariable();
-				var.setName(property);
-				var.setDataType(DataTypeEnum.STRING);
-				var.setLength(20);
-				var.setUnit(uom);
-				var.setSearchable(true);
-				var.setQualityCode(true);
-				variables.add(var);
+				properties.add(current_embeddedDataSpecification.getDataSpecificationContent().getShortName());
+				uoms.add(current_embeddedDataSpecification.getDataSpecificationContent().getPreferredName().getText());
 			}
 		}
-				
-		aspectType.setVariables(variables);
-		mindSphereGateway.createAsset(aas.getId(), aspectType);
-		logger.debug("AssetAdministrationShell created");
-		return true;
-	}
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(aas.getId(), "None", properties, uoms);
 
+		return mindSphereGateway.createAsset(aas.getId(), assetVariables, aspectType);
+	}
+	
+	private boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		logger.debug("AssetAdministrationShell created");
+		return mindSphereGateway.saveAsset(asset);
+	}
 	
 	private boolean createMindSphereTimeSeriesFromAAS(AssetAdministrationShell aas) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -149,4 +144,8 @@ public class AssetAdministrationShellServices {
 		}
 		return true;
 	}	
+
+
+
 }
+

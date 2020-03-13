@@ -16,15 +16,12 @@ public class VehicleModelNormalized {
 	private Attribute name;
 	private Attribute description;
 	@NotNull(message = "{vehicle.null.vehicleType}")
-	@Pattern(message = "{vehicle.wrong.vehicleType}", regexp = "agriculturalVehicle|bicycle|bus|minibus|car|caravan|tram|tanker|carWithCaravan|carWithTrailer|lorry|moped|tanker|motorcycle|motorcycleWithSideCar|motorscooter|trailer|van|caravan|constructionOrMaintenanceVehicle"
-			+ 			"trolley|binTrolley|sweepingMachine|cleaningTrolley", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute vehicleType;
 	private Attribute brandName;
 	private Attribute modelName;
 	private Attribute manufacturerName;
 	private Attribute vehicleModelDate;
 	private Attribute cargoVolume;
-	@Pattern(message = "{vehicle.wrong.fuelType}", regexp = "gasoline|petrol(unleaded)|petrol(leaded)|petrol|diesel|electric|hydrogen|lpg|autogas|cng|biodiesel ethanol|hybrid electric/petrol|hybrid electric/diesel|other", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute fuelType;
 	private Attribute fuelConsumption;
 	private Attribute height;

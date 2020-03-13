@@ -30,7 +30,7 @@ public class BuildingNormalized {
 	private MultiAttribute occupier ;
 	private Attribute  floorsAboveGround;
 	private Attribute floorsBelowGround ;
-	private Attribute mapUrl;
+	private Attribute refMap;
 	private OpeningHoursNormalized openingHours;
 
 	public String getId() {
@@ -123,11 +123,11 @@ public class BuildingNormalized {
 	public void setFloorsBelowGround(Attribute floorsBelowGround) {
 		this.floorsBelowGround = floorsBelowGround;
 	}
-	public Attribute getMapUrl() {
-		return mapUrl;
+	public Attribute getRefMap() {
+		return refMap;
 	}
-	public void setMapUrl(Attribute mapUrl) {
-		this.mapUrl = mapUrl;
+	public void setRefMap(Attribute refMap) {
+		this.refMap = refMap;
 	}
 	public OpeningHoursNormalized getOpeningHours() {
 		return openingHours;
@@ -135,5 +135,4 @@ public class BuildingNormalized {
 	public void setOpeningHours(OpeningHoursNormalized openingHours) {
 		this.openingHours = openingHours;
 	}
-
 }
