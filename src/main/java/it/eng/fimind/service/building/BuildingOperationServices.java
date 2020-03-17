@@ -66,7 +66,7 @@ public class BuildingOperationServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromBuildingOperation(BuildingOperation buildingOperation) {
+	public Asset createMindSphereAssetFromBuildingOperation(BuildingOperation buildingOperation) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 	
@@ -118,7 +118,7 @@ public class BuildingOperationServices {
 		return mindSphereGateway.saveAsset(asset);
 	}
 	
-	private boolean createMindSphereTimeSeriesFromBuildingOperation(BuildingOperation buildingOperation) {
+	public boolean createMindSphereTimeSeriesFromBuildingOperation(BuildingOperation buildingOperation) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+buildingOperation.getId()+"Asset\"}");
 		try {

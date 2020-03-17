@@ -18,20 +18,15 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.CategoryEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType.ScopeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable.DataTypeEnum;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.zvei.aas.AssetAdministrationShell;
 import it.eng.fimind.model.zvei.aas.ConceptDescriptionsObjects;
 import it.eng.fimind.model.zvei.aas.EmbeddedDataSpecificationsElement;
 import it.eng.fimind.model.zvei.aas.KeysElement;
-
 import it.eng.fimind.util.MindSphereGateway;
 import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
@@ -81,7 +76,7 @@ public class AssetAdministrationShellServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromAAS(AssetAdministrationShell aas) 
+	public Asset createMindSphereAssetFromAAS(AssetAdministrationShell aas) 
 	{	
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
@@ -110,7 +105,7 @@ public class AssetAdministrationShellServices {
 		return mindSphereGateway.saveAsset(asset);
 	}
 	
-	private boolean createMindSphereTimeSeriesFromAAS(AssetAdministrationShell aas) {
+	public boolean createMindSphereTimeSeriesFromAAS(AssetAdministrationShell aas) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"Asset\"}");
 		try {

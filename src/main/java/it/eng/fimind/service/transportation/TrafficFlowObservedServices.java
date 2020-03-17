@@ -68,7 +68,7 @@ public class TrafficFlowObservedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved) 
+	public Asset createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved) 
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
@@ -127,7 +127,7 @@ public class TrafficFlowObservedServices {
 		return mindSphereGateway.saveAsset(asset);
 	}
 	
-	private boolean createMindSphereTimeSeriesFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved) {
+	public boolean createMindSphereTimeSeriesFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+trafficFlowObserved.getId()+"Asset\"}");
 		try {

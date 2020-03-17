@@ -69,7 +69,7 @@ public class WeatherObservedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromWeatherObserved(WeatherObserved weatherObserved) {
+	public Asset createMindSphereAssetFromWeatherObserved(WeatherObserved weatherObserved) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -114,7 +114,7 @@ public class WeatherObservedServices {
 		return mindSphereGateway.saveAsset(asset);
 	}
 	
-	private boolean createMindSphereTimeSeriesFromWeatherObserved(WeatherObserved weatherObserved) {
+	public boolean createMindSphereTimeSeriesFromWeatherObserved(WeatherObserved weatherObserved) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+weatherObserved.getId()+"Asset\"}");
 		try {

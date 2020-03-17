@@ -68,7 +68,7 @@ public class AlertServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromAlert(Alert alert) {
+	public Asset createMindSphereAssetFromAlert(Alert alert) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -117,7 +117,7 @@ public class AlertServices {
 	}
 	
 	
-	private boolean createMindSphereTimeSeriesFromAlert(Alert alert) {
+	public boolean createMindSphereTimeSeriesFromAlert(Alert alert) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"Asset\"}");
 		try {

@@ -73,7 +73,7 @@ public class DeviceServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromDevice(Device device) {
+	public Asset createMindSphereAssetFromDevice(Device device) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -150,7 +150,7 @@ public class DeviceServices {
 		return mindSphereGateway.saveAsset(asset);
 	}
 	
-	private boolean createMindSphereTimeSeriesFromDevice(Device device) {
+	public boolean createMindSphereTimeSeriesFromDevice(Device device) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+device.getId()+"Asset\"}");
 		try {

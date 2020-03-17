@@ -1,6 +1,9 @@
 package it.eng.fimind.service.building;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +24,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
+import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.building.Building;
 import it.eng.fimind.util.MindSphereGateway;
@@ -49,7 +53,9 @@ public class BuildingServices {
 		
 		if(!buildingDoesAlreadyExist(building)) 
 			saveMindSphereAsset(createMindSphereAssetFromBuilding(building));
-				
+		
+		createMindSphereTimeSeriesFromBuilding(building);
+		
 		serviceResult.setResult("OK");
 		return Response.status(201).entity(serviceResult).build();
 	}
@@ -61,7 +67,7 @@ public class BuildingServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromBuilding(Building building) {
+	public Asset createMindSphereAssetFromBuilding(Building building) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -113,4 +119,28 @@ public class BuildingServices {
 		return mindSphereGateway.saveAsset(asset);
 	}
 	
+	public boolean createMindSphereTimeSeriesFromBuilding(Building building) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+building.getId()+"Asset\"}");
+		try {
+			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
+			Date now = new Date();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+			String instant = df.format(now);
+			Timeseries timeseriesPoint = new Timeseries();
+			timeseriesPoint.getFields().put("_time", instant);
+			
+			timeseriesPoint.getFields().put("OpeningHours", building.getOpeningHours());
+
+			timeSeriesList.add(timeseriesPoint);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), building.getId()+"AspectType", timeSeriesList);
+			logger.debug("buildingOperation updated");
+		
+		} catch (Exception e) {
+			// Exception handling
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}	
 }

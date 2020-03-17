@@ -67,7 +67,7 @@ public class VehicleServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromVehicle(Vehicle vehicle) {
+	public Asset createMindSphereAssetFromVehicle(Vehicle vehicle) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -133,7 +133,7 @@ public class VehicleServices {
 		return mindSphereGateway.saveAsset(asset);
 	}
 	
-	private boolean createMindSphereTimeSeriesFromVehicle(Vehicle vehicle) {
+	public boolean createMindSphereTimeSeriesFromVehicle(Vehicle vehicle) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+vehicle.getId()+"Asset\"}");
 		try {
