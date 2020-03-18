@@ -6,8 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -26,7 +24,6 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
-import it.eng.fimind.model.fiware.device.Device;
 import it.eng.fimind.model.fiware.device.DeviceModel;
 import it.eng.fimind.util.MindSphereGateway;
 import it.eng.fimind.util.MindSphereMapper;

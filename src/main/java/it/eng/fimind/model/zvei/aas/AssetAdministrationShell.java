@@ -3,11 +3,13 @@ package it.eng.fimind.model.zvei.aas;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 public class AssetAdministrationShell {
-	@NotNull(message = "{building.null.id}")
+	@NotNull(message = "{assetAdministrationShell.null.id}")
 	private String id;
-	@NotNull(message = "{building.null.type}")
+	@NotNull(message = "{assetAdministrationShell.null.type}")
+	@Pattern(message = "{assetAdministrationShell.wrong.type}", regexp = "AssetAdministrationShell", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String type;
 	private List<AssetAdministrationShellsObjects> assetAdministrationShells;
 	private List<SubmodelsObjects> submodels;

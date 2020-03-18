@@ -18,12 +18,30 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.eng.fimind.model.NotificationContent;
+import it.eng.fimind.model.fiware.alert.AlertNormalized;
+import it.eng.fimind.model.fiware.building.BuildingNormalized;
+import it.eng.fimind.model.fiware.building.BuildingOperationNormalized;
 import it.eng.fimind.model.fiware.common.Metadata;
 import it.eng.fimind.model.fiware.common.TimeInstant;
 import it.eng.fimind.model.fiware.device.DeviceModelNormalized;
 import it.eng.fimind.model.fiware.device.DeviceNormalized;
+import it.eng.fimind.model.fiware.transportation.TrafficFlowObservedNormalized;
+import it.eng.fimind.model.fiware.transportation.VehicleModelNormalized;
+import it.eng.fimind.model.fiware.transportation.VehicleNormalized;
+import it.eng.fimind.model.fiware.weather.WeatherForecastNormalized;
+import it.eng.fimind.model.fiware.weather.WeatherObservedNormalized;
+import it.eng.fimind.model.zvei.aas.AssetAdministrationShell;
+import it.eng.fimind.service.aas.AssetAdministrationShellServices;
+import it.eng.fimind.service.alert.AlertNormalizedServices;
+import it.eng.fimind.service.building.BuildingNormalizedServices;
+import it.eng.fimind.service.building.BuildingOperationNormalizedServices;
 import it.eng.fimind.service.device.DeviceModelNormalizedServices;
 import it.eng.fimind.service.device.DeviceNormalizedServices;
+import it.eng.fimind.service.transportation.TrafficFlowObservedNormalizedServices;
+import it.eng.fimind.service.transportation.VehicleModelNormalizedServices;
+import it.eng.fimind.service.transportation.VehicleNormalizedServices;
+import it.eng.fimind.service.weather.WeatherForecastNormalizedServices;
+import it.eng.fimind.service.weather.WeatherObservedNormalizedServices;
 
 
 @Path("fiware-notification")
@@ -52,52 +70,136 @@ public class NotificationServices {
 			for (it.eng.fimind.model.Entity entity:notificationContent.getData()) {
 				logger.debug("entity.getType()="+entity.getType());
 				
+				if (entity.getType().equalsIgnoreCase("Alert")){
+					logger.debug("Alert");
+					logger.debug("data="+data);
+				 					 
+					AlertNormalized alertNotified = new AlertNormalized();	
+					alertNotified = mapper.readValue( mapper.writeValueAsString(entity), AlertNormalized.class);
+					
+					AlertNormalizedServices alertNormalizedServices = new AlertNormalizedServices();		
+					alertNormalizedServices.createDataInJSON(alertNotified);				 
+				}
+				if (entity.getType().equalsIgnoreCase("AssetAdministrationShell")){
+					logger.debug("AssetAdministrationShell");
+					logger.debug("data="+data);
+				 					 
+					AssetAdministrationShell aasNotified = new AssetAdministrationShell();	
+					aasNotified = mapper.readValue( mapper.writeValueAsString(entity), AssetAdministrationShell.class);
+					
+					AssetAdministrationShellServices assetAdministrationShellServices = new AssetAdministrationShellServices();		
+					assetAdministrationShellServices.createDataInJSON(aasNotified);				 
+				}
+				if (entity.getType().equalsIgnoreCase("Building")){
+					logger.debug("Building");
+					logger.debug("data="+data);
+				 					 
+					BuildingNormalized buildingNotified = new BuildingNormalized();	
+					buildingNotified = mapper.readValue( mapper.writeValueAsString(entity), BuildingNormalized.class);
+					
+					BuildingNormalizedServices buildingNormalizedServices = new BuildingNormalizedServices();		
+					buildingNormalizedServices.createDataInJSON(buildingNotified);				 
+				}
+				if (entity.getType().equalsIgnoreCase("BuildingOperation")){
+					logger.debug("BuildingOperation");
+					logger.debug("data="+data);
+				 					 
+					BuildingOperationNormalized buildingOperationNormalized = new BuildingOperationNormalized();	
+					buildingOperationNormalized = mapper.readValue( mapper.writeValueAsString(entity), BuildingOperationNormalized.class);
+					
+					BuildingOperationNormalizedServices buildingOperationNormalizedServices = new BuildingOperationNormalizedServices();		
+					buildingOperationNormalizedServices.createDataInJSON(buildingOperationNormalized);				 
+				}
 				if (entity.getType().equalsIgnoreCase("Device")){
 					logger.debug("Device");
 					logger.debug("data="+data);
-				 	  
-				 
-					DeviceNormalized deviceNotified = new DeviceNormalized();
-					
+				 					 
+					DeviceNormalized deviceNotified = new DeviceNormalized();	
 					deviceNotified = mapper.readValue( mapper.writeValueAsString(entity), DeviceNormalized.class);
 					
-					DeviceNormalizedServices deviceNormalizedServices=new DeviceNormalizedServices();
-					
+					DeviceNormalizedServices deviceNormalizedServices = new DeviceNormalizedServices();		
 					String val = (String) entity.getAttributes().get("value").getValue();
-					
 					String resultVal = java.net.URLDecoder.decode(val, StandardCharsets.UTF_8.name());
-					
-					Date now=new Date();
+						
+					Date now = new Date();
 					DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 					String instant = df.format(now);
-				
 					
-					TimeInstant ti= new TimeInstant();
+					TimeInstant ti = new TimeInstant();
 					ti.setValue(instant);
- 					ti.setType("DateTime");
-					Metadata mt=new Metadata();
-					
+					ti.setType("DateTime");
+					Metadata mt = new Metadata();			
 					mt.setTimeInstant(ti);
 					
 					deviceNotified.getValue().setMetadata(mt);
-					deviceNotified.getValue().setValue(resultVal);
-					
+					deviceNotified.getValue().setValue(resultVal);	
 			        deviceNormalizedServices.createDataInJSON(deviceNotified);				 
 				}
 				if (entity.getType().equalsIgnoreCase("DeviceModel")) {
 					logger.debug("DeviceModel");
 					logger.debug("data="+data);
 					
-				    DeviceModelNormalized deviceModelNotified = new DeviceModelNormalized();
-				    
+				    DeviceModelNormalized deviceModelNotified = new DeviceModelNormalized();				    
 				    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-                    
 				    deviceModelNotified = mapper.readValue( mapper.writeValueAsString(entity), DeviceModelNormalized.class);
 					
-					DeviceModelNormalizedServices deviceModelNormalizedServices=new DeviceModelNormalizedServices();
-					
+					DeviceModelNormalizedServices deviceModelNormalizedServices = new DeviceModelNormalizedServices();
 					deviceModelNormalizedServices.createDataInJSON(deviceModelNotified);
+				}
+				if (entity.getType().equalsIgnoreCase("TrafficFlowObserved")) {
+					logger.debug("TrafficFlowObserved");
+					logger.debug("data="+data);
 					
+					TrafficFlowObservedNormalized trafficFlowObservedNotified = new TrafficFlowObservedNormalized();				    
+				    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+				    trafficFlowObservedNotified = mapper.readValue( mapper.writeValueAsString(entity), TrafficFlowObservedNormalized.class);
+					
+				    TrafficFlowObservedNormalizedServices trafficFlowObservedNormalizedServices = new TrafficFlowObservedNormalizedServices();
+				    trafficFlowObservedNormalizedServices.createDataInJSON(trafficFlowObservedNotified);
+				}
+				if (entity.getType().equalsIgnoreCase("Vehicle")) {
+					logger.debug("Vehicle");
+					logger.debug("data="+data);
+					
+					VehicleNormalized vehicleNotified = new VehicleNormalized();				    
+				    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+				    vehicleNotified = mapper.readValue( mapper.writeValueAsString(entity), VehicleNormalized.class);
+					
+				    VehicleNormalizedServices vehicleNormalizedServices = new VehicleNormalizedServices();
+				    vehicleNormalizedServices.createDataInJSON(vehicleNotified);				
+				}
+				if (entity.getType().equalsIgnoreCase("VehicleModel")) {
+					logger.debug("VehicleModel");
+					logger.debug("data="+data);
+					
+					VehicleModelNormalized vehicleModelNotified = new VehicleModelNormalized();				    
+				    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+				    vehicleModelNotified = mapper.readValue( mapper.writeValueAsString(entity), VehicleModelNormalized.class);
+					
+				    VehicleModelNormalizedServices vehicleModelNormalizedServices = new VehicleModelNormalizedServices();
+				    vehicleModelNormalizedServices.createDataInJSON(vehicleModelNotified);				
+				}
+				if (entity.getType().equalsIgnoreCase("WeatherForecast")) {
+					logger.debug("WeatherForecast");
+					logger.debug("data="+data);
+					
+					WeatherForecastNormalized weatherForecastNotified = new WeatherForecastNormalized();				    
+				    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+				    weatherForecastNotified = mapper.readValue( mapper.writeValueAsString(entity), WeatherForecastNormalized.class);
+					
+				    WeatherForecastNormalizedServices weatherForecastNormalizedServices = new WeatherForecastNormalizedServices();
+				    weatherForecastNormalizedServices.createDataInJSON(weatherForecastNotified);				
+				}
+				if (entity.getType().equalsIgnoreCase("WeatherObserved")) {
+					logger.debug("WeatherObserved");
+					logger.debug("data="+data);
+					
+					WeatherObservedNormalized weatherObservedNotified = new WeatherObservedNormalized();				    
+				    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+				    weatherObservedNotified = mapper.readValue( mapper.writeValueAsString(entity), WeatherObservedNormalized.class);
+					
+				    WeatherObservedNormalizedServices weatherObservedNormalizedServices = new WeatherObservedNormalizedServices();
+				    weatherObservedNormalizedServices.createDataInJSON(weatherObservedNotified);				
 				}
 			}
 		}catch (Exception e) {

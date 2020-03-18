@@ -1,6 +1,6 @@
 {
   "id":"test_aasx",
-  "type":"aas",
+  "type":"AssetAdministrationShell",
    "assetAdministrationShells":[
       {
          "identification":{
