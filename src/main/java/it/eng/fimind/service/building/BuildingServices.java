@@ -24,6 +24,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.building.Building;
@@ -71,52 +72,79 @@ public class BuildingServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
+		building.setId(building.getId().replaceAll("-","_"));
+
 		Location mindSphereLocation = null;
-		if(building.getLocation().getType().equals("Point")) 
-			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(building.getLocation());
-		else 
+		if(building.getLocation()!=null) {
+			if(building.getLocation().getType().equals("Point")) 
+				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(building.getLocation());
+		}else if(building.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(building.getAddress());
 		
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
-		keys.add("Source");
-		values.add(building.getSource());
-		keys.add("DataProvider");
-		values.add(building.getDataProvider());
-		keys.add("DateModified");
-		values.add(building.getDateModified());
-		keys.add("DateCreated");
-		values.add(building.getDateCreated());
-		keys.add("Owner");
-		values.add(building.getOwner().toString());
-		keys.add("Category");
-		values.add(building.getCategory());
-		keys.add("Occupier");
-		values.add(building.getOccupier().toString());
-		keys.add("FloorsAboveGround");
-		values.add(building.getFloorsAboveGround().toString());
-		keys.add("FloorsBelowGround");
-		values.add(building.getFloorsBelowGround().toString());
-		keys.add("RefMap");
-		values.add(building.getRefMap());
-		keys.add("OpeningHours");
-		values.add(building.getOpeningHours().toString());
+		if(building.getSource()!=null) {
+			keys.add("Source");
+			values.add(building.getSource());
+		}
+		if(building.getDataProvider()!=null) {
+			keys.add("DataProvider");
+			values.add(building.getDataProvider());
+		}
+		if(building.getDateModified()!=null) {
+			keys.add("DateModified");
+			values.add(building.getDateModified());
+		}
+		if(building.getDateCreated()!=null) {
+			keys.add("DateCreated");
+			values.add(building.getDateCreated());
+		}
+		if(building.getOwner()!=null) {
+			keys.add("Owner");
+			values.add(building.getOwner().toString());
+		}
+		if(building.getCategory()!=null) {
+			keys.add("Category");
+			values.add(building.getCategory().toString());
+		}
+		if(building.getOccupier()!=null) {
+			keys.add("Occupier");
+			values.add(building.getOccupier().toString());
+		}
+		if(building.getFloorsAboveGround()!=null) {
+			keys.add("FloorsAboveGround");
+			values.add(building.getFloorsAboveGround().toString());
+		}		
+		if(building.getFloorsBelowGround()!=null) {
+			keys.add("FloorsBelowGround");
+			values.add(building.getFloorsBelowGround().toString());
+		}
+		if(building.getMapUrl()!=null) {
+			keys.add("RefMap");
+			values.add(building.getMapUrl());
+		}
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
-		
+
 	
 		List<String> properties = Stream.of("OpeningHours").collect(Collectors.toList());
 		List<String> uoms = Stream.of("Dimensionless").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), building.getDescription(), properties, uoms);
+		List<String> dataTypes = Stream.of("String").collect(Collectors.toList());
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), building.getDescription(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariables, aspectType);
+		return mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
 	}
 	
-	private boolean saveMindSphereAsset(Asset asset) {
+	private Boolean saveMindSphereAsset(Asset asset) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		logger.debug("Building created");
-		return mindSphereGateway.saveAsset(asset);
+		Boolean result = mindSphereGateway.saveAsset(asset);
+		if(result)
+			logger.debug("Building created");
+		else 		
+			logger.error("Building couldn't be created");
+		return result;
 	}
 	
 	public boolean createMindSphereTimeSeriesFromBuilding(Building building) {
@@ -130,8 +158,10 @@ public class BuildingServices {
 			Timeseries timeseriesPoint = new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 			
-			timeseriesPoint.getFields().put("OpeningHours", building.getOpeningHours());
-
+			if(building.getOpeningHours()!=null) {
+				timeseriesPoint.getFields().put("OpeningHours", building.getOpeningHours().toString());
+			}
+		
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), building.getId()+"AspectType", timeSeriesList);
 			logger.debug("buildingOperation updated");

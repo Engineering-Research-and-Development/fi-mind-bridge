@@ -24,6 +24,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.weather.WeatherForecast;
@@ -34,7 +35,7 @@ import it.eng.fimind.util.ServiceResult;
 /**
  * Root resource (exposed at "weatherforecast" path)
  */
-@Path("weatherforecast")
+@Path("weatherForecast")
 public class WeatherForecastServices {
 	private static Logger logger = Logger.getLogger(WeatherForecastServices.class);
 	
@@ -72,51 +73,82 @@ public class WeatherForecastServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
+		weatherForecast.setId(weatherForecast.getId().replaceAll("-","_"));
+
 		Location mindSphereLocation = null;
-		if(weatherForecast.getLocation().getType().equals("Point")) 
-			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(weatherForecast.getLocation());
-		else 
+		if(weatherForecast.getLocation()!=null) {
+			if(weatherForecast.getLocation().getType().equals("Point")) 
+				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(weatherForecast.getLocation());
+		}else if(weatherForecast.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(weatherForecast.getAddress());
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
-		keys.add("DataProvider");
-		values.add(weatherForecast.getDataProvider());
-		keys.add("DateModified");
-		values.add(weatherForecast.getDateModified());
-		keys.add("DateCreated");
-		values.add(weatherForecast.getDateCreated());
-		keys.add("Name");
-		values.add(weatherForecast.getName());
-		keys.add("DateRetrieved");
-		values.add(weatherForecast.getDateRetrieved());
-		keys.add("DateIssued");
-		values.add(weatherForecast.getDateIssued());
-		keys.add("Validity");
-		values.add(weatherForecast.getValidity());
-		keys.add("ValidFrom");
-		values.add(weatherForecast.getValidFrom());
-		keys.add("ValidTo");
-		values.add(weatherForecast.getValidTo());
-		keys.add("Source");
-		values.add(weatherForecast.getSource());
-		keys.add("RefPointOfInterest");
-		values.add(weatherForecast.getRefPointOfInterest());
+		if(weatherForecast.getDataProvider()!=null) {
+			keys.add("DataProvider");
+			values.add(weatherForecast.getDataProvider());
+		}
+		if(weatherForecast.getDateModified()!=null) {
+			keys.add("DateModified");		
+			values.add(weatherForecast.getDateModified());
+		}
+		if(weatherForecast.getDateCreated()!=null) {
+			keys.add("DateCreated");
+			values.add(weatherForecast.getDateCreated());
+		}
+		if(weatherForecast.getName()!=null) {
+			keys.add("Name");
+			values.add(weatherForecast.getName());
+		}
+		if(weatherForecast.getDateRetrieved()!=null) {
+			keys.add("DateRetrieved");
+			values.add(weatherForecast.getDateRetrieved());
+		}
+		if(weatherForecast.getDateIssued()!=null) {
+			keys.add("DateIssued");
+			values.add(weatherForecast.getDateIssued());
+		}
+		if(weatherForecast.getValidity()!=null) {
+			keys.add("Validity");
+			values.add(weatherForecast.getValidity());
+		}
+		if(weatherForecast.getValidFrom()!=null) {
+			keys.add("ValidFrom");
+			values.add(weatherForecast.getValidFrom());
+		}
+		if(weatherForecast.getValidTo()!=null) {
+			keys.add("ValidTo");
+			values.add(weatherForecast.getValidTo());
+		}
+		if(weatherForecast.getSource()!=null) {
+			keys.add("Source");		
+			values.add(weatherForecast.getSource());
+		}
+		if(weatherForecast.getRefPointOfInterest()!=null) {
+			keys.add("RefPointOfInterest");
+			values.add(weatherForecast.getRefPointOfInterest());
+		}
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
-
+		
 		
 		List<String> properties = Stream.of("WeatherType", "Visibility", "Temperature", "FeelsLikeTemperature", "RelativeHumidity", "PrecipitationProbability", "WindDirection", "WindSpeed", "MinTemperature", "MinFeelsLikeTemperature", "MinRelativeHumidity", "MaxTemperature", "MaxFeelsLikeTemperature", "MaxRelativeHumidity").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Empiric Data", "Empiric Data", "c°", "c°", "%", "%/100", "°", "m/s", "c°", "c°", "%", "c°", "c°", "%").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherForecast.getId(), "None", properties, uoms);
+		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "c°", "c°", "%", "%/100", "°", "m/s", "c°", "c°", "%", "c°", "c°", "%").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("String", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double").collect(Collectors.toList());
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherForecast.getId(), "None", properties, uoms, dataTypes);
 		
-		
-		return mindSphereGateway.createAsset(weatherForecast.getId(), mindSphereLocation, assetVariables, aspectType);
+
+		return mindSphereGateway.createAsset(weatherForecast.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
 	}
 	
-	private boolean saveMindSphereAsset(Asset asset) {
+	private Boolean saveMindSphereAsset(Asset asset) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		logger.debug("WeatherForecast created");
-		return mindSphereGateway.saveAsset(asset);
+		Boolean result = mindSphereGateway.saveAsset(asset);
+		if(result)
+			logger.debug("WeatherForecast created");
+		else 		
+			logger.error("WeatherForecast couldn't be created");
+		return result;
 	}
 	
 	public boolean createMindSphereTimeSeriesFromWeatherForecast(WeatherForecast weatherForecast) {
@@ -130,20 +162,40 @@ public class WeatherForecastServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
-			timeseriesPoint.getFields().put("WeatherType",weatherForecast.getWeatherType());
-			timeseriesPoint.getFields().put("Visibility",weatherForecast.getVisibility());
-			timeseriesPoint.getFields().put("Temperature",weatherForecast.getTemperature());
-			timeseriesPoint.getFields().put("FeelsLikeTemperature",weatherForecast.getFeelsLikeTemperature());
-			timeseriesPoint.getFields().put("RelativeHumidity",weatherForecast.getRelativeHumidity());
-			timeseriesPoint.getFields().put("PrecipitationProbability",weatherForecast.getPrecipitationProbability());
-			timeseriesPoint.getFields().put("WindDirection",weatherForecast.getWindDirection());
-			timeseriesPoint.getFields().put("WindSpeed",weatherForecast.getWindSpeed());
-			timeseriesPoint.getFields().put("MinTemperature",weatherForecast.getDayMinimum().getTemperature());
-			timeseriesPoint.getFields().put("MinFeelsLikeTemperature",weatherForecast.getDayMinimum().getFeelsLikeTemperature());
-			timeseriesPoint.getFields().put("MinRelativeHumidity",weatherForecast.getDayMinimum().getRelativeHumidity());
-			timeseriesPoint.getFields().put("MaxTemperature",weatherForecast.getDayMaximum().getTemperature());
-			timeseriesPoint.getFields().put("MaxFeelsLikeTemperature",weatherForecast.getDayMaximum().getFeelsLikeTemperature());
-			timeseriesPoint.getFields().put("MaxRelativeHumidity",weatherForecast.getDayMaximum().getRelativeHumidity());
+			if(weatherForecast.getWeatherType()!=null) {
+				timeseriesPoint.getFields().put("WeatherType",weatherForecast.getWeatherType());
+			}
+			if(weatherForecast.getVisibility()!=null) {
+				timeseriesPoint.getFields().put("Visibility",weatherForecast.getVisibility());
+			}
+			if(weatherForecast.getTemperature()!=null) {
+				timeseriesPoint.getFields().put("Temperature",weatherForecast.getTemperature());
+			}
+			if(weatherForecast.getFeelsLikeTemperature()!=null) {
+				timeseriesPoint.getFields().put("FeelsLikeTemperature",weatherForecast.getFeelsLikeTemperature());
+			}
+			if(weatherForecast.getRelativeHumidity()!=null) {
+				timeseriesPoint.getFields().put("RelativeHumidity",weatherForecast.getRelativeHumidity());
+			}
+			if(weatherForecast.getPrecipitationProbability()!=null) {
+				timeseriesPoint.getFields().put("PrecipitationProbability",weatherForecast.getPrecipitationProbability());
+			}
+			if(weatherForecast.getWindDirection()!=null) {
+				timeseriesPoint.getFields().put("WindDirection",weatherForecast.getWindDirection());
+			}
+			if(weatherForecast.getWindSpeed()!=null) {
+				timeseriesPoint.getFields().put("WindSpeed",weatherForecast.getWindSpeed());
+			}
+			if(weatherForecast.getDayMinimum()!=null) {
+				timeseriesPoint.getFields().put("MinTemperature",weatherForecast.getDayMinimum().getTemperature());
+				timeseriesPoint.getFields().put("MinFeelsLikeTemperature",weatherForecast.getDayMinimum().getFeelsLikeTemperature());
+				timeseriesPoint.getFields().put("MinRelativeHumidity",weatherForecast.getDayMinimum().getRelativeHumidity());
+			}
+			if(weatherForecast.getDayMaximum()!=null) {
+				timeseriesPoint.getFields().put("MaxTemperature",weatherForecast.getDayMaximum().getTemperature());
+				timeseriesPoint.getFields().put("MaxFeelsLikeTemperature",weatherForecast.getDayMaximum().getFeelsLikeTemperature());
+				timeseriesPoint.getFields().put("MaxRelativeHumidity",weatherForecast.getDayMaximum().getRelativeHumidity());
+			}
 
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), weatherForecast.getId()+"AspectType", timeSeriesList);

@@ -5,6 +5,7 @@
         "controlledProperty": ["fillingLevel","temperature"],
         "controlledAsset":["wastecontainer-Osuna-100"],
         "ipAddress": ["192.14.56.78"],
+        "macAddress": ["ff-ff-ff-ff-ff-ff"],
         "mcc": "214",
         "mnc": "07",
         "batteryLevel": 0.75,

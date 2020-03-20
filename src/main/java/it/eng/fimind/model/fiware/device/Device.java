@@ -1,5 +1,6 @@
 package it.eng.fimind.model.fiware.device;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -14,47 +15,47 @@ public class Device {
 	@NotNull(message = "{device.null.type}")
 	@Pattern(message = "{device.wrong.type}", regexp = "Device", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String type;
-	private String source;
-	private String dataProvider;
+	private String source = "";
+	private String dataProvider = "";
 	@NotNull(message = "{device.null.category}")
-	@Pattern(message = "{device.wrong.category}", regexp = "sensor|actuator|meter|HVAC|network|multimedia|implement|irrSystem|irrSection|endgun", flags=Pattern.Flag.CASE_INSENSITIVE)
+	//@Pattern(message = "{device.wrong.category}", regexp = "sensor|actuator|meter|HVAC|network|multimedia|implement|irrSystem|irrSection|endgun", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private List<String> category;
 	@NotNull(message = "{device.null.controlledProperty}")
-	@Pattern(message = "{device.wrong.controlledProperty}", regexp = "temperature|humidity|light|motion|fillingLevel|occupancy|power|pressure|smoke|"
-			+ "															energy|airPollution|noiseLevel|weatherConditions|precipitation|windSpeed|windDirection|"
-			+ "															atmosphericPressure|solarRadiation|depth|pH|conductivity|conductance|tss|tds|turbidity|"
-			+ "															salinity|orp|cdom|waterPollution|location|speed|heading|weight|waterConsumption|gasComsumption|"
-			+ "															electricityConsumption|soilMoisture|trafficFlow|eatingActivity|milking|movementActivity", flags=Pattern.Flag.CASE_INSENSITIVE)
+//	@Pattern(message = "{device.wrong.controlledProperty}", regexp = "temperature|humidity|light|motion|fillingLevel|occupancy|power|pressure|smoke|"
+//																	+ "energy|airPollution|noiseLevel|weatherConditions|precipitation|windSpeed|windDirection|"
+//																	+ "atmosphericPressure|solarRadiation|depth|pH|conductivity|conductance|tss|tds|turbidity|"
+//																	+ "salinity|orp|cdom|waterPollution|location|speed|heading|weight|waterConsumption|gasComsumption|"
+//																	+ "electricityConsumption|soilMoisture|trafficFlow|eatingActivity|milking|movementActivity", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private List<String> controlledProperty;
-	private List<String> controlledAsset;
-	private String mnc;
-	private String mcc;
-	private List<String> macAddress;
-	private List<String> ipAddress;
-	private String supportedProtocol;
-	private String configuration;
+	private List<String> controlledAsset = new ArrayList<String>();
+	private String mnc = "";
+	private String mcc = "";
+	private List<String> macAddress = new ArrayList<String>();
+	private List<String> ipAddress = new ArrayList<String>();
+	private String supportedProtocol = "";
+	private String configuration = "";
 	private Location location;
-	private String name;
-	private String description;
-	private String dateInstalled;
-	private String dateFirstUsed;
-	private String dateManufactured;
-	private String hardwareVersion;
-	private String softwareVersion;
-	private String firmwareVersion;
-	private String osVersion;
-	private String dateLastCalibration;
-	private String serialNumber;
-	private String provider;
-	private String refDeviceModel;
-	private Float batteryLevel;
-	private Float rssi;
-	private String deviceState;
-	private String dateLastValueReported;
-	private String value;
-	private String dateModified;
-	private String dateCreated;
-	private List<String> owner;
+	private String name = "";
+	private String description = "";
+	private String dateInstalled = "";
+	private String dateFirstUsed = "";
+	private String dateManufactured = "";
+	private String hardwareVersion = "";
+	private String softwareVersion = "";
+	private String firmwareVersion = "";
+	private String osVersion = "";
+	private String dateLastCalibration = "";
+	private String serialNumber = "";
+	private String provider = "";
+	private String refDeviceModel = "";
+	private Float batteryLevel = new Float(-1);
+	private Float rssi = new Float(-1);
+	private String deviceState = "";
+	private String dateLastValueReported = "";
+	private String value = "";
+	private String dateModified = "";
+	private String dateCreated = "";
+	private List<String> owner = new ArrayList<String>();
 
 	// not present in the standard https://fiware-datamodels.readthedocs.io/en/latest/Device/Device/doc/spec/index.html
 	private String alternateName;

@@ -6,6 +6,7 @@
     "source": "http://www.example.com",
     "dataProvider": "OperatorA",
     "refBuilding": "building-a85e3da145c1",
+    "refOperator": "operator-1af45ge",
     "operationType": "airConditioning",
     "description": "Air conditioning levels reduced due to out of hours",
     "result": "ok",

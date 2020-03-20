@@ -24,6 +24,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.transportation.VehicleNormalized;
@@ -34,7 +35,7 @@ import it.eng.fimind.util.ServiceResult;
 /**
  * Root resource (exposed at "vehiclenormalized" path)
  */
-@Path("vehiclenormalized")
+@Path("vehicleNormalized")
 public class VehicleNormalizedServices {
 	private static Logger logger = Logger.getLogger(VehicleNormalizedServices.class);
 	
@@ -72,66 +73,115 @@ public class VehicleNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		
+		vehicle.setId(vehicle.getId().replaceAll("-","_"));
+
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
-		keys.add("Source");
-		values.add((String) vehicle.getSource().getValue());
-		keys.add("DataProvider");
-		values.add((String) vehicle.getDataProvider().getValue());
-		keys.add("Name");
-		values.add((String) vehicle.getName().getValue());
-		keys.add("VehicleType");
-		values.add((String) vehicle.getVehicleType().getValue());
-		keys.add("Category");
-		values.add((String) vehicle.getCategory().getValue());
-		keys.add("VehicleIdentificationNumber");
-		values.add((String) vehicle.getVehicleIdentificationNumber().getValue());
-		keys.add("VehiclePlateIdentifier");
-		values.add((String) vehicle.getVehiclePlateIdentifier().getValue());
-		keys.add("FleetVehicleId");
-		values.add((String) vehicle.getFleetVehicleId().getValue());
-		keys.add("DateVehicleFirstRegistered");
-		values.add((String) vehicle.getDateVehicleFirstRegistered().getValue());
-		keys.add("DateFirstUsed");
-		values.add((String) vehicle.getDateFirstUsed().getValue());
-		keys.add("PurchaseDate");
-		values.add((String) vehicle.getPurchaseDate().getValue());
-		keys.add("VehicleConfiguration");
-		values.add((String) vehicle.getVehicleConfiguration().getValue());
-		keys.add("Color");
-		values.add((String) vehicle.getColor().getValue());
-		keys.add("Owner");
-		values.add((String) vehicle.getOwner().getValue());
-		keys.add("Feature");
-		values.add((String) vehicle.getFeature().getValue().toString());
-		keys.add("ServiceProvided");
-		values.add((String) vehicle.getServiceProvided().getValue().toString());
-		keys.add("VehicleSpecialUsage");
-		values.add((String) vehicle.getVehicleSpecialUsage().getValue());
-		keys.add("RefVehicleModel");
-		values.add((String) vehicle.getRefVehicleModel().getValue());
-		keys.add("AreaServed");
-		values.add((String) vehicle.getAreaServed().getValue());
-		keys.add("DateModified");
-		values.add((String) vehicle.getDateModified().getValue());
-		keys.add("DateCreated");
-		values.add((String) vehicle.getDateCreated().getValue());
+		if(vehicle.getSource()!=null) {
+			keys.add("Source");
+			values.add((String) vehicle.getSource().getValue());
+		}
+		if(vehicle.getDataProvider()!=null) {
+			keys.add("DataProvider");
+			values.add((String) vehicle.getDataProvider().getValue());
+		}
+		if(vehicle.getName()!=null) {
+			keys.add("Name");
+			values.add((String) vehicle.getName().getValue());
+		}
+		if(vehicle.getVehicleType()!=null) {
+			keys.add("VehicleType");
+			values.add((String) vehicle.getVehicleType().getValue());
+		}
+		if(vehicle.getCategory()!=null) {
+			keys.add("Category");
+			values.add((String) vehicle.getCategory().getValue());
+		}
+		if(vehicle.getVehicleIdentificationNumber()!=null) {
+			keys.add("VehicleIdentificationNumber");
+			values.add((String) vehicle.getVehicleIdentificationNumber().getValue());
+		}
+		if(vehicle.getVehiclePlateIdentifier()!=null) {
+			keys.add("VehiclePlateIdentifier");
+			values.add((String) vehicle.getVehiclePlateIdentifier().getValue());
+		}
+		if(vehicle.getFleetVehicleId()!=null) {
+			keys.add("FleetVehicleId");
+			values.add((String) vehicle.getFleetVehicleId().getValue());
+		}
+		if(vehicle.getDateVehicleFirstRegistered()!=null) {
+			keys.add("DateVehicleFirstRegistered");
+			values.add((String) vehicle.getDateVehicleFirstRegistered().getValue());
+		}
+		if(vehicle.getDateFirstUsed()!=null) {
+			keys.add("DateFirstUsed");
+			values.add((String) vehicle.getDateFirstUsed().getValue());
+		}
+		if(vehicle.getPurchaseDate()!=null) {
+			keys.add("PurchaseDate");
+			values.add((String) vehicle.getPurchaseDate().getValue());
+		}
+		if(vehicle.getVehicleConfiguration()!=null) {
+			keys.add("VehicleConfiguration");
+			values.add((String) vehicle.getVehicleConfiguration().getValue());
+		}
+		if(vehicle.getColor()!=null) {
+			keys.add("Color");
+			values.add((String) vehicle.getColor().getValue());
+		}
+		if(vehicle.getOwner()!=null) {
+			keys.add("Owner");
+			values.add((String) vehicle.getOwner().getValue());
+		}
+		if(vehicle.getFeature()!=null) {
+			keys.add("Feature");
+			values.add((String) vehicle.getFeature().getValue().toString());
+		}
+		if(vehicle.getServiceProvided()!=null) {
+			keys.add("ServiceProvided");
+			values.add((String) vehicle.getServiceProvided().getValue().toString());
+		}
+		if(vehicle.getVehicleSpecialUsage()!=null) {
+			keys.add("VehicleSpecialUsage");
+			values.add((String) vehicle.getVehicleSpecialUsage().getValue());
+		}
+		if(vehicle.getRefVehicleModel()!=null) {
+			keys.add("RefVehicleModel");
+			values.add((String) vehicle.getRefVehicleModel().getValue());
+		}
+		if(vehicle.getAreaServed()!=null) {
+			keys.add("AreaServed");
+			values.add((String) vehicle.getAreaServed().getValue());
+		}
+		if(vehicle.getDateModified()!=null) {
+			keys.add("DateModified");
+			values.add((String) vehicle.getDateModified().getValue());
+		}
+		if(vehicle.getDateCreated()!=null) {
+			keys.add("DateCreated");
+			values.add((String) vehicle.getDateCreated().getValue());
+		}
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
-		
+
 
 		List<String> properties = Stream.of("Location", "PreviousLocation", "Speed", "Heading", "MileageFromOdometer","ServiceStatus").collect(Collectors.toList());
 		List<String> uoms = Stream.of("Coordinates","Coordinates","km/h", "°", "km","Dimensionless").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), (String) vehicle.getDescription().getValue(), properties, uoms);
+		List<String> dataTypes = Stream.of("String","String","Double","Double","Double", "String").collect(Collectors.toList());
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), (String) vehicle.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(vehicle.getId(), assetVariables, aspectType);
+		return mindSphereGateway.createAsset(vehicle.getId(), assetVariablesDefinitions, assetVariables, aspectType);
 	}
 	
-	private boolean saveMindSphereAsset(Asset asset) {
+	private Boolean saveMindSphereAsset(Asset asset) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		logger.debug("VehicleModel created");
-		return mindSphereGateway.saveAsset(asset);
+		Boolean result = mindSphereGateway.saveAsset(asset);
+		if(result)
+			logger.debug("VehicleNormalized created");
+		else 		
+			logger.error("VehicleNormalized couldn't be created");
+		return result;
 	}
 	
 	private boolean createMindSphereTimeSeriesFromVehicle(VehicleNormalized vehicle) {
@@ -145,15 +195,27 @@ public class VehicleNormalizedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
-			String curr_location = vehicle.getLocation().getValue().getCoordinates().get(0) + "," +  vehicle.getLocation().getValue().getCoordinates().get(1);
-			String prev_location = vehicle.getPreviousLocation().getValue().getCoordinates().get(0) + "," +  vehicle.getPreviousLocation().getValue().getCoordinates().get(1);
-
-			timeseriesPoint.getFields().put("Location",curr_location);
-			timeseriesPoint.getFields().put("PreviousLocation",prev_location);
-			timeseriesPoint.getFields().put("Speed",(Double) vehicle.getSpeed().getValue());
-			timeseriesPoint.getFields().put("Heading",(Double) vehicle.getHeading().getValue());
-			timeseriesPoint.getFields().put("MileageFromOdometer",(Double) vehicle.getMileageFromOdometer().getValue());
-
+			if(vehicle.getLocation()!=null) {
+				String curr_location = vehicle.getLocation().getValue().getCoordinates().get(0) + "," +  vehicle.getLocation().getValue().getCoordinates().get(1);
+				timeseriesPoint.getFields().put("Location",curr_location);
+			}
+			if(vehicle.getLocation()!=null) {
+				String prev_location = vehicle.getPreviousLocation().getValue().getCoordinates().get(0) + "," +  vehicle.getPreviousLocation().getValue().getCoordinates().get(1);
+				timeseriesPoint.getFields().put("PreviousLocation",prev_location);
+			}
+			if(vehicle.getSpeed()!=null) {
+				timeseriesPoint.getFields().put("Speed",(Double) vehicle.getSpeed().getValue());
+			}
+			if(vehicle.getHeading()!=null) {
+				timeseriesPoint.getFields().put("Heading",(Double) vehicle.getHeading().getValue());
+			}
+			if(vehicle.getMileageFromOdometer()!=null) {
+				timeseriesPoint.getFields().put("MileageFromOdometer",(Double) vehicle.getMileageFromOdometer().getValue());
+			}
+			if(vehicle.getServiceStatus()!=null) {
+				timeseriesPoint.getFields().put("ServiceStatus",(String) vehicle.getServiceStatus().getValue());
+			}
+			
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), vehicle.getId()+"AspectType", timeSeriesList);
 			logger.debug("VehicleNormalized updated");

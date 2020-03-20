@@ -1,10 +1,7 @@
 package it.eng.fimind.service.device;
 
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -22,7 +19,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
-import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
+import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
 
 import it.eng.fimind.model.fiware.device.DeviceModel;
 import it.eng.fimind.util.MindSphereGateway;
@@ -52,9 +49,7 @@ public class DeviceModelServices {
 		
 		if(!deviceModelDoesAlreadyExist(deviceModel)) 
 			saveMindSphereAsset(createMindSphereAssetFromDeviceModel(deviceModel));
-		
-		createMindSphereTimeSeriesFromDeviceModel(deviceModel);
-		
+				
 		serviceResult.setResult("OK");
 		return Response.status(201).entity(serviceResult).build();
 	}
@@ -70,90 +65,103 @@ public class DeviceModelServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
+		deviceModel.setId(deviceModel.getId().replaceAll("-","_"));
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
-		keys.add("Source");
-		values.add(deviceModel.getSource());
-		keys.add("DataProvider");
-		values.add(deviceModel.getDataProvider());
-		keys.add("Category");
-		values.add(deviceModel.getCategory().toString());
-		keys.add("DeviceClass");
-		values.add(deviceModel.getDeviceClass());
-		keys.add("Function");
-		values.add(deviceModel.getFunction().toString());
-		keys.add("SupportedProtocol");
-		values.add(deviceModel.getSupportedProtocol().toString());
-		keys.add("SupportedUnits");
-		values.add(deviceModel.getSupportedUnits().toString());
-		keys.add("EnergyLimitationClass");
-		values.add(deviceModel.getEnergyLimitationClass());
-		keys.add("BrandName");
-		values.add(deviceModel.getBrandName());
-		keys.add("ModelName");
-		values.add(deviceModel.getModelName());
-		keys.add("ManufacturerName");
-		values.add(deviceModel.getManufacturerName());
-		keys.add("Name");
-		values.add(deviceModel.getName());
-		keys.add("Documentation");
-		values.add(deviceModel.getDocumentation());
-		keys.add("Image");
-		values.add(deviceModel.getDocumentation());
-		keys.add("DateModified");
-		values.add(deviceModel.getDateModified());
-		keys.add("DateCreated");
-		values.add(deviceModel.getDateCreated());
+		if(deviceModel.getSource()!=null) {
+			keys.add("Source");
+			values.add(deviceModel.getSource());
+		}
+		if(deviceModel.getDataProvider()!=null) {
+			keys.add("DataProvider");
+			values.add(deviceModel.getDataProvider());
+		}
+		if(deviceModel.getCategory()!=null) {
+			keys.add("Category");
+			values.add(deviceModel.getCategory().toString());
+		}
+		if(deviceModel.getDeviceClass()!=null) {
+			keys.add("DeviceClass");
+			values.add(deviceModel.getDeviceClass());
+		}
+		if(deviceModel.getFunction()!=null) {
+			keys.add("Function");
+			values.add(deviceModel.getFunction().toString());
+		}
+		if(deviceModel.getSupportedProtocol()!=null) {
+			keys.add("SupportedProtocol");
+			values.add(deviceModel.getSupportedProtocol().toString());
+		}
+		if(deviceModel.getSupportedUnits()!=null) {
+			keys.add("SupportedUnits");
+			values.add(deviceModel.getSupportedUnits().toString());
+		}
+		if(deviceModel.getEnergyLimitationClass()!=null) {
+			keys.add("EnergyLimitationClass");		
+			values.add(deviceModel.getEnergyLimitationClass());
+		}
+		if(deviceModel.getBrandName()!=null) {
+			keys.add("BrandName");
+			values.add(deviceModel.getBrandName());
+		}
+		if(deviceModel.getModelName()!=null) {
+			keys.add("ModelName");
+			values.add(deviceModel.getModelName());
+		}
+		if(deviceModel.getManufacturerName()!=null) {
+			keys.add("ManufacturerName");
+			values.add(deviceModel.getManufacturerName());
+		}
+		if(deviceModel.getName()!=null) {
+			keys.add("Name");
+			values.add(deviceModel.getName());
+		}
+		if(deviceModel.getDocumentation()!=null) {
+			keys.add("Documentation");
+			values.add(deviceModel.getDocumentation());
+		}
+		if(deviceModel.getImage()!=null) {
+			keys.add("Image");
+			values.add(deviceModel.getImage());
+		}
+		if(deviceModel.getDateModified()!=null) {
+			keys.add("DateModified");
+			values.add(deviceModel.getDateModified());
+		}
+		if(deviceModel.getDateCreated()!=null) {
+			keys.add("DateCreated");
+			values.add(deviceModel.getDateCreated());
+		}
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+			
 		
-	
 		List<String> properties = new ArrayList<String>();
 		List<String> uoms = new ArrayList<String>();
-		for (int i=0; i<deviceModel.getControlledProperty().size(); i++) {
-			String property = deviceModel.getControlledProperty().get(i);
-			String uom = deviceModel.getSupportedUnits().get(i);
-			properties.add(property);
-			uoms.add(uom);
-		}
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(deviceModel.getId(), deviceModel.getDescription(), properties, uoms);
-		
-		
-		return mindSphereGateway.createAsset(deviceModel.getId(), assetVariables, aspectType);
-	}
-	
-	private boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		logger.debug("DeviceModel created");
-		return mindSphereGateway.saveAsset(asset);
-	}
-	
-	public boolean createMindSphereTimeSeriesFromDeviceModel(DeviceModel deviceModel) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+deviceModel.getId()+"Asset\"}");
-		try {
-			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
-			Date now = new Date();
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-			String instant = df.format(now);
-			Timeseries timeseriesPoint = new Timeseries();
-			timeseriesPoint.getFields().put("_time", instant);
-
-
+		List<String> dataTypes = new ArrayList<String>();
+		if(deviceModel.getControlledProperty()!=null && deviceModel.getSupportedUnits()!=null) {
 			for (int i=0; i<deviceModel.getControlledProperty().size(); i++) {
 				String property = deviceModel.getControlledProperty().get(i);
-				String value = deviceModel.getSupportedUnits().get(i);
-				timeseriesPoint.getFields().put(property,value);
+				String uom = deviceModel.getSupportedUnits().get(i);
+				properties.add(property);
+				uoms.add(uom);
+				dataTypes.add("Double");
 			}
-			
-			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), deviceModel.getId()+"AspectType", timeSeriesList);
-		} catch (Exception e) {
-			// Exception handling
-			e.printStackTrace();
-			return false;
 		}
-		return true;
-	}	
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(deviceModel.getId(), deviceModel.getDescription(), properties, uoms, dataTypes);
+		
+		return mindSphereGateway.createAsset(deviceModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
+	}
+	
+	private Boolean saveMindSphereAsset(Asset asset) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		Boolean result = mindSphereGateway.saveAsset(asset);
+		if(result)
+			logger.debug("DeviceModel created");
+		else 		
+			logger.error("DeviceModel couldn't be created");
+		return result;
+	}
 
 }

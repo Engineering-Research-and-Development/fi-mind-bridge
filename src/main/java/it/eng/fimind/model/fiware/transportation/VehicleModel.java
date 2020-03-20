@@ -15,7 +15,7 @@ public class VehicleModel {
 	private String description;
 	@NotNull(message = "{vehicle.null.vehicleType}")
 	@Pattern(message = "{vehicle.wrong.vehicleType}", regexp = "agriculturalVehicle|bicycle|bus|minibus|car|caravan|tram|tanker|carWithCaravan|carWithTrailer|lorry|moped|tanker|motorcycle|motorcycleWithSideCar|motorscooter|trailer|van|caravan|constructionOrMaintenanceVehicle"
-			+ 			"trolley|binTrolley|sweepingMachine|cleaningTrolley", flags=Pattern.Flag.CASE_INSENSITIVE)
+						+ "trolley|binTrolley|sweepingMachine|cleaningTrolley", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String vehicleType;
 	private String brandName;
 	private String modelName;

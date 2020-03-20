@@ -24,6 +24,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
+import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.transportation.TrafficFlowObservedNormalized;
@@ -34,7 +35,7 @@ import it.eng.fimind.util.ServiceResult;
 /**
  * Root resource (exposed at "trafficflowobservednormalized" path)
  */
-@Path("trafficflowobservednormalized")
+@Path("trafficFlowObservedNormalized")
 public class TrafficFlowObservedNormalizedServices {
 	private static Logger logger = Logger.getLogger(TrafficFlowObservedNormalizedServices.class);
 	
@@ -70,60 +71,92 @@ public class TrafficFlowObservedNormalizedServices {
 	
 	private Asset createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-MindSphereMapper mindSphereMapper = new MindSphereMapper();
+		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
+		trafficFlowObserved.setId(trafficFlowObserved.getId().replaceAll("-","_"));
+
 		Location mindSphereLocation = null;
-		if(trafficFlowObserved.getLocation().getType().equals("Point")) 
-			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(trafficFlowObserved.getLocation().getValue());
-		else 
+		if(trafficFlowObserved.getLocation()!=null) {
+			if(trafficFlowObserved.getLocation().getValue().getType().equals("Point")) 
+				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(trafficFlowObserved.getLocation().getValue());
+		}else if(trafficFlowObserved.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(trafficFlowObserved.getAddress().getValue());
-		
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
-		keys.add("Source");
-		values.add((String) trafficFlowObserved.getSource().getValue());
-		keys.add("VehicleType");
-		values.add((String) trafficFlowObserved.getVehicleType().getValue());
-		keys.add("VehicleSubType");
-		values.add((String) trafficFlowObserved.getVehicleSubType().getValue());
-		keys.add("DataProvider");
-		values.add((String) trafficFlowObserved.getDataProvider().getValue());
-		keys.add("RefRoadSegment");
-		values.add((String) trafficFlowObserved.getRefRoadSegment().getValue());
-		keys.add("DateModified");
-		values.add((String) trafficFlowObserved.getDateModified().getValue());
-		keys.add("LaneId");
-		values.add((String) trafficFlowObserved.getLaneId().getValue().toString());
-		keys.add("LaneDirection");
-		values.add((String) trafficFlowObserved.getLaneDirection().getValue());
-		keys.add("ReversedLane");
-		values.add((String) trafficFlowObserved.getReversedLane().getValue());
-		keys.add("DateObserved");
-		values.add((String) trafficFlowObserved.getDateObserved().getValue());
-		keys.add("DateObservedFrom");
-		values.add((String) trafficFlowObserved.getDateObservedFrom().getValue());
-		keys.add("DateObservedTo");
-		values.add((String) trafficFlowObserved.getDateObservedTo().getValue());
-		keys.add("DateCreated");
-		values.add((String) trafficFlowObserved.getDateCreated().getValue());
-		keys.add("Name");
-		values.add((String) trafficFlowObserved.getName().getValue());
+		if(trafficFlowObserved.getSource()!=null) {
+			keys.add("Source");
+			values.add((String) trafficFlowObserved.getSource().getValue());
+		}
+		if(trafficFlowObserved.getVehicleType()!=null) {
+			keys.add("VehicleType");		
+			values.add((String) trafficFlowObserved.getVehicleType().getValue());
+		}
+		if(trafficFlowObserved.getVehicleSubType()!=null) {
+			keys.add("VehicleSubType");
+			values.add((String) trafficFlowObserved.getVehicleSubType().getValue());
+		}
+		if(trafficFlowObserved.getDataProvider()!=null) {
+			keys.add("DataProvider");
+			values.add((String) trafficFlowObserved.getDataProvider().getValue());
+		}
+		if(trafficFlowObserved.getRefRoadSegment()!=null) {
+			keys.add("RefRoadSegment");		
+			values.add((String) trafficFlowObserved.getRefRoadSegment().getValue());
+		}
+		if(trafficFlowObserved.getDateModified()!=null) {
+			keys.add("DateModified");
+			values.add((String) trafficFlowObserved.getDateModified().getValue());
+		}
+		if(trafficFlowObserved.getLaneId()!=null) {
+			keys.add("LaneId");
+			values.add((String) trafficFlowObserved.getLaneId().getValue().toString());
+		}
+		if(trafficFlowObserved.getLaneDirection()!=null) {
+			keys.add("LaneDirection");
+			values.add((String) trafficFlowObserved.getLaneDirection().getValue());
+		}
+		if(trafficFlowObserved.getDateObserved()!=null) {
+			keys.add("DateObserved");
+			values.add((String) trafficFlowObserved.getDateObserved().getValue());
+		}
+		if(trafficFlowObserved.getDateObservedFrom()!=null) {	
+			keys.add("DateObservedFrom");
+			values.add((String) trafficFlowObserved.getDateObservedFrom().getValue());
+		}
+		if(trafficFlowObserved.getDateObservedTo()!=null) {
+			keys.add("DateObservedTo");
+			values.add((String) trafficFlowObserved.getDateObservedTo().getValue());
+		}
+		if(trafficFlowObserved.getDateCreated()!=null) {
+			keys.add("DateCreated");
+			values.add((String) trafficFlowObserved.getDateCreated().getValue());
+		}
+		if(trafficFlowObserved.getName()!=null) {
+			keys.add("Name");		
+			values.add((String) trafficFlowObserved.getName().getValue());
+		}
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
-		
+
 
 		List<String> properties = Stream.of("Intensity","Occupancy", "AverageVehicleSpeed", "AverageVehicleLength", "Congested", "AverageHeadwayTime", "AverageGapDistance").collect(Collectors.toList());
 		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "km/h", "m", "Dimensionless", "s", "m").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), (String) trafficFlowObserved.getDescription().getValue(), properties, uoms);
+		List<String> dataTypes = Stream.of("Integer", "Integer", "Double", "Double", "Boolean", "Double", "Double", "Boolean").collect(Collectors.toList());
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), (String) trafficFlowObserved.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariables, aspectType);
+		return mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
 	}
 	
-	private boolean saveMindSphereAsset(Asset asset) {
+	private Boolean saveMindSphereAsset(Asset asset) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		logger.debug("TrafficFlowObservedNormalized created");
-		return mindSphereGateway.saveAsset(asset);
+		Boolean result = mindSphereGateway.saveAsset(asset);
+		if(result)
+			logger.debug("TrafficFlowObservedNormalized created");
+		else 		
+			logger.error("TrafficFlowObservedNormalized couldn't be created");
+		return result;
 	}
 	
 	private boolean createMindSphereTimeSeriesFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved) {
@@ -137,14 +170,30 @@ MindSphereMapper mindSphereMapper = new MindSphereMapper();
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
-			timeseriesPoint.getFields().put("Intensity",(Integer) trafficFlowObserved.getIntensity().getValue());
-			timeseriesPoint.getFields().put("Occupancy",(Integer) trafficFlowObserved.getOccupancy().getValue());
-			timeseriesPoint.getFields().put("AverageVehicleSpeed",(Double) trafficFlowObserved.getAverageVehicleSpeed().getValue());
-			timeseriesPoint.getFields().put("AverageVehicleLength",(Double) trafficFlowObserved.getAverageVehicleLength().getValue());
-			timeseriesPoint.getFields().put("Congested",(Boolean) trafficFlowObserved.getCongested().getValue());
-			timeseriesPoint.getFields().put("AverageHeadwayTime",(Double) trafficFlowObserved.getAverageHeadwayTime().getValue());
-			timeseriesPoint.getFields().put("AverageGapDistance",(Double) trafficFlowObserved.getAverageGapDistance().getValue());
-			timeseriesPoint.getFields().put("ReversedLane",(Boolean) trafficFlowObserved.getReversedLane().getValue());
+			if(trafficFlowObserved.getIntensity()!=null) {
+				timeseriesPoint.getFields().put("Intensity",(Integer) trafficFlowObserved.getIntensity().getValue());
+			}
+			if(trafficFlowObserved.getOccupancy()!=null) {
+				timeseriesPoint.getFields().put("Occupancy",(Integer) trafficFlowObserved.getOccupancy().getValue());
+			}
+			if(trafficFlowObserved.getAverageVehicleSpeed()!=null) {
+				timeseriesPoint.getFields().put("AverageVehicleSpeed",(Double) trafficFlowObserved.getAverageVehicleSpeed().getValue());
+			}
+			if(trafficFlowObserved.getAverageVehicleLength()!=null) {
+				timeseriesPoint.getFields().put("AverageVehicleLength",(Double) trafficFlowObserved.getAverageVehicleLength().getValue());
+			}
+			if(trafficFlowObserved.getCongested()!=null) {
+				timeseriesPoint.getFields().put("Congested",(Boolean) trafficFlowObserved.getCongested().getValue());
+			}
+			if(trafficFlowObserved.getAverageHeadwayTime()!=null) {
+				timeseriesPoint.getFields().put("AverageHeadwayTime",(Double) trafficFlowObserved.getAverageHeadwayTime().getValue());
+			}
+			if(trafficFlowObserved.getAverageGapDistance()!=null) {
+				timeseriesPoint.getFields().put("AverageGapDistance",(Double) trafficFlowObserved.getAverageGapDistance().getValue());
+			}
+			if(trafficFlowObserved.getReversedLane()!=null) {
+				timeseriesPoint.getFields().put("ReversedLane",(Boolean) trafficFlowObserved.getReversedLane().getValue());
+			}
 
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), trafficFlowObserved.getId()+"AspectType", timeSeriesList);

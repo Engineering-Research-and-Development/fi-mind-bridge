@@ -14,8 +14,8 @@ public class TrafficFlowObserved {
 	private String type;
 	private String source;
 	@NotNull(message = "{trafficflowobserved.null.vehicleType}")
-	@Pattern(message = "{trafficflowobserved.wrong.vehicleType}", regexp = "agriculturalVehicle|bicycle|bus|minibus|car|caravan|tram|tanker|carWithCaravan|carWithTrailer|lorry|moped|tanker|motorcycle|motorcycleWithSideCar|motorscooter|trailer|van|caravan|constructionOrMaintenanceVehicle"
-			+ 			"trolley|binTrolley|sweepingMachine|cleaningTrolley", flags=Pattern.Flag.CASE_INSENSITIVE)
+	@Pattern(message = "{trafficflowobserved.wrong.vehicleType}", regexp = "agriculturalVehicle|bicycle|bus|minibus|car|caravan|tram|tanker|carWithCaravan|carWithTrailer|lorry|moped|tanker|motorcycle|motorcycleWithSideCar|motorscooter|trailer|van|caravan|constructionOrMaintenanceVehicle|"
+						+ "trolley|binTrolley|sweepingMachine|cleaningTrolley", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String vehicleType;
 	private String vehicleSubType;
 	private String dataProvider;

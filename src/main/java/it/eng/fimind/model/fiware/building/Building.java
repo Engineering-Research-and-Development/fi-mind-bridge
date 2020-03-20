@@ -7,7 +7,6 @@ import javax.validation.constraints.Pattern;
 
 import it.eng.fimind.model.fiware.common.Address;
 import it.eng.fimind.model.fiware.common.Location;
-import it.eng.fimind.model.fiware.common.OpeningHours;
 
 public class Building {
 	@NotNull(message = "{building.null.id}")
@@ -20,18 +19,18 @@ public class Building {
 	private String dateCreated;
 	private List<String> owner;
 	@NotNull(message = "{building.null.category}")
-	private String category;
+	private List<String> category;
 	private Location location;
 	private Location containedInPlace;
 	@NotNull(message = "{building.null.address}")
 	private Address address;
 	private String description;
-	private List<String> occupier ;
+	private List<String> occupier;
 	private Integer  floorsAboveGround;
-	private Integer floorsBelowGround ;
-	private String refMap;
+	private Integer floorsBelowGround;
+	private String mapUrl;
 
-	private List<OpeningHours> openingHours;
+	private List<String> openingHours;
 	
 	public String getId() {
 		return id;
@@ -75,10 +74,10 @@ public class Building {
 	public void setOwner(List<String> owner) {
 		this.owner = owner;
 	}
-	public String getCategory() {
+	public @NotNull(message = "{building.null.category}") List<String> getCategory() {
 		return category;
 	}
-	public void setCategory(String category) {
+	public void setCategory(List<String> category) {
 		this.category = category;
 	}
 	public Location getLocation() {
@@ -123,16 +122,16 @@ public class Building {
 	public void setFloorsBelowGround(Integer floorsBelowGround) {
 		this.floorsBelowGround = floorsBelowGround;
 	}
-	public String getRefMap() {
-		return refMap;
+	public String getMapUrl() {
+		return mapUrl;
 	}
-	public void setRefMap(String refMap) {
-		this.refMap = refMap;
+	public void setMapUrl(String mapUrl) {
+		this.mapUrl = mapUrl;
 	}
-	public List<OpeningHours> getOpeningHours() {
+	public List<String> getOpeningHours() {
 		return openingHours;
 	}
-	public void setOpeningHours(List<OpeningHours> openingHours) {
+	public void setOpeningHours(List<String> openingHours) {
 		this.openingHours = openingHours;
 	}
 

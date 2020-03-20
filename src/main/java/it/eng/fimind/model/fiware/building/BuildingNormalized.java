@@ -21,7 +21,7 @@ public class BuildingNormalized {
 	private Attribute dateCreated;
 	private MultiAttribute owner;
 	@NotNull(message = "{building.null.category}")
-	private Attribute category;
+	private MultiAttribute category;
 	private LocationNormalized location;
 	private LocationNormalized containedInPlace;
 	@NotNull(message = "{building.null.address}")
@@ -30,7 +30,8 @@ public class BuildingNormalized {
 	private MultiAttribute occupier ;
 	private Attribute  floorsAboveGround;
 	private Attribute floorsBelowGround ;
-	private Attribute refMap;
+	private Attribute mapUrl;
+
 	private OpeningHoursNormalized openingHours;
 
 	public String getId() {
@@ -75,10 +76,10 @@ public class BuildingNormalized {
 	public void setOwner(MultiAttribute owner) {
 		this.owner = owner;
 	}
-	public Attribute getCategory() {
+	public MultiAttribute getCategory() {
 		return category;
 	}
-	public void setCategory(Attribute category) {
+	public void setCategory(MultiAttribute category) {
 		this.category = category;
 	}
 	public LocationNormalized getLocation() {
@@ -123,11 +124,11 @@ public class BuildingNormalized {
 	public void setFloorsBelowGround(Attribute floorsBelowGround) {
 		this.floorsBelowGround = floorsBelowGround;
 	}
-	public Attribute getRefMap() {
-		return refMap;
+	public Attribute getMapUrl() {
+		return mapUrl;
 	}
-	public void setRefMap(Attribute refMap) {
-		this.refMap = refMap;
+	public void setMapUrl(Attribute mapUrl) {
+		this.mapUrl = mapUrl;
 	}
 	public OpeningHoursNormalized getOpeningHours() {
 		return openingHours;
