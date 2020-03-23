@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 
 import it.eng.fimind.model.fiware.building.BuildingOperation;
 
@@ -22,6 +23,7 @@ public class BuildingOperationServicesTest {
         BuildingOperation buildingOperation = objectMapper.readValue(jsonBody, BuildingOperation.class);
         
         BuildingOperationServices buildingOperationServices = new BuildingOperationServices();
-        buildingOperationServices.createMindSphereAssetFromBuildingOperation(buildingOperation);
+        Asset asset = buildingOperationServices.createMindSphereAssetFromBuildingOperation(buildingOperation);
+        System.out.println(asset);
     }
 }

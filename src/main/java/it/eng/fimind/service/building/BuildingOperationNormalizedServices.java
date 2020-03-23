@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
@@ -52,7 +51,7 @@ public class BuildingOperationNormalizedServices {
 		logger.debug("Id ="+buildingOperation.getId());
 		
 		if(!buildingOperationDoesAlreadyExist(buildingOperation)) 
-			saveMindSphereAsset(createMindSphereAssetFromBuildingOperation(buildingOperation));
+			createMindSphereAssetFromBuildingOperation(buildingOperation);
 			
 		createMindSphereTimeSeriesFromBuildingOperation(buildingOperation);
 		
@@ -67,7 +66,9 @@ public class BuildingOperationNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromBuildingOperation(BuildingOperationNormalized buildingOperation) {
+	private Boolean createMindSphereAssetFromBuildingOperation(BuildingOperationNormalized buildingOperation) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 	
@@ -75,69 +76,83 @@ public class BuildingOperationNormalizedServices {
 
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+
 		if(buildingOperation.getSource()!=null)
 		{
 			keys.add("Source");
 			values.add((String) buildingOperation.getSource().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getDataProvider()!=null)
 		{
 			keys.add("DataProvider");
 			values.add((String) buildingOperation.getDataProvider().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getDateModified()!=null)
 		{
 			keys.add("DateModified");
 			values.add((String) buildingOperation.getDateModified().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getDateCreated()!=null)
 		{
 			keys.add("DateCreated");		
 			values.add((String) buildingOperation.getDateCreated().getValue());
+			varDefDataTypes.add("Timestamp");
 
 		}
 		if(buildingOperation.getRefBuilding()!=null)
 		{
 			keys.add("RefBuilding");
 			values.add((String) buildingOperation.getRefBuilding().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getRefOperator()!=null)
 		{
 			keys.add("RefOperator");		
 			values.add((String) buildingOperation.getRefOperator().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getRefRelatedBuildingOperation()!=null)
 		{
 			keys.add("RefRelatedBuildingOperation");
 			values.add((String) buildingOperation.getRefRelatedBuildingOperation().getValue().toString());
+			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getStartDate()!=null)
 		{
 			keys.add("StartDate");		
 			values.add((String) buildingOperation.getStartDate().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getEndDate()!=null)
 		{
 			keys.add("EndDate");
 			values.add((String) buildingOperation.getEndDate().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getDateStarted()!=null)
 		{
 			keys.add("DateStarted");
 			values.add((String) buildingOperation.getDateStarted().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getDateFinished()!=null)
 		{
 			keys.add("DateFinished");
 			values.add((String) buildingOperation.getDateFinished().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getRefRelatedDeviceOperation()!=null)
 		{	
 			keys.add("RefRelatedDeviceOperation");
 			values.add((String) buildingOperation.getRefRelatedDeviceOperation().getValue().toString());
+			varDefDataTypes.add("String");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 		
 	
 		List<String> properties = Stream.of("OperationType", "Status", "Result").collect(Collectors.toList());
@@ -153,19 +168,14 @@ public class BuildingOperationNormalizedServices {
 			}
 		}
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), (String) buildingOperation.getDescription().getValue(), properties, uoms, dataTypes);
-		System.out.println(aspectType);
+
 		
-		return mindSphereGateway.createAsset(buildingOperation.getId(), assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result = mindSphereGateway.saveAsset(buildingOperation.getId(), assetVariablesDefinitions, assetVariables, aspectType);
 		if(result)
-			logger.debug("BuildingOperationNormalized created");
+			logger.debug("Building created");
 		else 		
-			logger.error("BuildingOperationNormalized couldn't be created");
-		return result;
+			logger.error("Building couldn't be created");
+		return result;	
 	}
 	
 	private boolean createMindSphereTimeSeriesFromBuildingOperation(BuildingOperationNormalized buildingOperation) {

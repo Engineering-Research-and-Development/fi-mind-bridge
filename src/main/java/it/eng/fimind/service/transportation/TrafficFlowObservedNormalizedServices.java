@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
@@ -53,7 +52,7 @@ public class TrafficFlowObservedNormalizedServices {
 		logger.debug("Id ="+trafficFlowObserved.getId());
 		
 		if(!trafficFlowObservedDoesAlreadyExist(trafficFlowObserved)) 
-			saveMindSphereAsset(createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved));
+			createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved);
 		
 		createMindSphereTimeSeriesFromTrafficFlowObserved(trafficFlowObserved);
 		
@@ -69,7 +68,9 @@ public class TrafficFlowObservedNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved) {
+	private Boolean createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -84,60 +85,75 @@ public class TrafficFlowObservedNormalizedServices {
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+
 		if(trafficFlowObserved.getSource()!=null) {
 			keys.add("Source");
 			values.add((String) trafficFlowObserved.getSource().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(trafficFlowObserved.getVehicleType()!=null) {
 			keys.add("VehicleType");		
 			values.add((String) trafficFlowObserved.getVehicleType().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(trafficFlowObserved.getVehicleSubType()!=null) {
 			keys.add("VehicleSubType");
 			values.add((String) trafficFlowObserved.getVehicleSubType().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(trafficFlowObserved.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add((String) trafficFlowObserved.getDataProvider().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(trafficFlowObserved.getRefRoadSegment()!=null) {
 			keys.add("RefRoadSegment");		
 			values.add((String) trafficFlowObserved.getRefRoadSegment().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(trafficFlowObserved.getDateModified()!=null) {
 			keys.add("DateModified");
 			values.add((String) trafficFlowObserved.getDateModified().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(trafficFlowObserved.getLaneId()!=null) {
 			keys.add("LaneId");
 			values.add((String) trafficFlowObserved.getLaneId().getValue().toString());
+			varDefDataTypes.add("Integer");
 		}
 		if(trafficFlowObserved.getLaneDirection()!=null) {
 			keys.add("LaneDirection");
 			values.add((String) trafficFlowObserved.getLaneDirection().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(trafficFlowObserved.getDateObserved()!=null) {
 			keys.add("DateObserved");
 			values.add((String) trafficFlowObserved.getDateObserved().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(trafficFlowObserved.getDateObservedFrom()!=null) {	
 			keys.add("DateObservedFrom");
 			values.add((String) trafficFlowObserved.getDateObservedFrom().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(trafficFlowObserved.getDateObservedTo()!=null) {
 			keys.add("DateObservedTo");
 			values.add((String) trafficFlowObserved.getDateObservedTo().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(trafficFlowObserved.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add((String) trafficFlowObserved.getDateCreated().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(trafficFlowObserved.getName()!=null) {
 			keys.add("Name");		
 			values.add((String) trafficFlowObserved.getName().getValue());
+			varDefDataTypes.add("String");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 
 		List<String> properties = Stream.of("Intensity","Occupancy", "AverageVehicleSpeed", "AverageVehicleLength", "Congested", "AverageHeadwayTime", "AverageGapDistance").collect(Collectors.toList());
@@ -146,19 +162,14 @@ public class TrafficFlowObservedNormalizedServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), (String) trafficFlowObserved.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result = mindSphereGateway.saveAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
 		if(result)
 			logger.debug("TrafficFlowObservedNormalized created");
 		else 		
 			logger.error("TrafficFlowObservedNormalized couldn't be created");
-		return result;
+		return result;	
 	}
-	
+
 	private boolean createMindSphereTimeSeriesFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+trafficFlowObserved.getId()+"Asset\"}");

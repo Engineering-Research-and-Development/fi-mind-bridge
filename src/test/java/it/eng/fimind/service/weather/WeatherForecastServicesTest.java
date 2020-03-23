@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 
 import it.eng.fimind.model.fiware.weather.WeatherForecast;
 
@@ -22,6 +23,7 @@ public class WeatherForecastServicesTest {
         WeatherForecast weatherForecast = objectMapper.readValue(jsonBody, WeatherForecast.class);
         
         WeatherForecastServices weatherForecastServices = new WeatherForecastServices();
-        weatherForecastServices.createMindSphereAssetFromWeatherForecast(weatherForecast);
+        Asset asset = weatherForecastServices.createMindSphereAssetFromWeatherForecast(weatherForecast);
+        System.out.println(asset);
     }
 }

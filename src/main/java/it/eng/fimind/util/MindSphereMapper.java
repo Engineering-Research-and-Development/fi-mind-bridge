@@ -14,6 +14,34 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.AspectVariable;
 
 public class MindSphereMapper {
 	
+	public AspectVariable.DataTypeEnum getAspectVariableDataType(String type){
+		if(type.equalsIgnoreCase("String"))
+			return AspectVariable.DataTypeEnum.STRING;
+		else if(type.equalsIgnoreCase("Double"))
+			return AspectVariable.DataTypeEnum.DOUBLE;
+		else if(type.equalsIgnoreCase("Integer"))
+			return AspectVariable.DataTypeEnum.INT;
+		else if(type.equalsIgnoreCase("Boolean"))
+			return AspectVariable.DataTypeEnum.BOOLEAN;
+		else if(type.equalsIgnoreCase("Timestamp"))
+			return AspectVariable.DataTypeEnum.TIMESTAMP;
+		return AspectVariable.DataTypeEnum.STRING;
+	}
+	
+	public VariableDefinition.DataTypeEnum getVariableDefinitionDataType(String type){
+		if(type.equalsIgnoreCase("String"))
+			return VariableDefinition.DataTypeEnum.STRING;
+		else if(type.equalsIgnoreCase("Double"))
+			return VariableDefinition.DataTypeEnum.DOUBLE;
+		else if(type.equalsIgnoreCase("Integer"))
+			return VariableDefinition.DataTypeEnum.INT;
+		else if(type.equalsIgnoreCase("Boolean"))
+			return VariableDefinition.DataTypeEnum.BOOLEAN;
+		else if(type.equalsIgnoreCase("Timestamp"))
+			return VariableDefinition.DataTypeEnum.TIMESTAMP;
+		return VariableDefinition.DataTypeEnum.STRING;
+	}
+	
 	public Location fiLocationToMiLocation(it.eng.fimind.model.fiware.common.Location fiLocation) {
 		Location mindSphereLocation = new Location();
 		if(fiLocation.getType().equals("Point")) {
@@ -33,53 +61,42 @@ public class MindSphereMapper {
 		return mindSphereLocation;	
 	}
 	
-	public List<VariableDefinition> fiPropertiesToMiVariablesDefinitions(List<String> keys, List<String> values)
+	public List<VariableDefinition> fiPropertiesToMiVariablesDefinitions(List<String> keys, List<String> values, List<String> dataTypes)
 	{
-		
 		List<VariableDefinition> assetVariablesDefinition = new ArrayList<VariableDefinition>();
 		
 		for(int i=0;i<keys.size();i++) {
-			if(keys.get(i) == null) continue;
-
 			VariableDefinition varDefinition = new VariableDefinition();
 			varDefinition.setName(keys.get(i));
-			varDefinition.setDataType(VariableDefinition.DataTypeEnum.STRING);
-			//mindSphereVariableDefinition.setLength(128);
+			varDefinition.setDataType(getVariableDefinitionDataType(dataTypes.get(i)));
+			if(dataTypes.get(i).equalsIgnoreCase("String")) {
+				varDefinition.setLength(255);
+			}
 			assetVariablesDefinition.add(varDefinition);
 		}
 		
 		return assetVariablesDefinition;
 	}
 	
-	public List<Variable> fiPropertiesToMiVariables(List<String> keys, List<String> values)
+	public List<Variable> fiPropertiesToMiVariables(List<String> keys, List<String> values, List<String> dataTypes)
 	{
-		
 		List<Variable> assetVariables = new ArrayList<Variable>();
 		
 		for(int i=0;i<keys.size();i++) {	
-			if(keys.get(i) == null) continue;
-
 			Variable var = new Variable();			
-			var.setName(keys.get(i));			
-			var.setValue((values.get(i) == null) ? "" : values.get(i));
+			var.setName(keys.get(i));	
+			if(dataTypes.get(i).equalsIgnoreCase("Timestamp")) {
+				String timestamp = values.get(i);
+				if(!timestamp.contains("\\."))
+					var.setValue(timestamp);
+				else
+					var.setValue(timestamp.split("\\.")[0].concat("Z"));
+			}else
+				var.setValue(values.get(i));
 			assetVariables.add(var);
 		}
 		
 		return assetVariables;
-	}
-	
-	public AspectVariable.DataTypeEnum getAspectVariableDataType(String type){
-		if(type.equalsIgnoreCase("String"))
-			return AspectVariable.DataTypeEnum.STRING;
-		else if(type.equalsIgnoreCase("Double"))
-			return AspectVariable.DataTypeEnum.DOUBLE;
-		else if(type.equalsIgnoreCase("Integer"))
-			return AspectVariable.DataTypeEnum.INT;
-		else if(type.equalsIgnoreCase("Boolean"))
-			return AspectVariable.DataTypeEnum.BOOLEAN;
-		else if(type.equalsIgnoreCase("Timestamp"))
-			return AspectVariable.DataTypeEnum.TIMESTAMP;
-		return AspectVariable.DataTypeEnum.STRING;
 	}
 	
 	public AspectType fiStateToMiAspectType(String id, String description, List<String> keys, List<String> values, List<String> dataTypes)
@@ -99,12 +116,14 @@ public class MindSphereMapper {
 			var.setName(keys.get(i));
 			var.setUnit(values.get(i));
 			var.setDataType(getAspectVariableDataType(dataTypes.get(i)));
-			//var.setLength(128);
+			if(dataTypes.get(i).equalsIgnoreCase("String")) {
+				var.setLength(255);
+			}
 			var.setSearchable(true);
 			var.setQualityCode(true);
 			aspectVariables.add(var);
 		}
-				
+		
 		aspectType.setVariables(aspectVariables);
 		
 		return aspectType;

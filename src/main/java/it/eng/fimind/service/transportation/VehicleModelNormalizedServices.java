@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
@@ -46,7 +45,7 @@ public class VehicleModelNormalizedServices {
 		logger.debug("Id ="+vehicleModel.getId());
 		
 		if(!vehicleModelDoesAlreadyExist(vehicleModel)) 
-			saveMindSphereAsset(createMindSphereAssetFromVehicleModel(vehicleModel));
+			createMindSphereAssetFromVehicleModel(vehicleModel);
 				
 		serviceResult.setResult("OK");
 		return Response.status(201).entity(serviceResult).build();
@@ -60,7 +59,9 @@ public class VehicleModelNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromVehicleModel(VehicleModelNormalized vehicleModel) {
+	private Boolean createMindSphereAssetFromVehicleModel(VehicleModelNormalized vehicleModel) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -68,88 +69,110 @@ public class VehicleModelNormalizedServices {
 
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+		
 		if(vehicleModel.getSource()!=null) {
 			keys.add("Source");
 			values.add((String) vehicleModel.getSource().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add((String) vehicleModel.getDataProvider().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getName()!=null) {
 			keys.add("Name");
 			values.add((String) vehicleModel.getName().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getVehicleType()!=null) {
 			keys.add("VehicleType");
 			values.add((String) vehicleModel.getVehicleType().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getBrandName()!=null) {
 			keys.add("BrandName");
 			values.add((String) vehicleModel.getBrandName().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getModelName()!=null) {
 			keys.add("ModelName");
 			values.add((String) vehicleModel.getModelName().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getManufacturerName()!=null) {
 			keys.add("ManufacturerName");
 			values.add((String) vehicleModel.getManufacturerName().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getVehicleModelDate()!=null) {
 			keys.add("VehicleModelDate");
 			values.add((String) vehicleModel.getVehicleModelDate().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getCargoVolume()!=null) {
 			keys.add("CargoVolume");
 			values.add((String) vehicleModel.getCargoVolume().getValue());
+			varDefDataTypes.add("Integer");
 		}
 		if(vehicleModel.getFuelType()!=null) {
 			keys.add("FuelType");
 			values.add((String) vehicleModel.getFuelType().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getFuelConsumption()!=null) {
 			keys.add("FuelConsumption");
 			values.add((String) vehicleModel.getFuelConsumption().getValue());
+			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getHeight()!=null) {
 			keys.add("Height");
 			values.add((String) vehicleModel.getHeight().getValue());
+			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getWidth()!=null) {
 			keys.add("Width");
 			values.add((String) vehicleModel.getWidth().getValue());
+			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getDepth()!=null) {
 			keys.add("Depth");
 			values.add((String) vehicleModel.getDepth().getValue());
+			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getWeight()!=null) {
 			keys.add("Weight");
 			values.add((String) vehicleModel.getWeight().getValue());
+			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getVehicleEngine()!=null) {
 			keys.add("VehicleEngine");
 			values.add((String) vehicleModel.getVehicleEngine().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getUrl()!=null) {
 			keys.add("Url");
 			values.add((String) vehicleModel.getUrl().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getImage()!=null) {
 			keys.add("Image");
 			values.add((String) vehicleModel.getImage().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getDateModified()!=null) {
 			keys.add("DateModified");
 			values.add((String) vehicleModel.getDateModified().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(vehicleModel.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add((String) vehicleModel.getDateCreated().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
 		List<String> properties = new ArrayList<String>();
@@ -158,12 +181,7 @@ public class VehicleModelNormalizedServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), (String) vehicleModel.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(vehicleModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result = mindSphereGateway.saveAsset(vehicleModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
 		if(result)
 			logger.debug("VehicleModelNormalized created");
 		else 		

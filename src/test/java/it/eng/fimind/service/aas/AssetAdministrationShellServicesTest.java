@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 
 import it.eng.fimind.model.zvei.aas.AssetAdministrationShell;
 
@@ -22,6 +23,7 @@ public class AssetAdministrationShellServicesTest {
         AssetAdministrationShell aas = objectMapper.readValue(jsonBody, AssetAdministrationShell.class);
         
         AssetAdministrationShellServices assetAdministrationShellServices = new AssetAdministrationShellServices();
-        assetAdministrationShellServices.createMindSphereAssetFromAAS(aas);
+        Asset asset = assetAdministrationShellServices.createMindSphereAssetFromAAS(aas);
+        System.out.println(asset);
     }
 }

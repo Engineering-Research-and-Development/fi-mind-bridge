@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
@@ -53,7 +52,7 @@ public class BuildingServices {
 		logger.debug("Id ="+building.getId());
 		
 		if(!buildingDoesAlreadyExist(building)) 
-			saveMindSphereAsset(createMindSphereAssetFromBuilding(building));
+			createMindSphereAssetFromBuilding(building);
 		
 		createMindSphereTimeSeriesFromBuilding(building);
 		
@@ -68,7 +67,9 @@ public class BuildingServices {
 		return assets.size()>0;
 	}
 	
-	public Asset createMindSphereAssetFromBuilding(Building building) {
+	public Boolean createMindSphereAssetFromBuilding(Building building) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -84,48 +85,60 @@ public class BuildingServices {
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+
 		if(building.getSource()!=null) {
 			keys.add("Source");
 			values.add(building.getSource());
+			varDefDataTypes.add("String");
 		}
 		if(building.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add(building.getDataProvider());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(building.getDateModified()!=null) {
 			keys.add("DateModified");
 			values.add(building.getDateModified());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(building.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add(building.getDateCreated());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(building.getOwner()!=null) {
 			keys.add("Owner");
 			values.add(building.getOwner().toString());
+			varDefDataTypes.add("String");
 		}
 		if(building.getCategory()!=null) {
 			keys.add("Category");
 			values.add(building.getCategory().toString());
+			varDefDataTypes.add("String");
 		}
 		if(building.getOccupier()!=null) {
 			keys.add("Occupier");
 			values.add(building.getOccupier().toString());
+			varDefDataTypes.add("String");
 		}
 		if(building.getFloorsAboveGround()!=null) {
 			keys.add("FloorsAboveGround");
 			values.add(building.getFloorsAboveGround().toString());
+			varDefDataTypes.add("Integer");
 		}		
 		if(building.getFloorsBelowGround()!=null) {
 			keys.add("FloorsBelowGround");
 			values.add(building.getFloorsBelowGround().toString());
+			varDefDataTypes.add("Integer");
 		}
 		if(building.getMapUrl()!=null) {
 			keys.add("RefMap");
 			values.add(building.getMapUrl());
+			varDefDataTypes.add("String");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
 		List<String> properties = Stream.of("OpeningHours").collect(Collectors.toList());
@@ -134,16 +147,13 @@ public class BuildingServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), building.getDescription(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result =  mindSphereGateway.saveAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
+			
 		if(result)
 			logger.debug("Building created");
 		else 		
 			logger.error("Building couldn't be created");
+		
 		return result;
 	}
 	
@@ -164,7 +174,7 @@ public class BuildingServices {
 		
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), building.getId()+"AspectType", timeSeriesList);
-			logger.debug("buildingOperation updated");
+			logger.debug("Building updated");
 		
 		} catch (Exception e) {
 			// Exception handling

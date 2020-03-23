@@ -22,7 +22,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
@@ -52,7 +51,7 @@ public class DeviceNormalizedServices {
 		logger.debug("Id ="+device.getId());
 		
 		if(!deviceDoesAlreadyExist(device)) 
-			saveMindSphereAsset(createMindSphereAssetFromDevice(device));
+			createMindSphereAssetFromDevice(device);
 		
 		createMindSphereTimeSeriesFromDevice(device);
 		
@@ -67,7 +66,9 @@ public class DeviceNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromDevice(DeviceNormalized device) {
+	private Boolean createMindSphereAssetFromDevice(DeviceNormalized device) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -83,96 +84,120 @@ public class DeviceNormalizedServices {
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+
 		if(device.getSource()!=null) {
 			keys.add("Source");
 			values.add((String) device.getSource().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add((String) device.getDataProvider().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getCategory()!=null) {
 			keys.add("Category");
 			values.add((String) device.getCategory().getValue().toString());
+			varDefDataTypes.add("String");
 		}
 		if(device.getMnc()!=null) {
 			keys.add("Mnc");
 			values.add((String) device.getMnc().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getMcc()!=null) {
 			keys.add("Mcc");
 			values.add((String) device.getMcc().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getMacAddress()!=null) {
 			keys.add("MacAddress");
 			values.add((String) device.getMacAddress().getValue().toString());
+			varDefDataTypes.add("String");
 		}
 		if(device.getSupportedProtocol()!=null) {
 			keys.add("SupportedProtocol");
 			values.add((String) device.getSupportedProtocol().getValue().toString());
+			varDefDataTypes.add("String");
 		}
 		if(device.getConfiguration()!=null) {
 			keys.add("Configuration");
 			values.add((String) device.getConfiguration().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getName()!=null) {
 			keys.add("Name");
 			values.add((String) device.getName().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getDateInstalled()!=null) {
 			keys.add("DateInstalled");
 			values.add((String) device.getDateInstalled().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getDateFirstUsed()!=null) {
 			keys.add("DateFirstUsed");
 			values.add((String) device.getDateFirstUsed().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getDateManufactured()!=null) {
 			keys.add("DateManufactured");
 			values.add((String) device.getDateManufactured().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getHardwareVersion()!=null) {
 			keys.add("HardwareVersion");
 			values.add((String) device.getHardwareVersion().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getSoftwareVersion()!=null) {
 			keys.add("SoftwareVersion");
 			values.add((String) device.getSoftwareVersion().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getFirmwareVersion()!=null) {
 			keys.add("FirmwareVersion");
 			values.add((String) device.getFirmwareVersion().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getOsVersion()!=null) {
 			keys.add("OsVersion");
 			values.add((String) device.getOsVersion().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getSerialNumber()!=null) {
 			keys.add("SerialNumber");
 			values.add((String) device.getSerialNumber().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getProvider()!=null) {
 			keys.add("Provider");
 			values.add((String) device.getProvider().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getRefDeviceModel()!=null) {
 			keys.add("RefDeviceModel");
 			values.add((String) device.getRefDeviceModel().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(device.getDateModified()!=null) {
 			keys.add("DateModified");
 			values.add((String) device.getDateModified().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add((String) device.getDateCreated().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getOwner()!=null) {
 			keys.add("Owner");
 			values.add((String) device.getOwner().toString());
+			varDefDataTypes.add("String");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
 		List<String> properties = Stream.of("ControlledAssets","IpAddress", "DateLastCalibration","BatteryLevel","Rssi","DeviceState", "DateLastValueReported").collect(Collectors.toList());
@@ -188,12 +213,7 @@ public class DeviceNormalizedServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), (String) device.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result =  mindSphereGateway.saveAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);		
 		if(result)
 			logger.debug("DeviceNormalized created");
 		else 		
@@ -250,6 +270,7 @@ public class DeviceNormalizedServices {
 			
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), device.getId()+"AspectType", timeSeriesList);
+			logger.debug("DeviceNormalized updated");
 		} catch (Exception e) {
 			// Exception handling
 			e.printStackTrace();

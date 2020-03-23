@@ -18,7 +18,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
@@ -52,9 +51,10 @@ public class AssetAdministrationShellServices {
 	public Response createDataInJSON(@Valid AssetAdministrationShell aas) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+aas.getId());
-		if(!aasDoesAlreadyExist(aas)) {
-			saveMindSphereAsset(createMindSphereAssetFromAAS(aas));
-		}
+		
+		if(!aasDoesAlreadyExist(aas)) 
+			createMindSphereAssetFromAAS(aas);
+		
 		createMindSphereTimeSeriesFromAAS(aas);
 		
 		serviceResult.setResult("OK");
@@ -77,15 +77,17 @@ public class AssetAdministrationShellServices {
 		return assets.size()>0;
 	}
 	
-	public Asset createMindSphereAssetFromAAS(AssetAdministrationShell aas) 
+	public Boolean createMindSphereAssetFromAAS(AssetAdministrationShell aas) 
 	{	
+		Boolean result = false;
+
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 
 		aas.setId(aas.getId().replace("-","_"));
 
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(new ArrayList<String>(), new ArrayList<String>());
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(new ArrayList<String>(), new ArrayList<String>());
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
 
 		List<String> properties = new ArrayList<String>();
 		List<String> uoms = new ArrayList<String>();
@@ -103,17 +105,14 @@ public class AssetAdministrationShellServices {
 		}
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(aas.getId(), "None", properties, uoms, dataTypes);
 
-		return mindSphereGateway.createAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result = mindSphereGateway.saveAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType);
+			
 		if(result)
 			logger.debug("AssetAdministrationShell created");
 		else 		
 			logger.error("AssetAdministrationShell couldn't be created");
-		return result;
+		
+		return result;	
 	}
 	
 	public boolean createMindSphereTimeSeriesFromAAS(AssetAdministrationShell aas) {

@@ -16,7 +16,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
@@ -48,7 +47,7 @@ public class DeviceModelServices {
 		logger.debug("Id ="+deviceModel.getId());
 		
 		if(!deviceModelDoesAlreadyExist(deviceModel)) 
-			saveMindSphereAsset(createMindSphereAssetFromDeviceModel(deviceModel));
+			createMindSphereAssetFromDeviceModel(deviceModel);
 				
 		serviceResult.setResult("OK");
 		return Response.status(201).entity(serviceResult).build();
@@ -61,7 +60,9 @@ public class DeviceModelServices {
 		return assets.size()>0;
 	}
 	
-	public Asset createMindSphereAssetFromDeviceModel(DeviceModel deviceModel) {
+	public Boolean createMindSphereAssetFromDeviceModel(DeviceModel deviceModel) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -69,72 +70,90 @@ public class DeviceModelServices {
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+
 		if(deviceModel.getSource()!=null) {
 			keys.add("Source");
 			values.add(deviceModel.getSource());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add(deviceModel.getDataProvider());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getCategory()!=null) {
 			keys.add("Category");
 			values.add(deviceModel.getCategory().toString());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDeviceClass()!=null) {
 			keys.add("DeviceClass");
 			values.add(deviceModel.getDeviceClass());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getFunction()!=null) {
 			keys.add("Function");
 			values.add(deviceModel.getFunction().toString());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getSupportedProtocol()!=null) {
 			keys.add("SupportedProtocol");
 			values.add(deviceModel.getSupportedProtocol().toString());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getSupportedUnits()!=null) {
 			keys.add("SupportedUnits");
 			values.add(deviceModel.getSupportedUnits().toString());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getEnergyLimitationClass()!=null) {
 			keys.add("EnergyLimitationClass");		
 			values.add(deviceModel.getEnergyLimitationClass());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getBrandName()!=null) {
 			keys.add("BrandName");
 			values.add(deviceModel.getBrandName());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getModelName()!=null) {
 			keys.add("ModelName");
 			values.add(deviceModel.getModelName());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getManufacturerName()!=null) {
 			keys.add("ManufacturerName");
 			values.add(deviceModel.getManufacturerName());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getName()!=null) {
 			keys.add("Name");
 			values.add(deviceModel.getName());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDocumentation()!=null) {
 			keys.add("Documentation");
 			values.add(deviceModel.getDocumentation());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getImage()!=null) {
 			keys.add("Image");
 			values.add(deviceModel.getImage());
+			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDateModified()!=null) {
 			keys.add("DateModified");
 			values.add(deviceModel.getDateModified());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(deviceModel.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add(deviceModel.getDateCreated());
+			varDefDataTypes.add("Timestamp");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 			
 		
 		List<String> properties = new ArrayList<String>();
@@ -151,17 +170,12 @@ public class DeviceModelServices {
 		}
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(deviceModel.getId(), deviceModel.getDescription(), properties, uoms, dataTypes);
 		
-		return mindSphereGateway.createAsset(deviceModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result =  mindSphereGateway.saveAsset(deviceModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
 		if(result)
 			logger.debug("DeviceModel created");
 		else 		
 			logger.error("DeviceModel couldn't be created");
 		return result;
 	}
-
+	
 }

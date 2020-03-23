@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
@@ -53,7 +52,7 @@ public class BuildingNormalizedServices {
 		logger.debug("Id ="+building.getId());
 		
 		if(!buildingDoesAlreadyExist(building)) 
-			saveMindSphereAsset(createMindSphereAssetFromBuilding(building));
+			createMindSphereAssetFromBuilding(building);
 			
 		createMindSphereTimeSeriesFromBuilding(building);
 
@@ -68,7 +67,9 @@ public class BuildingNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromBuilding(BuildingNormalized building) {
+	private Boolean createMindSphereAssetFromBuilding(BuildingNormalized building) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -83,48 +84,60 @@ public class BuildingNormalizedServices {
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+
 		if(building.getSource()!=null) {
 			keys.add("Source");
 			values.add((String) building.getSource().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(building.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add((String) building.getDataProvider().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(building.getDateModified()!=null) {
 			keys.add("DateModified");
 			values.add((String) building.getDateModified().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(building.getDateModified()!=null) {
 			keys.add("DateCreated");
 			values.add((String) building.getDateCreated().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(building.getOwner()!=null) {
 			keys.add("Owner");
 			values.add((String) building.getOwner().getValue().toString());
+			varDefDataTypes.add("String");
 		}
 		if(building.getCategory()!=null) {
 			keys.add("Category");
 			values.add((String) building.getCategory().getValue().toString());
+			varDefDataTypes.add("String");
 		}
 		if(building.getOccupier()!=null) {
 			keys.add("Occupier");
 			values.add((String) building.getOccupier().getValue().toString());
+			varDefDataTypes.add("String");
 		}
 		if(building.getFloorsAboveGround()!=null) {
 			keys.add("FloorsAboveGround");
 			values.add((String) building.getFloorsAboveGround().getValue().toString());
+			varDefDataTypes.add("Integer");
 		}
 		if(building.getFloorsBelowGround()!=null) {
 			keys.add("FloorsBelowGround");
 			values.add((String) building.getFloorsBelowGround().getValue().toString());
+			varDefDataTypes.add("Integer");
 		}
 		if(building.getMapUrl()!=null) {
 			keys.add("RefMap");
 			values.add((String) building.getMapUrl().getValue());
+			varDefDataTypes.add("String");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
 		List<String> properties = Stream.of("OpeningHours").collect(Collectors.toList());
@@ -133,16 +146,11 @@ public class BuildingNormalizedServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), (String) building.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result =  mindSphereGateway.saveAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
 		if(result)
 			logger.debug("BuildingNormalized created");
 		else 		
-			logger.error("BuildingNormalized couldn't be created");
+			logger.error("BuildingNormalized couldn't be created");	
 		return result;
 	}
 	
@@ -163,7 +171,7 @@ public class BuildingNormalizedServices {
 			
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), building.getId()+"AspectType", timeSeriesList);
-			logger.debug("buildingOperation updated");
+			logger.debug("BuildingNormalized updated");
 		
 		} catch (Exception e) {
 			// Exception handling

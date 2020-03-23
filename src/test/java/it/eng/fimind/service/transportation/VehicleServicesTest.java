@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 
 import it.eng.fimind.model.fiware.transportation.Vehicle;
 
@@ -22,6 +23,7 @@ public class VehicleServicesTest {
         Vehicle vehicle = objectMapper.readValue(jsonBody, Vehicle.class);
         
         VehicleServices vehicleServices = new VehicleServices();
-        vehicleServices.createMindSphereAssetFromVehicle(vehicle);
+        Asset asset = vehicleServices.createMindSphereAssetFromVehicle(vehicle);
+        System.out.println(asset);
     }
 }

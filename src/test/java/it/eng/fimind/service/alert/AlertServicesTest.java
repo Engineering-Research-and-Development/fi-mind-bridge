@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 
 import it.eng.fimind.model.fiware.alert.Alert;
 
@@ -22,6 +23,7 @@ public class AlertServicesTest {
         Alert alert = objectMapper.readValue(jsonBody, Alert.class);
         
         AlertServices alertServices = new AlertServices();
-        alertServices.createMindSphereAssetFromAlert(alert);
+        Asset asset = alertServices.createMindSphereAssetFromAlert(alert);
+        System.out.println(asset);
     }
 }

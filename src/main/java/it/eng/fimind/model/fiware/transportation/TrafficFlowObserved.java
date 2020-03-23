@@ -37,6 +37,7 @@ public class TrafficFlowObserved {
 	private Boolean congested;
 	private Double averageHeadwayTime;
 	private Double averageGapDistance;
+	@Pattern(message = "{trafficflowobserved.wrong.laneDirection}", regexp = "forward|backward", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String laneDirection;
 	private Boolean reversedLane;
 	

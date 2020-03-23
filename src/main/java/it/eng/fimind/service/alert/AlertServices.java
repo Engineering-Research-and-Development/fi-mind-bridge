@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
@@ -54,7 +53,7 @@ public class AlertServices {
 		logger.debug("Id ="+alert.getId());
 		
 		if(!alertDoesAlreadyExist(alert)) 
-			saveMindSphereAsset(createMindSphereAssetFromAlert(alert));
+			createMindSphereAssetFromAlert(alert);
 		
 		createMindSphereTimeSeriesFromAlert(alert);
 		
@@ -69,7 +68,9 @@ public class AlertServices {
 		return assets.size()>0;
 	}
 	
-	public Asset createMindSphereAssetFromAlert(Alert alert) {
+	public Boolean createMindSphereAssetFromAlert(Alert alert) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -85,44 +86,55 @@ public class AlertServices {
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+
 		if(alert.getSource()!=null) {
 			keys.add("Source");
 			values.add(alert.getSource());
+			varDefDataTypes.add("String");
 		}
 		if(alert.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add(alert.getDataProvider());
+			varDefDataTypes.add("String");
 		}
 		if(alert.getCategory()!=null) {
 			keys.add("Category");
 			values.add(alert.getCategory());
+			varDefDataTypes.add("String");
 		}
 		if(alert.getSubCategory()!=null) {
 			keys.add("SubCategory");
 			values.add(alert.getSubCategory());
+			varDefDataTypes.add("String");
 		}
 		if(alert.getDateIssued()!=null) {
 			keys.add("DateIssued");
 			values.add(alert.getDateIssued());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(alert.getValidFrom()!=null) {
 			keys.add("ValidFrom");
 			values.add(alert.getValidFrom());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(alert.getValidTo()!=null) {
 			keys.add("ValidTo");
 			values.add(alert.getValidTo());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(alert.getAlertSource()!=null) {
 			keys.add("AlertSource");
 			values.add(alert.getAlertSource());
+			varDefDataTypes.add("String");
 		}
 		if(alert.getData()!=null) {
 			keys.add("Data");
 			values.add(alert.getData());
+			varDefDataTypes.add("String");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
 		List<String> properties = Stream.of("Severity").collect(Collectors.toList());
@@ -131,20 +143,13 @@ public class AlertServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), alert.getDescription(), properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-	}
-	
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result = mindSphereGateway.saveAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
 		if(result)
 			logger.debug("Alert created");
 		else 		
 			logger.error("Alert couldn't be created");
 		return result;
 	}
-	
 	
 	public boolean createMindSphereTimeSeriesFromAlert(Alert alert) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();		

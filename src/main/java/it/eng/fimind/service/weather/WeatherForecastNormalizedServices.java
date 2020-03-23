@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
@@ -53,7 +52,7 @@ public class WeatherForecastNormalizedServices {
 		logger.debug("Id ="+weatherForecast.getId());
 		
 		if(!weatherForecastDoesAlreadyExist(weatherForecast))
-			saveMindSphereAsset(createMindSphereAssetFromWeatherForecast(weatherForecast));
+			createMindSphereAssetFromWeatherForecast(weatherForecast);
 		
 		createMindSphereTimeSeriesFromWeatherForecast(weatherForecast);
 		
@@ -69,7 +68,9 @@ public class WeatherForecastNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Asset createMindSphereAssetFromWeatherForecast(WeatherForecastNormalized weatherForecast) {
+	private Boolean createMindSphereAssetFromWeatherForecast(WeatherForecastNormalized weatherForecast) {
+		Boolean result = false;
+		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
@@ -85,52 +86,65 @@ public class WeatherForecastNormalizedServices {
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+		
 		if(weatherForecast.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add((String) weatherForecast.getDataProvider().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(weatherForecast.getDateModified()!=null) {
 			keys.add("DateModified");		
 			values.add((String) weatherForecast.getDateModified().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherForecast.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add((String) weatherForecast.getDateCreated().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherForecast.getName()!=null) {
 			keys.add("Name");
 			values.add((String) weatherForecast.getName().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(weatherForecast.getDateRetrieved()!=null) {
 			keys.add("DateRetrieved");
 			values.add((String) weatherForecast.getDateRetrieved().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherForecast.getDateIssued()!=null) {
 			keys.add("DateIssued");
 			values.add((String) weatherForecast.getDateIssued().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherForecast.getValidity()!=null) {
 			keys.add("Validity");
 			values.add((String) weatherForecast.getValidity().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(weatherForecast.getValidFrom()!=null) {
 			keys.add("ValidFrom");
 			values.add((String) weatherForecast.getValidFrom().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherForecast.getValidTo()!=null) {
 			keys.add("ValidTo");
 			values.add((String) weatherForecast.getValidTo().getValue());
+			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherForecast.getSource()!=null) {
 			keys.add("Source");		
 			values.add((String) weatherForecast.getSource().getValue());
+			varDefDataTypes.add("String");
 		}
 		if(weatherForecast.getRefPointOfInterest()!=null) {
 			keys.add("RefPointOfInterest");
 			values.add((String) weatherForecast.getRefPointOfInterest().getValue());
+			varDefDataTypes.add("String");
 		}
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values);
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values);
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 		
 		
 		List<String> properties = Stream.of("WeatherType", "Visibility", "Temperature", "FeelsLikeTemperature", "RelativeHumidity", "PrecipitationProbability", "WindDirection", "WindSpeed", "MinTemperature", "MinFeelsLikeTemperature", "MinRelativeHumidity", "MaxTemperature", "MaxFeelsLikeTemperature", "MaxRelativeHumidity").collect(Collectors.toList());
@@ -139,12 +153,7 @@ public class WeatherForecastNormalizedServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherForecast.getId(), "None", properties, uoms, dataTypes);
 		
 		
-		return mindSphereGateway.createAsset(weatherForecast.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-	}
-		
-	private Boolean saveMindSphereAsset(Asset asset) {
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		Boolean result = mindSphereGateway.saveAsset(asset);
+		result = mindSphereGateway.saveAsset(weatherForecast.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
 		if(result)
 			logger.debug("WeatherForecastNormalized created");
 		else 		

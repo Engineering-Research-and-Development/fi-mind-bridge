@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
 
 import it.eng.fimind.model.fiware.transportation.TrafficFlowObserved;
 
@@ -22,6 +23,7 @@ public class TrafficFlowObservedServicesTest {
         TrafficFlowObserved trafficFlowObserved = objectMapper.readValue(jsonBody, TrafficFlowObserved.class);
         
         TrafficFlowObservedServices trafficFlowObservedServices = new TrafficFlowObservedServices();
-        trafficFlowObservedServices.createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved);
+        Asset asset = trafficFlowObservedServices.createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved);
+        System.out.println(asset);
     }
 }
