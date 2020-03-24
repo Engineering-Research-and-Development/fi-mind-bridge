@@ -92,8 +92,6 @@ public class DeviceServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		device.setId(device.getId().replaceAll("-","_"));
-
 		Location mindSphereLocation = null;
 		if(device.getLocation()!=null) {
 			if(device.getLocation().getType().equals("Point")) 
@@ -147,7 +145,7 @@ public class DeviceServices {
 			varDefDataTypes.add("String");
 		}
 		if(device.getName()!=null) {
-			keys.add("Name");
+			keys.add("DeviceName");
 			values.add(device.getName());
 			varDefDataTypes.add("String");
 		}
@@ -201,11 +199,6 @@ public class DeviceServices {
 			values.add(device.getRefDeviceModel());
 			varDefDataTypes.add("String");
 		}
-		if(device.getDateModified()!=null) {
-			keys.add("DateModified");
-			values.add(device.getDateModified());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(device.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add(device.getDateCreated());
@@ -219,16 +212,17 @@ public class DeviceServices {
 		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
-	
-		List<String> properties = Stream.of("ControlledAssets","IpAddress", "DateLastCalibration","BatteryLevel","Rssi","DeviceState", "DateLastValueReported").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless", "Dimensionless","Dimensionless", "ms","%/100","%/100", "Dimensionless", "ms", "Numeric").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String","String", "String","Double","Double","String", "String").collect(Collectors.toList());
-		for (int i=0; i<device.getControlledProperty().size(); i++) {
-			String property = device.getControlledProperty().get(i);
-			String uom = "Undefined";
-			properties.add(property);
-			uoms.add(uom);
-			dataTypes.add("Double");
+		
+		List<String> properties = Stream.of("ControlledAssets","IpAddress", "DateLastCalibration","BatteryLevel","Rssi","DeviceState", "DateLastValueReported", "DateModified").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "t","%/100","%/100", "Dimensionless", "t", "t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("String","String", "Timestamp","Double","Double","String", "Timestamp", "Timestamp").collect(Collectors.toList());
+		if(device.getControlledProperty()!=null) {
+			for (int i=0; i<device.getControlledProperty().size(); i++) {
+				String property = device.getControlledProperty().get(i);
+				properties.add(property);
+				uoms.add("na");
+				dataTypes.add("Double");
+			}
 		}
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), device.getDescription(), properties, uoms, dataTypes);
 		
@@ -261,7 +255,7 @@ public class DeviceServices {
 				timeseriesPoint.getFields().put("ControlledAssets", device.getControlledAsset().toString());
 			}
 			if(device.getIpAddress()!=null) {
-				timeseriesPoint.getFields().put("IpAddress", device.getIpAddress());
+				timeseriesPoint.getFields().put("IpAddress", device.getIpAddress().toString());
 			}
 			if(device.getDateLastCalibration()!=null) {
 				timeseriesPoint.getFields().put("DateLastCalibration", device.getDateLastCalibration());
@@ -278,7 +272,9 @@ public class DeviceServices {
 			if(device.getDateLastValueReported()!=null) {
 				timeseriesPoint.getFields().put("DateLastValueReported", device.getDateLastValueReported());
 			}
-			
+			if(device.getDateModified()!=null) {
+				timeseriesPoint.getFields().put("DateModified", device.getDateModified());
+			}	
 			if(device.getValue()!=null && device.getControlledProperty()!=null) {
 				Pattern pattern = Pattern.compile("[+-]?([0-9]*[.])?[0-9]+");
 				Matcher matcher = pattern.matcher(device.getValue());		

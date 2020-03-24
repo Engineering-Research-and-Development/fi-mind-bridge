@@ -88,9 +88,7 @@ public class WeatherObservedNormalizedServices {
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
-		
-		weatherObserved.setId(weatherObserved.getId().replaceAll("-","_"));
-		
+				
 		Location mindSphereLocation = null;
 		if(weatherObserved.getLocation()!=null) {
 			if(weatherObserved.getLocation().getValue().getType().equals("Point")) 
@@ -107,11 +105,6 @@ public class WeatherObservedNormalizedServices {
 			keys.add("DataProvider");
 			values.add((String) weatherObserved.getDataProvider().getValue());
 			varDefDataTypes.add("String");
-		}
-		if(weatherObserved.getDateModified()!=null) {
-			keys.add("DateModified");		
-			values.add((String) weatherObserved.getDateModified().getValue());
-			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherObserved.getDateCreated()!=null) {
 			keys.add("DateCreated");
@@ -147,9 +140,9 @@ public class WeatherObservedNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
-		List<String> properties = Stream.of("DateObserved","WeatherType", "DewPoint", "Visibility", "Temperature", "RelativeHumidity", "Precipitation", "WindDirection", "WindSpeed", "AtmosphericPressure", "PressureTendency", "SolarRadiation", "Illuminance", "StreamGauge", "SnowHeight").collect(Collectors.toList());
-		List<String> uoms = Stream.of("t", "Dimensionless", "c°", "Dimensionless", "c°", "%", "l/m2", "°", "m/s", "hPa", "Dimensionless", "W/m2", "lux", "cm", "cm").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("Timestamp","String", "Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "String", "Double", "Double", "Double", "Double").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateModified","DateObserved","WeatherType", "DewPoint", "Visibility", "Temperature", "RelativeHumidity", "Precipitation", "WindDirection", "WindSpeed", "AtmosphericPressure", "PressureTendency", "SolarRadiation", "Illuminance", "StreamGauge", "SnowHeight").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "t","Dimensionless", "c°", "Dimensionless", "c°", "%", "l/m2", "°", "m/s", "hPa", "Dimensionless", "W/m2", "lux", "cm", "cm").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "String", "Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherObserved.getId(), "None", properties, uoms, dataTypes);
 		
 		
@@ -177,6 +170,9 @@ public class WeatherObservedNormalizedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
+			if(weatherObserved.getDateModified()!=null) {
+				timeseriesPoint.getFields().put("DateModified",(String) weatherObserved.getDateModified().getValue());
+			}
 			if(weatherObserved.getDateObserved()!=null) {
 				timeseriesPoint.getFields().put("DateObserved",(String) weatherObserved.getDateObserved().getValue());
 			}
@@ -208,7 +204,7 @@ public class WeatherObservedNormalizedServices {
 				timeseriesPoint.getFields().put("AtmosphericPressure",(Double) weatherObserved.getAtmosphericPressure().getValue());
 			}
 			if(weatherObserved.getPressureTendency()!=null) {
-				timeseriesPoint.getFields().put("PressureTendency",(String) weatherObserved.getPressureTendency().getValue());
+				timeseriesPoint.getFields().put("PressureTendency",(Double) weatherObserved.getPressureTendency().getValue());
 			}
 			if(weatherObserved.getSolarRadiation()!=null) {
 				timeseriesPoint.getFields().put("SolarRadiation",(Double) weatherObserved.getSolarRadiation().getValue());

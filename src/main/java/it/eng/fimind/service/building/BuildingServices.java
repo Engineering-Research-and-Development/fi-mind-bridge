@@ -89,8 +89,6 @@ public class BuildingServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		building.setId(building.getId().replaceAll("-","_"));
-
 		Location mindSphereLocation = null;
 		if(building.getLocation()!=null) {
 			if(building.getLocation().getType().equals("Point")) 
@@ -111,12 +109,7 @@ public class BuildingServices {
 		if(building.getDataProvider()!=null) {
 			keys.add("DataProvider");
 			values.add(building.getDataProvider());
-			varDefDataTypes.add("Timestamp");
-		}
-		if(building.getDateModified()!=null) {
-			keys.add("DateModified");
-			values.add(building.getDateModified());
-			varDefDataTypes.add("Timestamp");
+			varDefDataTypes.add("String");
 		}
 		if(building.getDateCreated()!=null) {
 			keys.add("DateCreated");
@@ -157,9 +150,9 @@ public class BuildingServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = Stream.of("OpeningHours").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String").collect(Collectors.toList());
+		List<String> properties = Stream.of("DataModfiied", "OpeningHours").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), building.getDescription(), properties, uoms, dataTypes);
 		
 		
@@ -187,6 +180,9 @@ public class BuildingServices {
 			Timeseries timeseriesPoint = new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 			
+			if(building.getDateModified()!=null) {
+				timeseriesPoint.getFields().put("DateModified", (String) building.getDateModified());
+			}
 			if(building.getOpeningHours()!=null) {
 				timeseriesPoint.getFields().put("OpeningHours", building.getOpeningHours().toString());
 			}

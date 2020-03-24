@@ -88,8 +88,6 @@ public class BuildingOperationServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 	
-		buildingOperation.setId(buildingOperation.getId().replaceAll("-","_"));
-
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
@@ -105,12 +103,6 @@ public class BuildingOperationServices {
 			keys.add("DataProvider");
 			values.add(buildingOperation.getDataProvider());
 			varDefDataTypes.add("String");
-		}
-		if(buildingOperation.getDateModified()!=null)
-		{
-			keys.add("DateModified");
-			values.add(buildingOperation.getDateModified());
-			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getDateCreated()!=null)
 		{
@@ -155,14 +147,13 @@ public class BuildingOperationServices {
 			values.add(buildingOperation.getRefRelatedDeviceOperation().toString());
 			varDefDataTypes.add("String");
 		}
-		values.add(buildingOperation.getRefRelatedDeviceOperation().toString());
 		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = Stream.of("OperationType","Status","Result","DateStarted", "DateFinished").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless","Dimensionless","Dimensionless", "t", "t").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String", "String", "String", "Timestamp", "Timestamp").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateModified", "OperationType","Status","Result","DateStarted", "DateFinished").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "Dimensionless","Dimensionless","Dimensionless", "t", "t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "String", "String", "String", "Timestamp", "Timestamp").collect(Collectors.toList());
 		if(buildingOperation.getOperationSequence()!=null) {
 			for (int i=0; i<buildingOperation.getOperationSequence().size(); i++) {
 				String property = buildingOperation.getOperationSequence().get(i).split("=")[0];
@@ -199,6 +190,10 @@ public class BuildingOperationServices {
 			Timeseries timeseriesPoint = new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 			
+			if(buildingOperation.getDateModified()!=null)
+			{
+				timeseriesPoint.getFields().put("DateModified", (String) buildingOperation.getDateModified());
+			}
 			if(buildingOperation.getOperationType()!=null) {
 				timeseriesPoint.getFields().put("OperationType", buildingOperation.getOperationType());
 			}

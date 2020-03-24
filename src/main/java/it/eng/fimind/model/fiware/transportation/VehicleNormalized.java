@@ -20,7 +20,7 @@ public class VehicleNormalized {
 	@NotNull(message = "{vehicle.null.vehicleType}")
 	private Attribute vehicleType;
 	@NotNull(message = "{vehicle.null.category}")
-	private Attribute category;
+	private MultiAttribute category;
 	private LocationNormalized location;
 	private LocationNormalized previousLocation;
 	private Attribute speed;
@@ -87,10 +87,10 @@ public class VehicleNormalized {
 	public void setVehicleType(Attribute vehicleType) {
 		this.vehicleType = vehicleType;
 	}
-	public Attribute getCategory() {
+	public MultiAttribute getCategory() {
 		return category;
 	}
-	public void setCategory(Attribute category) {
+	public void setCategory(MultiAttribute category) {
 		this.category = category;
 	}
 	public LocationNormalized getLocation() {

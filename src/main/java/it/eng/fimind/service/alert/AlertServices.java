@@ -90,8 +90,6 @@ public class AlertServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		alert.setId(alert.getId().replaceAll("-","_"));
-
 		Location mindSphereLocation = null;
 		if(alert.getLocation()!=null) {
 			if(alert.getLocation().getType().equals("Point")) 

@@ -33,8 +33,7 @@ public class WeatherObserved {
 	private Double windDirection;
 	private Double windSpeed;
 	private Double atmosphericPressure;
-	@Pattern(message = "{weatherobserved.wrong.pressureTendency}", regexp = "raising|falling|steady", flags=Pattern.Flag.CASE_INSENSITIVE)
-	private String pressureTendency;
+	private Double pressureTendency;
 	private Double solarRadiation;
 	private Double illuminance;
 	private Double streamGauge;
@@ -166,10 +165,10 @@ public class WeatherObserved {
 	public void setAtmosphericPressure(Double atmosphericPressure) {
 		this.atmosphericPressure = atmosphericPressure;
 	}
-	public String getPressureTendency() {
+	public Double getPressureTendency() {
 		return pressureTendency;
 	}
-	public void setPressureTendency(String pressureTendency) {
+	public void setPressureTendency(Double pressureTendency) {
 		this.pressureTendency = pressureTendency;
 	}
 	public Double getSolarRadiation() {

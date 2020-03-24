@@ -89,8 +89,6 @@ public class AlertNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 
-		alert.setId(alert.getId().replace("-","_"));
-
 		Location mindSphereLocation = null;
 		if(alert.getLocation()!=null) {
 			if(alert.getLocation().getValue().getType().equals("Point")) 

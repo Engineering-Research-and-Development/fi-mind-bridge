@@ -22,8 +22,8 @@ public class Vehicle {
 						+"trolley|binTrolley|sweepingMachine|cleaningTrolley", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String vehicleType;
 	@NotNull(message = "{vehicle.null.category}")
-	@Pattern(message = "{vehicle.wrong.category}", regexp = "public|private|municipalServices|specialUsage|tracked|nonTracked", flags=Pattern.Flag.CASE_INSENSITIVE)
-	private String category;
+	//@Pattern(message = "{vehicle.wrong.category}", regexp = "public|private|municipalServices|specialUsage|tracked|nonTracked", flags=Pattern.Flag.CASE_INSENSITIVE)
+	private List<String> category;
 	private Location location;
 	private Location previousLocation;
 	private Double speed;
@@ -92,10 +92,10 @@ public class Vehicle {
 	public void setVehicleType(String vehicleType) {
 		this.vehicleType = vehicleType;
 	}
-	public String getCategory() {
+	public List<String> getCategory() {
 		return category;
 	}
-	public void setCategory(String category) {
+	public void setCategory(List<String> category) {
 		this.category = category;
 	}
 	public Location getLocation() {

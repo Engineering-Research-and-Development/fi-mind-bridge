@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -86,8 +88,6 @@ public class VehicleModelServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		vehicleModel.setId(vehicleModel.getId().replaceAll("-","_"));
-
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
@@ -103,7 +103,7 @@ public class VehicleModelServices {
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getName()!=null) {
-			keys.add("Name");
+			keys.add("VehicleModelName");
 			values.add(vehicleModel.getName());
 			varDefDataTypes.add("String");
 		}
@@ -135,7 +135,7 @@ public class VehicleModelServices {
 		if(vehicleModel.getCargoVolume()!=null) {
 			keys.add("CargoVolume");
 			values.add(vehicleModel.getCargoVolume().toString());
-			varDefDataTypes.add("Integer");
+			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getFuelType()!=null) {
 			keys.add("FuelType");
@@ -182,11 +182,6 @@ public class VehicleModelServices {
 			values.add(vehicleModel.getImage());
 			varDefDataTypes.add("String");
 		}
-		if(vehicleModel.getDateModified()!=null) {
-			keys.add("DateModified");
-			values.add(vehicleModel.getDateModified());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(vehicleModel.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add(vehicleModel.getDateCreated());
@@ -196,9 +191,9 @@ public class VehicleModelServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 
-		List<String> properties = new ArrayList<String>();
-		List<String> uoms = new ArrayList<String>();
-		List<String> dataTypes = new ArrayList<String>();
+		List<String> properties = Stream.of("DateModified").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), vehicleModel.getDescription(), properties, uoms, dataTypes);
 		
 		
@@ -226,8 +221,10 @@ public class VehicleModelServices {
 			Timeseries timeseriesPoint = new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
-			timeseriesPoint.getFields().put("FuelConsumption",vehicleModel.getFuelConsumption());
-
+			if(vehicleModel.getDateModified()!=null){
+				timeseriesPoint.getFields().put("DateModified",vehicleModel.getDateModified());
+			}
+			
 			timeSeriesList.add(timeseriesPoint);
 			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), vehicleModel.getId()+"AspectType", timeSeriesList);
 			logger.debug("VehicleModel updated");

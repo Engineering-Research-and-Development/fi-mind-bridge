@@ -90,8 +90,6 @@ public class TrafficFlowObservedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		trafficFlowObserved.setId(trafficFlowObserved.getId().replaceAll("-","_"));
-
 		Location mindSphereLocation = null;
 		if(trafficFlowObserved.getLocation()!=null) {
 			if(trafficFlowObserved.getLocation().getType().equals("Point")) 
@@ -129,11 +127,6 @@ public class TrafficFlowObservedServices {
 			values.add(trafficFlowObserved.getRefRoadSegment());
 			varDefDataTypes.add("String");
 		}
-		if(trafficFlowObserved.getDateModified()!=null) {
-			keys.add("DateModified");
-			values.add(trafficFlowObserved.getDateModified());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(trafficFlowObserved.getLaneId()!=null) {
 			keys.add("LaneId");
 			values.add(trafficFlowObserved.getLaneId().toString());
@@ -158,9 +151,9 @@ public class TrafficFlowObservedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
-		List<String> properties = Stream.of("DateObserved", "DateObservedFrom", "DateObservedTo", "Intensity","Occupancy", "AverageVehicleSpeed", "AverageVehicleLength", "Congested", "AverageHeadwayTime", "AverageGapDistance", "ReversedLane").collect(Collectors.toList());
-		List<String> uoms = Stream.of("t", "t", "t", "Dimensionless", "Dimensionless", "km/h", "m", "Dimensionless", "s", "m", "Dimensionless").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "Timestamp", "Integer", "Integer", "Double", "Double", "Boolean", "Double", "Double", "Boolean").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateModified", "DateObserved", "DateObservedFrom", "DateObservedTo", "Intensity","Occupancy", "AverageVehicleSpeed", "AverageVehicleLength", "Congested", "AverageHeadwayTime", "AverageGapDistance", "ReversedLane").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "t", "t", "t", "Dimensionless", "Dimensionless", "km/h", "m", "Dimensionless", "s", "m", "Dimensionless").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "String", "Timestamp", "Timestamp", "Integer", "Integer", "Double", "Double", "Boolean", "Double", "Double", "Boolean").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), trafficFlowObserved.getDescription(), properties, uoms, dataTypes);
 		
 		
@@ -188,6 +181,9 @@ public class TrafficFlowObservedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
+			if(trafficFlowObserved.getDateModified()!=null) {
+				timeseriesPoint.getFields().put("DateModified", trafficFlowObserved.getDateModified());
+			}
 			if(trafficFlowObserved.getDateObserved()!=null) {
 				timeseriesPoint.getFields().put("DateObserved", trafficFlowObserved.getDateObserved());
 			}

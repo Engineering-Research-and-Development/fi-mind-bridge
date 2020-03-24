@@ -1,5 +1,5 @@
 {
-    "id": "Spain-WeatherObserved-2422-2016-11-30T08:00:00",
+    "id": "fimind_weatherObserved",
     "type": "WeatherObserved",
     "address": {
         "addressLocality": "Valladolid",

@@ -1,5 +1,5 @@
 {
-    "id": "TrafficFlowObserved-Valladolid-osm-60821110",
+    "id": "fimind_trafficFlowObserver_NYCity",
     "type": "TrafficFlowObserved",
     "laneId": 1,
     "address": {

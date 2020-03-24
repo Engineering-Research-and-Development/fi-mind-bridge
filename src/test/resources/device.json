@@ -1,5 +1,5 @@
 {
-        "id": "device-9845A",
+        "id": "fimind_device_18A",
         "type": "Device",
         "category": ["sensor"],
         "controlledProperty": ["fillingLevel","temperature"],
@@ -16,4 +16,4 @@
         "deviceState": "ok",
         "dateFirstUsed": "2014-09-11T11:00:00Z",
         "owner": ["http://person.org/leon"]
-    }
+}

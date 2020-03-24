@@ -99,8 +99,6 @@ public class AssetAdministrationShellServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 
-		aas.setId(aas.getId().replace("-","_"));
-
 		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
 

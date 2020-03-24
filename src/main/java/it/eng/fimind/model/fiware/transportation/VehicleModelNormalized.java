@@ -9,7 +9,7 @@ public class VehicleModelNormalized {
 	@NotNull(message = "{vehicle.null.id}")
 	private String id;
 	@NotNull(message = "{vehicle.null.type}")
-	@Pattern(message = "{vehicle.wrong.type}", regexp = "Vehicle", flags=Pattern.Flag.CASE_INSENSITIVE)
+	@Pattern(message = "{vehicle.wrong.type}", regexp = "VehicleModel", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String type;
 	private Attribute source;
 	private Attribute dataProvider;

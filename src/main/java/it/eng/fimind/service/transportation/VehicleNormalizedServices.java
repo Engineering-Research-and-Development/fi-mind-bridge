@@ -89,8 +89,6 @@ public class VehicleNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		vehicle.setId(vehicle.getId().replaceAll("-","_"));
-
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
@@ -106,7 +104,7 @@ public class VehicleNormalizedServices {
 			varDefDataTypes.add("String");
 		}
 		if(vehicle.getName()!=null) {
-			keys.add("Name");
+			keys.add("VehicleName");
 			values.add((String) vehicle.getName().getValue());
 			varDefDataTypes.add("String");
 		}
@@ -117,7 +115,7 @@ public class VehicleNormalizedServices {
 		}
 		if(vehicle.getCategory()!=null) {
 			keys.add("Category");
-			values.add((String) vehicle.getCategory().getValue());
+			values.add((String) vehicle.getCategory().getValue().toString());
 			varDefDataTypes.add("String");
 		}
 		if(vehicle.getVehicleIdentificationNumber()!=null) {
@@ -190,11 +188,6 @@ public class VehicleNormalizedServices {
 			values.add((String) vehicle.getAreaServed().getValue());
 			varDefDataTypes.add("String");
 		}
-		if(vehicle.getDateModified()!=null) {
-			keys.add("DateModified");
-			values.add((String) vehicle.getDateModified().getValue());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(vehicle.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add((String) vehicle.getDateCreated().getValue());
@@ -204,9 +197,9 @@ public class VehicleNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 
-		List<String> properties = Stream.of("Location", "PreviousLocation", "Speed", "Heading", "MileageFromOdometer","ServiceStatus").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Coordinates","Coordinates","km/h", "°", "km","Dimensionless").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String","String","Double","Double","Double", "String").collect(Collectors.toList());
+		List<String> properties = Stream.of("Location", "PreviousLocation", "Speed", "Heading", "MileageFromOdometer","ServiceStatus", "DateModfied").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Coordinates","Coordinates","km/h", "°", "km","Dimensionless", "t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("String","String","Double","Double","Double", "String", "Timestamp").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), (String) vehicle.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
@@ -253,6 +246,9 @@ public class VehicleNormalizedServices {
 			}
 			if(vehicle.getServiceStatus()!=null) {
 				timeseriesPoint.getFields().put("ServiceStatus",(String) vehicle.getServiceStatus().getValue());
+			}
+			if(vehicle.getDateModified()!=null) {
+				timeseriesPoint.getFields().put("DateModified", vehicle.getDateModified());
 			}
 			
 			timeSeriesList.add(timeseriesPoint);

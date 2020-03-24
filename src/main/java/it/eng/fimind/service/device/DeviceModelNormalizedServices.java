@@ -1,7 +1,12 @@
 package it.eng.fimind.service.device;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -19,6 +24,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.AspectType;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
+import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.fiware.device.DeviceModelNormalized;
 import it.eng.fimind.util.MindSphereGateway;
@@ -53,7 +59,9 @@ public class DeviceModelNormalizedServices {
 			Boolean result = false;
 			if(!deviceModelDoesAlreadyExist(deviceModel)) 
 				result = createMindSphereAssetFromDeviceModel(deviceModel, false);
-						
+			
+			result = createMindSphereTimeSeriesFromDeviceModel(deviceModel);		
+			
 			if(result) {
 				serviceResult.setResult("DeviceModelNormalized added succesfully");
 				return Response.status(201).entity(serviceResult).build();
@@ -78,8 +86,6 @@ public class DeviceModelNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		deviceModel.setId(deviceModel.getId().replaceAll("-","_"));
-
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
@@ -140,7 +146,7 @@ public class DeviceModelNormalizedServices {
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getName()!=null) {
-			keys.add("Name");
+			keys.add("DeviceModelName");
 			values.add((String)deviceModel.getName().getValue());
 			varDefDataTypes.add("String");
 		}
@@ -154,11 +160,6 @@ public class DeviceModelNormalizedServices {
 			values.add((String)deviceModel.getImage().getValue());
 			varDefDataTypes.add("String");
 		}
-		if(deviceModel.getDateModified()!=null) {
-			keys.add("DateModified");
-			values.add((String)deviceModel.getDateModified().getValue());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(deviceModel.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add((String) deviceModel.getDateCreated().getValue());
@@ -168,9 +169,9 @@ public class DeviceModelNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = new ArrayList<String>();
-		List<String> uoms = new ArrayList<String>();
-		List<String> dataTypes = new ArrayList<String>();
+		List<String> properties = Stream.of("DateModified").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp").collect(Collectors.toList());
 		if(deviceModel.getControlledProperty()!=null) {
 			for (int i=0; i<deviceModel.getControlledProperty().getValue().size(); i++) {
 				String property = (String) deviceModel.getControlledProperty().getValue().get(i);
@@ -195,5 +196,31 @@ public class DeviceModelNormalizedServices {
 		}
 		return result;
 	}
+	
+	public boolean createMindSphereTimeSeriesFromDeviceModel(DeviceModelNormalized deviceModel) {
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+deviceModel.getId()+"Asset\"}");
+		try {
+			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
+			Date now = new Date();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+			String instant = df.format(now);
+			Timeseries timeseriesPoint = new Timeseries();
+			timeseriesPoint.getFields().put("_time", instant);
+			
+			if(deviceModel.getDateModified()!=null) {
+				timeseriesPoint.getFields().put("DateModified", (String) deviceModel.getDateModified().getValue());
+			}
+			
+			timeSeriesList.add(timeseriesPoint);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), deviceModel.getId()+"AspectType", timeSeriesList);
+			logger.debug("DeviceModel updated");
+		} catch (Exception e) {
+			// Exception handling
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}	
 
 }

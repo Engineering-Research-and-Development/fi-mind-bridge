@@ -89,8 +89,6 @@ public class WeatherForecastNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
-		weatherForecast.setId(weatherForecast.getId().replaceAll("-","_"));
-
 		Location mindSphereLocation = null;
 		if(weatherForecast.getLocation()!=null) {
 			if(weatherForecast.getLocation().getValue().getType().equals("Point")) 
@@ -107,11 +105,6 @@ public class WeatherForecastNormalizedServices {
 			keys.add("DataProvider");
 			values.add((String) weatherForecast.getDataProvider().getValue());
 			varDefDataTypes.add("String");
-		}
-		if(weatherForecast.getDateModified()!=null) {
-			keys.add("DateModified");		
-			values.add((String) weatherForecast.getDateModified().getValue());
-			varDefDataTypes.add("Timestamp");
 		}
 		if(weatherForecast.getDateCreated()!=null) {
 			keys.add("DateCreated");
@@ -152,9 +145,9 @@ public class WeatherForecastNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 		
 		
-		List<String> properties = Stream.of("DateRetrieved", "DateIssued", "Validity", "ValidFrom", "ValidTo", "WeatherType", "Visibility", "Temperature", "FeelsLikeTemperature", "RelativeHumidity", "PrecipitationProbability", "WindDirection", "WindSpeed", "MinTemperature", "MinFeelsLikeTemperature", "MinRelativeHumidity", "MaxTemperature", "MaxFeelsLikeTemperature", "MaxRelativeHumidity").collect(Collectors.toList());
-		List<String> uoms = Stream.of("t", "t", "t", "t", "t", "Dimensionless", "Dimensionless", "c°", "c°", "%", "%/100", "°", "m/s", "c°", "c°", "%", "c°", "c°", "%").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "Timestamp", "Timestamp", "Timestamp", "String", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateModified", "DateRetrieved", "DateIssued", "Validity", "ValidFrom", "ValidTo", "WeatherType", "Visibility", "Temperature", "FeelsLikeTemperature", "RelativeHumidity", "PrecipitationProbability", "WindDirection", "WindSpeed", "MinTemperature", "MinFeelsLikeTemperature", "MinRelativeHumidity", "MaxTemperature", "MaxFeelsLikeTemperature", "MaxRelativeHumidity").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "t", "t", "t", "t", "t", "Dimensionless", "Dimensionless", "c°", "c°", "%", "%/100", "°", "m/s", "c°", "c°", "%", "c°", "c°", "%").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "Timestamp", "String", "Timestamp", "Timestamp", "String", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherForecast.getId(), "None", properties, uoms, dataTypes);
 		
 		
@@ -182,6 +175,9 @@ public class WeatherForecastNormalizedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
+			if(weatherForecast.getDateModified()!=null) {
+				timeseriesPoint.getFields().put("DateModified",(String) weatherForecast.getDateModified().getValue());
+			}
 			if(weatherForecast.getDateRetrieved()!=null) {
 				timeseriesPoint.getFields().put("DateRetrieved",(String) weatherForecast.getDateRetrieved().getValue());
 			}

@@ -32,7 +32,6 @@ public class WeatherObservedNormalized {
 	private Attribute windDirection;
 	private Attribute windSpeed;
 	private Attribute atmosphericPressure;
-	@Pattern(message = "{weatherobserved.wrong.pressureTendency}", regexp = "raising|falling|steady", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private Attribute pressureTendency;
 	private Attribute solarRadiation;
 	private Attribute illuminance;

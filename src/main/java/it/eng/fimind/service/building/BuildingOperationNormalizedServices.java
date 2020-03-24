@@ -87,8 +87,6 @@ public class BuildingOperationNormalizedServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 	
-		buildingOperation.setId(buildingOperation.getId().replaceAll("-","_"));
-
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
@@ -104,12 +102,6 @@ public class BuildingOperationNormalizedServices {
 			keys.add("DataProvider");
 			values.add((String) buildingOperation.getDataProvider().getValue());
 			varDefDataTypes.add("String");
-		}
-		if(buildingOperation.getDateModified()!=null)
-		{
-			keys.add("DateModified");
-			values.add((String) buildingOperation.getDateModified().getValue());
-			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getDateCreated()!=null)
 		{
@@ -158,9 +150,9 @@ public class BuildingOperationNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 		
 	
-		List<String> properties = Stream.of("OperationType","Status","Result","DateStarted", "DateFinished").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless","Dimensionless","Dimensionless", "t", "t").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String", "String", "String", "Timestamp", "Timestamp").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateModified", "OperationType","Status","Result","DateStarted", "DateFinished").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "Dimensionless","Dimensionless","Dimensionless", "t", "t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "String", "String", "String", "Timestamp", "Timestamp").collect(Collectors.toList());
 		if(buildingOperation.getOperationSequence()!=null) {
 			for (int i=0; i<buildingOperation.getOperationSequence().getValue().size(); i++) {
 				String property = buildingOperation.getOperationSequence().getValue().get(i).toString().split("=")[0];
@@ -197,6 +189,10 @@ public class BuildingOperationNormalizedServices {
 			Timeseries timeseriesPoint = new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 			
+			if(buildingOperation.getDateModified()!=null)
+			{
+				timeseriesPoint.getFields().put("DateModified", (String) buildingOperation.getDateModified().getValue());
+			}
 			if(buildingOperation.getOperationType()!=null) {
 				timeseriesPoint.getFields().put("OperationType", (String) buildingOperation.getOperationType().getValue());
 			}
