@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -48,19 +49,34 @@ public class AlertServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid Alert alert) { 
+	public Response createDataInJSON(@HeaderParam("Debug-mode") String debugMode, @Valid Alert alert) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+alert.getId());
 		
-		if(!alertDoesAlreadyExist(alert)) 
-			createMindSphereAssetFromAlert(alert);
-		
-		createMindSphereTimeSeriesFromAlert(alert);
-		
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- Alert ---");
+			createMindSphereAssetFromAlert(alert, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!alertDoesAlreadyExist(alert)) 
+				result = createMindSphereAssetFromAlert(alert, false);
+			
+			result = createMindSphereTimeSeriesFromAlert(alert);
+			
+			if(result) {
+				serviceResult.setResult("Alert added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
 
+	
 	private Boolean alertDoesAlreadyExist(Alert alert)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -68,7 +84,7 @@ public class AlertServices {
 		return assets.size()>0;
 	}
 	
-	public Boolean createMindSphereAssetFromAlert(Alert alert) {
+	public Boolean createMindSphereAssetFromAlert(Alert alert, Boolean isDebugMode) {
 		Boolean result = false;
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -108,11 +124,6 @@ public class AlertServices {
 			values.add(alert.getSubCategory());
 			varDefDataTypes.add("String");
 		}
-		if(alert.getDateIssued()!=null) {
-			keys.add("DateIssued");
-			values.add(alert.getDateIssued());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(alert.getValidFrom()!=null) {
 			keys.add("ValidFrom");
 			values.add(alert.getValidFrom());
@@ -130,24 +141,29 @@ public class AlertServices {
 		}
 		if(alert.getData()!=null) {
 			keys.add("Data");
-			values.add(alert.getData());
+			values.add(alert.getData().toString());
 			varDefDataTypes.add("String");
 		}
 		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
-		List<String> properties = Stream.of("Severity").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateIssued", "Severity").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), alert.getDescription(), properties, uoms, dataTypes);
 		
 		
-		result = mindSphereGateway.saveAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-		if(result)
-			logger.debug("Alert created");
-		else 		
-			logger.error("Alert couldn't be created");
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result = mindSphereGateway.saveAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("Alert created");
+			else 		
+				logger.error("Alert couldn't be created");
+		}
 		return result;
 	}
 	
@@ -163,6 +179,9 @@ public class AlertServices {
 			Timeseries timeseriesPoint = new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 			
+			if(alert.getDateIssued()!=null) {
+				timeseriesPoint.getFields().put("DateIssued", alert.getDateIssued());
+			}
 			if(alert.getSeverity()!=null) {
 				timeseriesPoint.getFields().put("Severity", alert.getSeverity());
 			}

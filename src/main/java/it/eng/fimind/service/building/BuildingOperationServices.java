@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -46,19 +47,34 @@ public class BuildingOperationServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid BuildingOperation buildingOperation) { 
+	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid BuildingOperation buildingOperation) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+buildingOperation.getId());
 		
-		if(!buildingOperationDoesAlreadyExist(buildingOperation)) 
-			createMindSphereAssetFromBuildingOperation(buildingOperation);
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- BuildingOperation ---");
+			createMindSphereAssetFromBuildingOperation(buildingOperation, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!buildingOperationDoesAlreadyExist(buildingOperation)) 
+				result = createMindSphereAssetFromBuildingOperation(buildingOperation, false);
 			
-		createMindSphereTimeSeriesFromBuildingOperation(buildingOperation);
-		
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+			result = createMindSphereTimeSeriesFromBuildingOperation(buildingOperation);
+			
+			if(result) {
+				serviceResult.setResult("BuildingOperation added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
-
+	
+	
 	private Boolean buildingOperationDoesAlreadyExist(BuildingOperation buildingOperation)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -66,7 +82,7 @@ public class BuildingOperationServices {
 		return assets.size()>0;
 	}
 	
-	public Boolean createMindSphereAssetFromBuildingOperation(BuildingOperation buildingOperation) {
+	public Boolean createMindSphereAssetFromBuildingOperation(BuildingOperation buildingOperation, Boolean isDebugMode) {
 		Boolean result = false;
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -133,18 +149,6 @@ public class BuildingOperationServices {
 			values.add(buildingOperation.getEndDate());
 			varDefDataTypes.add("Timestamp");
 		}
-		if(buildingOperation.getDateStarted()!=null)
-		{
-			keys.add("DateStarted");
-			values.add(buildingOperation.getDateStarted());
-			varDefDataTypes.add("Timestamp");
-		}
-		if(buildingOperation.getDateFinished()!=null)
-		{
-			keys.add("DateFinished");
-			values.add(buildingOperation.getDateFinished());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(buildingOperation.getRefRelatedDeviceOperation()!=null)
 		{	
 			keys.add("RefRelatedDeviceOperation");
@@ -156,9 +160,9 @@ public class BuildingOperationServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = Stream.of("OperationType","Status","Result").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless","Dimensionless","Dimensionless").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String", "String", "String").collect(Collectors.toList());
+		List<String> properties = Stream.of("OperationType","Status","Result","DateStarted", "DateFinished").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Dimensionless","Dimensionless","Dimensionless", "t", "t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("String", "String", "String", "Timestamp", "Timestamp").collect(Collectors.toList());
 		if(buildingOperation.getOperationSequence()!=null) {
 			for (int i=0; i<buildingOperation.getOperationSequence().size(); i++) {
 				String property = buildingOperation.getOperationSequence().get(i).split("=")[0];
@@ -171,11 +175,16 @@ public class BuildingOperationServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), buildingOperation.getDescription(), properties, uoms, dataTypes);
 		
 		
-		result = mindSphereGateway.saveAsset(buildingOperation.getId(), assetVariablesDefinitions, assetVariables, aspectType);
-		if(result)
-			logger.debug("Building created");
-		else 		
-			logger.error("Building couldn't be created");
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(buildingOperation.getId(), assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result = mindSphereGateway.saveAsset(buildingOperation.getId(), assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("BuildingOperation created");
+			else 		
+				logger.error("BuildingOperation couldn't be created");
+		}
 		return result;
 	}
 	
@@ -198,6 +207,14 @@ public class BuildingOperationServices {
 			}
 			if(buildingOperation.getResult()!=null) {
 				timeseriesPoint.getFields().put("Result", buildingOperation.getResult());
+			}
+			if(buildingOperation.getDateStarted()!=null)
+			{
+				timeseriesPoint.getFields().put("DateStarted", buildingOperation.getDateStarted());
+			}
+			if(buildingOperation.getDateFinished()!=null)
+			{
+				timeseriesPoint.getFields().put("DateFinished", buildingOperation.getDateFinished());
 			}
 			if(buildingOperation.getOperationSequence()!=null) {
 				for (int i=0; i<buildingOperation.getOperationSequence().size(); i++) {

@@ -87,6 +87,8 @@ public class MindSphereMapper {
 			var.setName(keys.get(i));	
 			if(dataTypes.get(i).equalsIgnoreCase("Timestamp")) {
 				String timestamp = values.get(i);
+				System.out.println(timestamp);
+				System.out.println(timestamp.split("\\.")[0].concat("Z"));
 				if(!timestamp.contains("\\."))
 					var.setValue(timestamp);
 				else

@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
-
-import it.eng.fimind.model.fiware.weather.WeatherObserved;
+import it.eng.fimind.util.HttpRequests;
 
 public class WeatherObservedServicesTest {
     public static void main(String[] args) throws IOException {
@@ -19,11 +16,7 @@ public class WeatherObservedServicesTest {
 
         String jsonBody = new String(Files.readAllBytes(file.toPath()));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        WeatherObserved weatherObserved = objectMapper.readValue(jsonBody, WeatherObserved.class);
-        
-        WeatherObservedServices weatherObservedServices = new WeatherObservedServices();
-        Asset asset = weatherObservedServices.createMindSphereAssetFromWeatherObserved(weatherObserved);
-        System.out.println(asset);
+        HttpRequests httpReq = new HttpRequests();
+        httpReq.sendPOST("http://localhost:8080/fimind/webapi/weatherObserved", jsonBody);
     }
 }

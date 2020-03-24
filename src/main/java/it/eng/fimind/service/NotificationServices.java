@@ -78,7 +78,7 @@ public class NotificationServices {
 					alertNotified = mapper.readValue( mapper.writeValueAsString(entity), AlertNormalized.class);
 					
 					AlertNormalizedServices alertNormalizedServices = new AlertNormalizedServices();		
-					alertNormalizedServices.createDataInJSON(alertNotified);				 
+					alertNormalizedServices.createDataInJSON(null, alertNotified);				 
 				}
 				if (entity.getType().equalsIgnoreCase("AssetAdministrationShell")){
 					logger.debug("AssetAdministrationShell");
@@ -88,7 +88,7 @@ public class NotificationServices {
 					aasNotified = mapper.readValue( mapper.writeValueAsString(entity), AssetAdministrationShell.class);
 					
 					AssetAdministrationShellServices assetAdministrationShellServices = new AssetAdministrationShellServices();		
-					assetAdministrationShellServices.createDataInJSON(aasNotified);				 
+					assetAdministrationShellServices.createDataInJSON(null,aasNotified);				 
 				}
 				if (entity.getType().equalsIgnoreCase("Building")){
 					logger.debug("Building");
@@ -98,7 +98,7 @@ public class NotificationServices {
 					buildingNotified = mapper.readValue( mapper.writeValueAsString(entity), BuildingNormalized.class);
 					
 					BuildingNormalizedServices buildingNormalizedServices = new BuildingNormalizedServices();		
-					buildingNormalizedServices.createDataInJSON(buildingNotified);				 
+					buildingNormalizedServices.createDataInJSON(null, buildingNotified);				 
 				}
 				if (entity.getType().equalsIgnoreCase("BuildingOperation")){
 					logger.debug("BuildingOperation");
@@ -108,7 +108,7 @@ public class NotificationServices {
 					buildingOperationNormalized = mapper.readValue( mapper.writeValueAsString(entity), BuildingOperationNormalized.class);
 					
 					BuildingOperationNormalizedServices buildingOperationNormalizedServices = new BuildingOperationNormalizedServices();		
-					buildingOperationNormalizedServices.createDataInJSON(buildingOperationNormalized);				 
+					buildingOperationNormalizedServices.createDataInJSON(null, buildingOperationNormalized);				 
 				}
 				if (entity.getType().equalsIgnoreCase("Device")){
 					logger.debug("Device");
@@ -133,7 +133,7 @@ public class NotificationServices {
 					
 					deviceNotified.getValue().setMetadata(mt);
 					deviceNotified.getValue().setValue(resultVal);	
-			        deviceNormalizedServices.createDataInJSON(deviceNotified);				 
+			        deviceNormalizedServices.createDataInJSON(null, deviceNotified);				 
 				}
 				if (entity.getType().equalsIgnoreCase("DeviceModel")) {
 					logger.debug("DeviceModel");
@@ -144,7 +144,7 @@ public class NotificationServices {
 				    deviceModelNotified = mapper.readValue( mapper.writeValueAsString(entity), DeviceModelNormalized.class);
 					
 					DeviceModelNormalizedServices deviceModelNormalizedServices = new DeviceModelNormalizedServices();
-					deviceModelNormalizedServices.createDataInJSON(deviceModelNotified);
+					deviceModelNormalizedServices.createDataInJSON(null, deviceModelNotified);
 				}
 				if (entity.getType().equalsIgnoreCase("TrafficFlowObserved")) {
 					logger.debug("TrafficFlowObserved");
@@ -155,7 +155,7 @@ public class NotificationServices {
 				    trafficFlowObservedNotified = mapper.readValue( mapper.writeValueAsString(entity), TrafficFlowObservedNormalized.class);
 					
 				    TrafficFlowObservedNormalizedServices trafficFlowObservedNormalizedServices = new TrafficFlowObservedNormalizedServices();
-				    trafficFlowObservedNormalizedServices.createDataInJSON(trafficFlowObservedNotified);
+				    trafficFlowObservedNormalizedServices.createDataInJSON(null, trafficFlowObservedNotified);
 				}
 				if (entity.getType().equalsIgnoreCase("Vehicle")) {
 					logger.debug("Vehicle");
@@ -166,7 +166,7 @@ public class NotificationServices {
 				    vehicleNotified = mapper.readValue( mapper.writeValueAsString(entity), VehicleNormalized.class);
 					
 				    VehicleNormalizedServices vehicleNormalizedServices = new VehicleNormalizedServices();
-				    vehicleNormalizedServices.createDataInJSON(vehicleNotified);				
+				    vehicleNormalizedServices.createDataInJSON(null, vehicleNotified);				
 				}
 				if (entity.getType().equalsIgnoreCase("VehicleModel")) {
 					logger.debug("VehicleModel");
@@ -177,7 +177,7 @@ public class NotificationServices {
 				    vehicleModelNotified = mapper.readValue( mapper.writeValueAsString(entity), VehicleModelNormalized.class);
 					
 				    VehicleModelNormalizedServices vehicleModelNormalizedServices = new VehicleModelNormalizedServices();
-				    vehicleModelNormalizedServices.createDataInJSON(vehicleModelNotified);				
+				    vehicleModelNormalizedServices.createDataInJSON(null, vehicleModelNotified);				
 				}
 				if (entity.getType().equalsIgnoreCase("WeatherForecast")) {
 					logger.debug("WeatherForecast");
@@ -188,7 +188,7 @@ public class NotificationServices {
 				    weatherForecastNotified = mapper.readValue( mapper.writeValueAsString(entity), WeatherForecastNormalized.class);
 					
 				    WeatherForecastNormalizedServices weatherForecastNormalizedServices = new WeatherForecastNormalizedServices();
-				    weatherForecastNormalizedServices.createDataInJSON(weatherForecastNotified);				
+				    weatherForecastNormalizedServices.createDataInJSON(null, weatherForecastNotified);				
 				}
 				if (entity.getType().equalsIgnoreCase("WeatherObserved")) {
 					logger.debug("WeatherObserved");
@@ -199,7 +199,7 @@ public class NotificationServices {
 				    weatherObservedNotified = mapper.readValue( mapper.writeValueAsString(entity), WeatherObservedNormalized.class);
 					
 				    WeatherObservedNormalizedServices weatherObservedNormalizedServices = new WeatherObservedNormalizedServices();
-				    weatherObservedNormalizedServices.createDataInJSON(weatherObservedNotified);				
+				    weatherObservedNormalizedServices.createDataInJSON(null, weatherObservedNotified);				
 				}
 			}
 		}catch (Exception e) {

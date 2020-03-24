@@ -9,6 +9,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -48,17 +49,31 @@ public class AssetAdministrationShellServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid AssetAdministrationShell aas) { 
+	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid AssetAdministrationShell aas) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+aas.getId());
 		
-		if(!aasDoesAlreadyExist(aas)) 
-			createMindSphereAssetFromAAS(aas);
-		
-		createMindSphereTimeSeriesFromAAS(aas);
-		
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- AssetAdministrationShell ---");
+			createMindSphereAssetFromAAS(aas, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!aasDoesAlreadyExist(aas)) 
+				result = createMindSphereAssetFromAAS(aas, false);
+			
+			result = createMindSphereTimeSeriesFromAAS(aas);
+			
+			if(result) {
+				serviceResult.setResult("AssetAdministrationShell added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
 	
 	@SuppressWarnings("unused")
@@ -77,7 +92,7 @@ public class AssetAdministrationShellServices {
 		return assets.size()>0;
 	}
 	
-	public Boolean createMindSphereAssetFromAAS(AssetAdministrationShell aas) 
+	public Boolean createMindSphereAssetFromAAS(AssetAdministrationShell aas, Boolean isDebugMode) 
 	{	
 		Boolean result = false;
 
@@ -104,15 +119,18 @@ public class AssetAdministrationShellServices {
 			}
 		}
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(aas.getId(), "None", properties, uoms, dataTypes);
-
-		result = mindSphereGateway.saveAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType);
-			
-		if(result)
-			logger.debug("AssetAdministrationShell created");
-		else 		
-			logger.error("AssetAdministrationShell couldn't be created");
 		
-		return result;	
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result = mindSphereGateway.saveAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("AssetAdministrationShell created");
+			else 		
+				logger.error("AssetAdministrationShell couldn't be created");
+		}
+		return result;
 	}
 	
 	public boolean createMindSphereTimeSeriesFromAAS(AssetAdministrationShell aas) {

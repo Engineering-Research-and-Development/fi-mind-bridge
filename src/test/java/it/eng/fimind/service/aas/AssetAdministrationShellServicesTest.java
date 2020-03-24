@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
-
-import it.eng.fimind.model.zvei.aas.AssetAdministrationShell;
+import it.eng.fimind.util.HttpRequests;
 
 public class AssetAdministrationShellServicesTest {
     public static void main(String[] args) throws IOException {
@@ -19,11 +16,8 @@ public class AssetAdministrationShellServicesTest {
 
         String jsonBody = new String(Files.readAllBytes(file.toPath()));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        AssetAdministrationShell aas = objectMapper.readValue(jsonBody, AssetAdministrationShell.class);
+        HttpRequests httpReq = new HttpRequests();
+        httpReq.sendPOST("http://localhost:8080/fimind/webapi/aas", jsonBody);
         
-        AssetAdministrationShellServices assetAdministrationShellServices = new AssetAdministrationShellServices();
-        Asset asset = assetAdministrationShellServices.createMindSphereAssetFromAAS(aas);
-        System.out.println(asset);
     }
 }

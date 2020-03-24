@@ -15,6 +15,7 @@ public class HttpRequests {
 		con.setRequestProperty("User-Agent", "Mozilla/5.0");
 		con.setRequestProperty("Content-Type", "application/json; utf-8");
 		con.setRequestProperty("Accept", "application/json");
+		con.setRequestProperty("Debug-mode", "true");
 		con.setDoOutput(true);
 		
 		// For POST only - START

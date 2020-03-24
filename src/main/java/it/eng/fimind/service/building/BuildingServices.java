@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -47,19 +48,34 @@ public class BuildingServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid Building building) { 
+	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid Building building) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+building.getId());
 		
-		if(!buildingDoesAlreadyExist(building)) 
-			createMindSphereAssetFromBuilding(building);
-		
-		createMindSphereTimeSeriesFromBuilding(building);
-		
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- Building ---");
+			createMindSphereAssetFromBuilding(building, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!buildingDoesAlreadyExist(building)) 
+				result = createMindSphereAssetFromBuilding(building, false);
+			
+			result = createMindSphereTimeSeriesFromBuilding(building);
+			
+			if(result) {
+				serviceResult.setResult("Building added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
-
+	
+	
 	private Boolean buildingDoesAlreadyExist(Building building)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -67,7 +83,7 @@ public class BuildingServices {
 		return assets.size()>0;
 	}
 	
-	public Boolean createMindSphereAssetFromBuilding(Building building) {
+	public Boolean createMindSphereAssetFromBuilding(Building building, Boolean isDebugMode) {
 		Boolean result = false;
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -147,14 +163,17 @@ public class BuildingServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), building.getDescription(), properties, uoms, dataTypes);
 		
 		
-		result =  mindSphereGateway.saveAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-			
-		if(result)
-			logger.debug("Building created");
-		else 		
-			logger.error("Building couldn't be created");
-		
-		return result;
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result =  mindSphereGateway.saveAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("Building created");
+			else 		
+				logger.error("Building couldn't be created");
+		}
+		return result;	
 	}
 	
 	public boolean createMindSphereTimeSeriesFromBuilding(Building building) {

@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -46,17 +47,31 @@ public class DeviceNormalizedServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid DeviceNormalized device) { 
-		ServiceResult serviceResult=new ServiceResult();
+	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid DeviceNormalized device) { 
+		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+device.getId());
 		
-		if(!deviceDoesAlreadyExist(device)) 
-			createMindSphereAssetFromDevice(device);
-		
-		createMindSphereTimeSeriesFromDevice(device);
-		
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- DeviceNormalized ---");
+			createMindSphereAssetFromDevice(device, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!deviceDoesAlreadyExist(device)) 
+				result = createMindSphereAssetFromDevice(device, false);
+			
+			result = createMindSphereTimeSeriesFromDevice(device);
+			
+			if(result) {
+				serviceResult.setResult("DeviceNormalized added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
 	
 	private Boolean deviceDoesAlreadyExist(DeviceNormalized device)
@@ -66,7 +81,7 @@ public class DeviceNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Boolean createMindSphereAssetFromDevice(DeviceNormalized device) {
+	private Boolean createMindSphereAssetFromDevice(DeviceNormalized device, Boolean isDebugMode) {
 		Boolean result = false;
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -213,11 +228,16 @@ public class DeviceNormalizedServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), (String) device.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		result =  mindSphereGateway.saveAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);		
-		if(result)
-			logger.debug("DeviceNormalized created");
-		else 		
-			logger.error("DeviceNormalized couldn't be created");
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result =  mindSphereGateway.saveAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("DeviceNormalized created");
+			else 		
+				logger.error("DeviceNormalized couldn't be created");
+		}
 		return result;
 	}
 	

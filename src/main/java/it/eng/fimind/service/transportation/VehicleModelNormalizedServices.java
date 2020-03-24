@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,15 +41,29 @@ public class VehicleModelNormalizedServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid VehicleModelNormalized vehicleModel) { 
+	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid VehicleModelNormalized vehicleModel) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+vehicleModel.getId());
 		
-		if(!vehicleModelDoesAlreadyExist(vehicleModel)) 
-			createMindSphereAssetFromVehicleModel(vehicleModel);
-				
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- VehicleModelNormalized ---");
+			createMindSphereAssetFromVehicleModel(vehicleModel, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!vehicleModelDoesAlreadyExist(vehicleModel)) 
+				result = createMindSphereAssetFromVehicleModel(vehicleModel, false);
+						
+			if(result) {
+				serviceResult.setResult("VehicleModelNormalized added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
 
 	
@@ -59,7 +74,7 @@ public class VehicleModelNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Boolean createMindSphereAssetFromVehicleModel(VehicleModelNormalized vehicleModel) {
+	private Boolean createMindSphereAssetFromVehicleModel(VehicleModelNormalized vehicleModel, Boolean isDebugMode) {
 		Boolean result = false;
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -181,11 +196,16 @@ public class VehicleModelNormalizedServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), (String) vehicleModel.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		result = mindSphereGateway.saveAsset(vehicleModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
-		if(result)
-			logger.debug("VehicleModelNormalized created");
-		else 		
-			logger.error("VehicleModelNormalized couldn't be created");
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(vehicleModel.getId(), assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result = mindSphereGateway.saveAsset(vehicleModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("VehicleModelNormalized created");
+			else 		
+				logger.error("VehicleModelNormalized couldn't be created");
+		}
 		return result;
 	}
 	

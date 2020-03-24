@@ -34,7 +34,7 @@ public class Alert {
 	private String description;
 	@NotNull(message = "{alert.null.alertSource}")
 	private String alertSource;
-	private String data;
+	private Object data;
 	@Pattern(message = "{alert.wrong.severity}", regexp = "informational|low|medium|high|critical", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String severity;
 	
@@ -116,10 +116,10 @@ public class Alert {
 	public void setAlertSource(String alertSource) {
 		this.alertSource = alertSource;
 	}
-	public String getData() {
+	public Object getData() {
 		return data;
 	}
-	public void setData(String data) {
+	public void setData(Object data) {
 		this.data = data;
 	}
 	public String getSeverity() {

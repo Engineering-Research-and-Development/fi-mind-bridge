@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -47,18 +48,31 @@ public class WeatherObservedServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid WeatherObserved weatherObserved) { 
+	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid WeatherObserved weatherObserved) { 
 		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+weatherObserved.getId());
 		
-		if(!weatherObservedDoesAlreadyExist(weatherObserved))
-			createMindSphereAssetFromWeatherObserved(weatherObserved);
-		
-		
-		createMindSphereTimeSeriesFromWeatherObserved(weatherObserved);
-		
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- WeatherObserved ---");
+			createMindSphereAssetFromWeatherObserved(weatherObserved, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!weatherObservedDoesAlreadyExist(weatherObserved)) 
+				result = createMindSphereAssetFromWeatherObserved(weatherObserved, false);
+			
+			result = createMindSphereTimeSeriesFromWeatherObserved(weatherObserved);
+			
+			if(result) {
+				serviceResult.setResult("WeatherObserved added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
 
 	
@@ -69,7 +83,7 @@ public class WeatherObservedServices {
 		return assets.size()>0;
 	}
 	
-	public Boolean createMindSphereAssetFromWeatherObserved(WeatherObserved weatherObserved) {
+	public Boolean createMindSphereAssetFromWeatherObserved(WeatherObserved weatherObserved, Boolean isDebugMode) {
 		Boolean result = false;
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -108,11 +122,6 @@ public class WeatherObservedServices {
 			values.add(weatherObserved.getName());
 			varDefDataTypes.add("String");
 		}
-		if(weatherObserved.getDateObserved()!=null) {
-			keys.add("DateObserved");
-			values.add(weatherObserved.getDateObserved());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(weatherObserved.getSource()!=null) {
 			keys.add("Source");
 			values.add(weatherObserved.getSource());
@@ -132,17 +141,22 @@ public class WeatherObservedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
-		List<String> properties = Stream.of("WeatherType", "DewPoint", "Visibility", "Temperature", "RelativeHumidity", "Precipitation", "WindDirection", "WindSpeed", "AtmosphericPressure", "PressureTendency", "SolarRadiation", "Illuminance", "StreamGauge", "SnowHeight").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless", "c°", "Dimensionless", "c°", "%", "l/m2", "°", "m/s", "hPa", "Dimensionless", "W/m2", "lux", "cm", "cm").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String", "Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "String", "Double", "Double", "Double", "Double").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateObserved","WeatherType", "DewPoint", "Visibility", "Temperature", "RelativeHumidity", "Precipitation", "WindDirection", "WindSpeed", "AtmosphericPressure", "PressureTendency", "SolarRadiation", "Illuminance", "StreamGauge", "SnowHeight").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t","Dimensionless", "c°", "Dimensionless", "c°", "%", "l/m2", "°", "m/s", "hPa", "Dimensionless", "W/m2", "lux", "cm", "cm").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp","String", "Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "String", "Double", "Double", "Double", "Double").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherObserved.getId(), "None", properties, uoms, dataTypes);
 
 		
-		result = mindSphereGateway.saveAsset(weatherObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);	
-		if(result)
-			logger.debug("WeatherObserved created");
-		else 		
-			logger.error("WeatherObserved couldn't be created");
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(weatherObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result = mindSphereGateway.saveAsset(weatherObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("WeatherObserved created");
+			else 		
+				logger.error("WeatherObserved couldn't be created");
+		}
 		return result;
 	}
 	
@@ -157,6 +171,9 @@ public class WeatherObservedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
+			if(weatherObserved.getDateObserved()!=null) {
+				timeseriesPoint.getFields().put("DateObserved",weatherObserved.getDateObserved());
+			}
 			if(weatherObserved.getWeatherType()!=null) {
 				timeseriesPoint.getFields().put("WeatherType",weatherObserved.getWeatherType());
 			}

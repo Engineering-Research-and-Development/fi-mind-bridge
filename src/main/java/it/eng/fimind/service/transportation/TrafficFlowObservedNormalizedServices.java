@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -47,17 +48,31 @@ public class TrafficFlowObservedNormalizedServices {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDataInJSON(@Valid TrafficFlowObservedNormalized trafficFlowObserved) { 
-		ServiceResult serviceResult=new ServiceResult();
+	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid TrafficFlowObservedNormalized trafficFlowObserved) { 
+		ServiceResult serviceResult = new ServiceResult();
 		logger.debug("Id ="+trafficFlowObserved.getId());
 		
-		if(!trafficFlowObservedDoesAlreadyExist(trafficFlowObserved)) 
-			createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved);
-		
-		createMindSphereTimeSeriesFromTrafficFlowObserved(trafficFlowObserved);
-		
-		serviceResult.setResult("OK");
-		return Response.status(201).entity(serviceResult).build();
+		if(debugMode!=null && debugMode.equals("true")){
+			System.out.println("DEBUG MODE FOR --- TrafficFlowObservedNormalized ---");
+			createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved, true);
+			serviceResult.setResult("Test gone fine");
+			return Response.status(200).entity(serviceResult).build();
+		}else {
+			Boolean result = false;
+			if(!trafficFlowObservedDoesAlreadyExist(trafficFlowObserved)) 
+				result = createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved, false);
+			
+			result = createMindSphereTimeSeriesFromTrafficFlowObserved(trafficFlowObserved);
+			
+			if(result) {
+				serviceResult.setResult("TrafficFlowObservedNormalized added succesfully");
+				return Response.status(201).entity(serviceResult).build();
+			}
+			else {
+				serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+				return Response.status(500).entity(serviceResult).build();
+			}
+		}
 	}
 
 	
@@ -68,7 +83,7 @@ public class TrafficFlowObservedNormalizedServices {
 		return assets.size()>0;
 	}
 	
-	private Boolean createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved) {
+	private Boolean createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved, Boolean isDebugMode) {
 		Boolean result = false;
 		
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
@@ -127,21 +142,6 @@ public class TrafficFlowObservedNormalizedServices {
 			values.add((String) trafficFlowObserved.getLaneDirection().getValue());
 			varDefDataTypes.add("String");
 		}
-		if(trafficFlowObserved.getDateObserved()!=null) {
-			keys.add("DateObserved");
-			values.add((String) trafficFlowObserved.getDateObserved().getValue());
-			varDefDataTypes.add("Timestamp");
-		}
-		if(trafficFlowObserved.getDateObservedFrom()!=null) {	
-			keys.add("DateObservedFrom");
-			values.add((String) trafficFlowObserved.getDateObservedFrom().getValue());
-			varDefDataTypes.add("Timestamp");
-		}
-		if(trafficFlowObserved.getDateObservedTo()!=null) {
-			keys.add("DateObservedTo");
-			values.add((String) trafficFlowObserved.getDateObservedTo().getValue());
-			varDefDataTypes.add("Timestamp");
-		}
 		if(trafficFlowObserved.getDateCreated()!=null) {
 			keys.add("DateCreated");
 			values.add((String) trafficFlowObserved.getDateCreated().getValue());
@@ -156,18 +156,23 @@ public class TrafficFlowObservedNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 
-		List<String> properties = Stream.of("Intensity","Occupancy", "AverageVehicleSpeed", "AverageVehicleLength", "Congested", "AverageHeadwayTime", "AverageGapDistance").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "km/h", "m", "Dimensionless", "s", "m").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("Integer", "Integer", "Double", "Double", "Boolean", "Double", "Double", "Boolean").collect(Collectors.toList());
+		List<String> properties = Stream.of("DateObserved", "DateObservedFrom", "DateObservedTo", "Intensity","Occupancy", "AverageVehicleSpeed", "AverageVehicleLength", "Congested", "AverageHeadwayTime", "AverageGapDistance", "ReversedLane").collect(Collectors.toList());
+		List<String> uoms = Stream.of("t", "t", "t", "Dimensionless", "Dimensionless", "km/h", "m", "Dimensionless", "s", "m", "Dimensionless").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "Timestamp", "Integer", "Integer", "Double", "Double", "Boolean", "Double", "Double", "Boolean").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), (String) trafficFlowObserved.getDescription().getValue(), properties, uoms, dataTypes);
 		
 		
-		result = mindSphereGateway.saveAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
-		if(result)
-			logger.debug("TrafficFlowObservedNormalized created");
-		else 		
-			logger.error("TrafficFlowObservedNormalized couldn't be created");
-		return result;	
+		if(isDebugMode) {
+			System.out.println(mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			result = true;
+		}else {
+			result = mindSphereGateway.saveAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
+			if(result)
+				logger.debug("TrafficFlowObservedNormalized created");
+			else 		
+				logger.error("TrafficFlowObservedNormalized couldn't be created");
+		}
+		return result;
 	}
 
 	private boolean createMindSphereTimeSeriesFromTrafficFlowObserved(TrafficFlowObservedNormalized trafficFlowObserved) {
@@ -181,6 +186,15 @@ public class TrafficFlowObservedNormalizedServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 		
+			if(trafficFlowObserved.getDateObserved()!=null) {
+				timeseriesPoint.getFields().put("DateObserved",(String) trafficFlowObserved.getDateObserved().getValue());
+			}
+			if(trafficFlowObserved.getDateObservedFrom()!=null) {	
+				timeseriesPoint.getFields().put("DateObservedFrom",(String) trafficFlowObserved.getDateObservedFrom().getValue());
+			}
+			if(trafficFlowObserved.getDateObservedTo()!=null) {
+				timeseriesPoint.getFields().put("DateObservedTo",(String) trafficFlowObserved.getDateObservedTo().getValue());
+			}
 			if(trafficFlowObserved.getIntensity()!=null) {
 				timeseriesPoint.getFields().put("Intensity",(Integer) trafficFlowObserved.getIntensity().getValue());
 			}

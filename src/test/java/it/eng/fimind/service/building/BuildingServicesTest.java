@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.siemens.mindsphere.sdk.assetmanagement.model.Asset;
-
-import it.eng.fimind.model.fiware.building.Building;
+import it.eng.fimind.util.HttpRequests;
 
 public class BuildingServicesTest {
     public static void main(String[] args) throws IOException {
@@ -19,11 +16,7 @@ public class BuildingServicesTest {
 
         String jsonBody = new String(Files.readAllBytes(file.toPath()));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Building building = objectMapper.readValue(jsonBody, Building.class);
-        
-        BuildingServices buildingServices = new BuildingServices();
-        Asset asset = buildingServices.createMindSphereAssetFromBuilding(building);
-        System.out.println(asset);
+        HttpRequests httpReq = new HttpRequests();
+        httpReq.sendPOST("http://localhost:8080/fimind/webapi/buildingOperation", jsonBody);
     }
 }

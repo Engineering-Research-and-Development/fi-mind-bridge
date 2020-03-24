@@ -16,8 +16,6 @@
     "pressureTendency": 0.5,
     "relativeHumidity": 1,
     "source": "http://www.aemet.es",
-    "stationCode": "2422",
-    "stationName": "Valladolid",
     "temperature": 3.3,
     "windDirection": -45,
     "windSpeed": 2,
