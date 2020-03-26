@@ -11,6 +11,7 @@ public class AssetAdministrationShell {
 	@NotNull(message = "{assetAdministrationShell.null.type}")
 	@Pattern(message = "{assetAdministrationShell.wrong.type}", regexp = "AssetAdministrationShell", flags=Pattern.Flag.CASE_INSENSITIVE)
 	private String type;
+	private String schemaLocation;
 	private List<AssetAdministrationShellsObjects> assetAdministrationShells;
 	private List<SubmodelsObjects> submodels;
 	private List<AssetsObjects> assets;
@@ -27,6 +28,12 @@ public class AssetAdministrationShell {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getSchemaLocation() {
+		return schemaLocation;
+	}
+	public void setSchemaLocation(String schemaLocation) {
+		this.schemaLocation = schemaLocation;
 	}
 	public List<AssetAdministrationShellsObjects> getAssetAdministrationShells() {
 		return assetAdministrationShells;
@@ -52,6 +59,5 @@ public class AssetAdministrationShell {
 	public void setConceptDescriptions(List<ConceptDescriptionsObjects> conceptDescriptions) {
 		this.conceptDescriptions = conceptDescriptions;
 	}
-
 
 }

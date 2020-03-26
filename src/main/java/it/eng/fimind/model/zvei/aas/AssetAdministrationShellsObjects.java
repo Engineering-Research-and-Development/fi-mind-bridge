@@ -3,19 +3,20 @@ package it.eng.fimind.model.zvei.aas;
 import java.util.List;
 
 public class AssetAdministrationShellsObjects {
-	private Identification identification;
+	private KeysObject derivedFrom;
 	private KeysObject asset;
 	private List<KeysObject> submodels;
-	private List<ViewsElement> views;
-	private Administration administration;
-	private NameObject modelType;
 	private List<ConceptDescriptionsElement> conceptDictionaries;
+	private Identification identification;
+	private Administration administration;
+	private String idShort;
+	private NameObject modelType;
 	
-	public Identification getIdentification() {
-		return identification;
+	public KeysObject getDerivedFrom() {
+		return derivedFrom;
 	}
-	public void setIdentification(Identification identification) {
-		this.identification = identification;
+	public void setDerivedFrom(KeysObject derivedFrom) {
+		this.derivedFrom = derivedFrom;
 	}
 	public KeysObject getAsset() {
 		return asset;
@@ -29,11 +30,17 @@ public class AssetAdministrationShellsObjects {
 	public void setSubmodels(List<KeysObject> submodels) {
 		this.submodels = submodels;
 	}
-	public List<ViewsElement> getViews() {
-		return views;
+	public List<ConceptDescriptionsElement> getConceptDictionaries() {
+		return conceptDictionaries;
 	}
-	public void setViews(List<ViewsElement> views) {
-		this.views = views;
+	public void setConceptDictionaries(List<ConceptDescriptionsElement> conceptDictionaries) {
+		this.conceptDictionaries = conceptDictionaries;
+	}
+	public Identification getIdentification() {
+		return identification;
+	}
+	public void setIdentification(Identification identification) {
+		this.identification = identification;
 	}
 	public Administration getAdministration() {
 		return administration;
@@ -41,17 +48,18 @@ public class AssetAdministrationShellsObjects {
 	public void setAdministration(Administration administration) {
 		this.administration = administration;
 	}
+	public String getIdShort() {
+		return idShort;
+	}
+	public void setIdShort(String idShort) {
+		this.idShort = idShort;
+	}
 	public NameObject getModelType() {
 		return modelType;
 	}
 	public void setModelType(NameObject modelType) {
 		this.modelType = modelType;
 	}
-	public List<ConceptDescriptionsElement> getConceptDictionaries() {
-		return conceptDictionaries;
-	}
-	public void setConceptDictionaries(List<ConceptDescriptionsElement> conceptDictionaries) {
-		this.conceptDictionaries = conceptDictionaries;
-	}
+
 
 }

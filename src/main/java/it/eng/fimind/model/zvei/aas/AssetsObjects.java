@@ -3,23 +3,29 @@ package it.eng.fimind.model.zvei.aas;
 import java.util.List;
 
 public class AssetsObjects {
-	private String idShort;
 	private Identification identification;
+	private String idShort;
+	private NameObject modelType;
 	private String kind;
 	private List<LangTextObject> descriptions;
-	private NameObject modelType;
 	
+	public Identification getIdentification() {
+		return identification;
+	}
+	public void setIdentification(Identification identification) {
+		this.identification = identification;
+	}
 	public String getIdShort() {
 		return idShort;
 	}
 	public void setIdShort(String idShort) {
 		this.idShort = idShort;
 	}
-	public Identification getIdentification() {
-		return identification;
+	public NameObject getModelType() {
+		return modelType;
 	}
-	public void setIdentification(Identification identification) {
-		this.identification = identification;
+	public void setModelType(NameObject modelType) {
+		this.modelType = modelType;
 	}
 	public String getKind() {
 		return kind;
@@ -33,11 +39,5 @@ public class AssetsObjects {
 	public void setDescriptions(List<LangTextObject> descriptions) {
 		this.descriptions = descriptions;
 	}
-	public NameObject getModelType() {
-		return modelType;
-	}
-	public void setModelType(NameObject modelType) {
-		this.modelType = modelType;
-	}
-
+	
 }

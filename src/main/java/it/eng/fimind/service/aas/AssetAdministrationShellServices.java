@@ -25,9 +25,8 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.VariableDefinition;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
 import it.eng.fimind.model.zvei.aas.AssetAdministrationShell;
-import it.eng.fimind.model.zvei.aas.ConceptDescriptionsObjects;
-import it.eng.fimind.model.zvei.aas.EmbeddedDataSpecificationsElement;
-import it.eng.fimind.model.zvei.aas.KeysElement;
+import it.eng.fimind.model.zvei.aas.SubmodelElements;
+import it.eng.fimind.model.zvei.aas.SubmodelsObjects;
 import it.eng.fimind.util.MindSphereGateway;
 import it.eng.fimind.util.MindSphereMapper;
 import it.eng.fimind.util.ServiceResult;
@@ -106,13 +105,15 @@ public class AssetAdministrationShellServices {
 		List<String> uoms = new ArrayList<String>();
 		List<String> dataTypes = new ArrayList<String>();
 
-		for (int i=0; i<aas.getConceptDescriptions().size();i++) {
-			ConceptDescriptionsObjects current_conceptDescription = aas.getConceptDescriptions().get(i);
-			for (int j=0; j<current_conceptDescription.getEmbeddedDataSpecifications().size();j++) {
-				EmbeddedDataSpecificationsElement current_embeddedDataSpecification = current_conceptDescription.getEmbeddedDataSpecifications().get(j);
-				
-				properties.add(current_embeddedDataSpecification.getDataSpecificationContent().getShortName());
-				uoms.add(current_embeddedDataSpecification.getDataSpecificationContent().getPreferredName().getText());
+		for (int i=0; i<aas.getSubmodels().size();i++) {
+			SubmodelsObjects current_submodel = aas.getSubmodels().get(i);
+			String idShort = current_submodel.getIdShort();
+			if(!idShort.equalsIgnoreCase("DataSheet"))
+				continue;
+			for (int j=0; j<current_submodel.getSubmodelElements().size();j++) {
+				SubmodelElements current_submodelElement = current_submodel.getSubmodelElements().get(j);	
+				properties.add(current_submodelElement.getIdShort());
+				uoms.add(current_submodelElement.getMimeType());
 				dataTypes.add("String");
 			}
 		}
@@ -142,15 +143,17 @@ public class AssetAdministrationShellServices {
 			Timeseries timeseriesPoint=new Timeseries();
 			timeseriesPoint.getFields().put("_time", instant);
 			
-			for (int i=0; i<aas.getConceptDescriptions().size();i++) {
-				ConceptDescriptionsObjects current_conceptDescription = aas.getConceptDescriptions().get(i);
-				for (int j=0; j<current_conceptDescription.getEmbeddedDataSpecifications().size();j++) {
-					EmbeddedDataSpecificationsElement current_embeddedDataSpecification = current_conceptDescription.getEmbeddedDataSpecifications().get(j);
-					String property = current_embeddedDataSpecification.getDataSpecificationContent().getShortName();
-					for (int k=0; k<current_embeddedDataSpecification.getDataSpecificationContent().getUnitId().getKeys().size();k++) {
-						KeysElement current_key = current_embeddedDataSpecification.getDataSpecificationContent().getUnitId().getKeys().get(k);
-						timeseriesPoint.getFields().put(property,current_key.getValue());
-					}
+			for (int i=0; i<aas.getSubmodels().size();i++) {
+				SubmodelsObjects current_submodel = aas.getSubmodels().get(i);
+				String idShort = current_submodel.getIdShort();
+				if(!idShort.equalsIgnoreCase("DataSheet"))
+					continue;
+				
+				for (int j=0; j<current_submodel.getSubmodelElements().size();j++) {
+					SubmodelElements current_submodelElement = current_submodel.getSubmodelElements().get(j);	
+					String property = current_submodelElement.getIdShort();
+					Object value = current_submodelElement.getValue();
+					timeseriesPoint.getFields().put(property,value.toString());
 				}
 			}
 
