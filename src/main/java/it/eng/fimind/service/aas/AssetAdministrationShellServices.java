@@ -114,7 +114,7 @@ public class AssetAdministrationShellServices {
 				SubmodelElements current_submodelElement = current_submodel.getSubmodelElements().get(j);	
 				properties.add(current_submodelElement.getIdShort());
 				uoms.add(current_submodelElement.getMimeType());
-				dataTypes.add("String");
+				dataTypes.add(current_submodelElement.getValueType().getDataObjectType().getName());
 			}
 		}
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(aas.getId(), "None", properties, uoms, dataTypes);

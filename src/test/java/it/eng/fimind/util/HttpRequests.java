@@ -13,7 +13,7 @@ public class HttpRequests {
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", "Mozilla/5.0");
-		con.setRequestProperty("Content-Type", "application/json; utf-8");
+		con.setRequestProperty("Content-Type", "application/json");
 		con.setRequestProperty("Accept", "application/json");
 		con.setRequestProperty("Debug-mode", "true");
 		con.setDoOutput(true);

@@ -10,7 +10,7 @@ public class AlertServicesTest {
     public static void main(String[] args) throws IOException {
     	String fileName = "alert.json";
 
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+    	ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         File file = new File(classLoader.getResource(fileName).getFile());
         System.out.println("File Found : " + file.exists());
 

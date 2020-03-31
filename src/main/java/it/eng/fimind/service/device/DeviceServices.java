@@ -220,7 +220,7 @@ public class DeviceServices {
 			for (int i=0; i<device.getControlledProperty().size(); i++) {
 				String property = device.getControlledProperty().get(i);
 				properties.add(property);
-				uoms.add("na");
+				uoms.add("Dimensionless");
 				dataTypes.add("Double");
 			}
 		}
