@@ -48,6 +48,27 @@ import it.eng.fimind.service.weather.WeatherObservedNormalizedServices;
 public class NotificationServices {
 	private static Logger logger = Logger.getLogger(NotificationServices.class);
 	
+	private String unmapForbiddenChars(String value) {
+		String result = value;
+		if(result.contains("%3C"))
+			result = result.replace("%3C", "<");
+		if(result.contains("%3E"))
+			result = result.replace("%3E", ">");
+		if(result.contains("%22"))
+			result = result.replace("%22", "\"");
+		if(result.contains("%27"))
+			result = result.replace("%27", "'");
+		if(result.contains("%3D"))
+			result = result.replace("%3D", "=");
+		if(result.contains("%3B"))
+			result = result.replace("%3B", ";");
+		if(result.contains("%28"))
+			result = result.replace("%28", "(");
+		if(result.contains("%29"))
+			result = result.replace("%29", ")");
+		return result;
+	}
+	
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response get() { 
@@ -70,10 +91,12 @@ public class NotificationServices {
 			for (it.eng.fimind.model.Entity entity:notificationContent.getData()) {
 				logger.debug("entity.getType()="+entity.getType());
 				
+				data = unmapForbiddenChars(data);
+				
 				if (entity.getType().equalsIgnoreCase("Alert")){
 					logger.debug("Alert");
 					logger.debug("data="+data);
-				 					 
+				 					 					
 					AlertNormalized alertNotified = new AlertNormalized();	
 					alertNotified = mapper.readValue( mapper.writeValueAsString(entity), AlertNormalized.class);
 					

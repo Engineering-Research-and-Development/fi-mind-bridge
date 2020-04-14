@@ -61,7 +61,8 @@ public class DeviceNormalizedServices {
 			if(!deviceDoesAlreadyExist(device)) 
 				result = createMindSphereAssetFromDevice(device, false);
 			
-			result = createMindSphereTimeSeriesFromDevice(device);
+			if(result)
+				result = createMindSphereTimeSeriesFromDevice(device);
 			
 			if(result) {
 				serviceResult.setResult("DeviceNormalized added succesfully");
@@ -88,10 +89,11 @@ public class DeviceNormalizedServices {
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 			
 		Location mindSphereLocation = null;
-		if(device.getLocation()!=null) {
-			if(device.getLocation().getValue().getType().equals("Point")) 
-				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(device.getLocation().getValue());
-		}else if(device.getAddress()!=null) 
+		if(device.getLocation()!=null && device.getAddress()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocAddrToMiLocation(device.getLocation().getValue(), device.getAddress().getValue());
+		else if(device.getLocation()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(device.getLocation().getValue());
+		else if(device.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(device.getAddress().getValue());
 		
 		
@@ -99,108 +101,93 @@ public class DeviceNormalizedServices {
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(device.getType()!=null) {
+			keys.add("entityType");
+			values.add(device.getType());
+			varDefDataTypes.add("String");
+		}
 		if(device.getSource()!=null) {
-			keys.add("Source");
+			keys.add("source");
 			values.add((String) device.getSource().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getDataProvider()!=null) {
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add((String) device.getDataProvider().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getCategory()!=null) {
-			keys.add("Category");
+			keys.add("category");
 			values.add((String) device.getCategory().getValue().toString());
 			varDefDataTypes.add("String");
 		}
 		if(device.getMnc()!=null) {
-			keys.add("Mnc");
+			keys.add("mnc");
 			values.add((String) device.getMnc().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getMcc()!=null) {
-			keys.add("Mcc");
+			keys.add("mcc");
 			values.add((String) device.getMcc().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getMacAddress()!=null) {
-			keys.add("MacAddress");
+			keys.add("macAddress");
 			values.add((String) device.getMacAddress().getValue().toString());
 			varDefDataTypes.add("String");
 		}
 		if(device.getSupportedProtocol()!=null) {
-			keys.add("SupportedProtocol");
+			keys.add("supportedProtocol");
 			values.add((String) device.getSupportedProtocol().getValue().toString());
 			varDefDataTypes.add("String");
 		}
 		if(device.getConfiguration()!=null) {
-			keys.add("Configuration");
+			keys.add("configuration");
 			values.add((String) device.getConfiguration().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getName()!=null) {
-			keys.add("DeviceName");
+			keys.add("entityName");
 			values.add((String) device.getName().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getDateInstalled()!=null) {
-			keys.add("DateInstalled");
+			keys.add("dateInstalled");
 			values.add((String) device.getDateInstalled().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getDateFirstUsed()!=null) {
-			keys.add("DateFirstUsed");
+			keys.add("dateFirstUsed");
 			values.add((String) device.getDateFirstUsed().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getDateManufactured()!=null) {
-			keys.add("DateManufactured");
+			keys.add("dateManufactured");
 			values.add((String) device.getDateManufactured().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
-		if(device.getHardwareVersion()!=null) {
-			keys.add("HardwareVersion");
-			values.add((String) device.getHardwareVersion().getValue());
-			varDefDataTypes.add("String");
-		}
-		if(device.getSoftwareVersion()!=null) {
-			keys.add("SoftwareVersion");
-			values.add((String) device.getSoftwareVersion().getValue());
-			varDefDataTypes.add("String");
-		}
-		if(device.getFirmwareVersion()!=null) {
-			keys.add("FirmwareVersion");
-			values.add((String) device.getFirmwareVersion().getValue());
-			varDefDataTypes.add("String");
-		}
-		if(device.getOsVersion()!=null) {
-			keys.add("OsVersion");
-			values.add((String) device.getOsVersion().getValue());
-			varDefDataTypes.add("String");
-		}
 		if(device.getSerialNumber()!=null) {
-			keys.add("SerialNumber");
+			keys.add("serialNumber");
 			values.add((String) device.getSerialNumber().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getProvider()!=null) {
-			keys.add("Provider");
+			keys.add("provider");
 			values.add((String) device.getProvider().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getRefDeviceModel()!=null) {
-			keys.add("RefDeviceModel");
+			keys.add("refDeviceModel");
 			values.add((String) device.getRefDeviceModel().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(device.getDateCreated()!=null) {
-			keys.add("DateCreated");
+			keys.add("dateCreated");
 			values.add((String) device.getDateCreated().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getOwner()!=null) {
-			keys.add("Owner");
+			keys.add("owner");
 			values.add((String) device.getOwner().toString());
 			varDefDataTypes.add("String");
 		}
@@ -208,14 +195,14 @@ public class DeviceNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = Stream.of("ControlledAssets","IpAddress", "DateLastCalibration","BatteryLevel","Rssi","DeviceState", "DateLastValueReported", "DateModified").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "t","%/100","%/100", "Dimensionless", "t", "t").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String","String", "Timestamp","Double","Double","String", "Timestamp", "Timestamp").collect(Collectors.toList());
+		List<String> properties = Stream.of("controlledAssets", "ipAddress", "hardwareVersion", "softwareVersion", "firmwareVersion", "osVersion", "dateLastCalibration","batteryLevel","rssi","deviceState", "dateLastValueReported", "dateModified").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "t","%/100","%/100", "Dimensionless", "t", "t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("String","String", "String","String", "String","String", "Timestamp","Double","Double","String", "Timestamp", "Timestamp").collect(Collectors.toList());
 		if(device.getControlledProperty()!=null) {
 			for (int i=0; i<device.getControlledProperty().getValue().size(); i++) {
 				String property = device.getControlledProperty().getValue().get(i).toString();
 				properties.add(property);
-				uoms.add("na");
+				uoms.add("Not Available");
 				dataTypes.add("Double");
 			}
 		}
@@ -247,28 +234,40 @@ public class DeviceNormalizedServices {
 			timeseriesPoint.getFields().put("_time", instant);
 					
 			if(device.getControlledAsset()!=null) {
-				timeseriesPoint.getFields().put("ControlledAssets", (String) device.getControlledAsset().getValue().toString());
+				timeseriesPoint.getFields().put("controlledAssets", (String) device.getControlledAsset().getValue().toString());
 			}
 			if(device.getIpAddress()!=null) {
-				timeseriesPoint.getFields().put("IpAddress", (String) device.getIpAddress().getValue().toString());
+				timeseriesPoint.getFields().put("ipAddress", (String) device.getIpAddress().getValue().toString());
+			}
+			if(device.getHardwareVersion()!=null) {
+				timeseriesPoint.getFields().put("hardwareVersion", device.getHardwareVersion().getValue());
+			}
+			if(device.getSoftwareVersion()!=null) {
+				timeseriesPoint.getFields().put("softwareVersion", device.getSoftwareVersion().getValue());
+			}
+			if(device.getFirmwareVersion()!=null) {
+				timeseriesPoint.getFields().put("firmwareVersion", device.getFirmwareVersion().getValue());
+			}
+			if(device.getOsVersion()!=null) {
+				timeseriesPoint.getFields().put("osVersion", device.getOsVersion().getValue());
 			}
 			if(device.getDateLastCalibration()!=null) {
-				timeseriesPoint.getFields().put("DateLastCalibration", (String) device.getDateLastCalibration().getValue());
+				timeseriesPoint.getFields().put("dateLastCalibration", (String) device.getDateLastCalibration().getValue());
 			}
 			if(device.getBatteryLevel()!=null) {
-				timeseriesPoint.getFields().put("BatteryLevel", (String) device.getBatteryLevel().getValue());
+				timeseriesPoint.getFields().put("batteryLevel", (String) device.getBatteryLevel().getValue());
 			}
 			if(device.getRssi()!=null) {
-				timeseriesPoint.getFields().put("Rssi", (String) device.getRssi().getValue());
+				timeseriesPoint.getFields().put("rssi", (String) device.getRssi().getValue());
 			}
 			if(device.getDeviceState()!=null) {
-				timeseriesPoint.getFields().put("DeviceState", (String) device.getDeviceState().getValue());
+				timeseriesPoint.getFields().put("deviceState", (String) device.getDeviceState().getValue());
 			}
 			if(device.getDateLastValueReported()!=null) {
-				timeseriesPoint.getFields().put("DateLastValueReported", (String) device.getDateLastValueReported().getValue());
+				timeseriesPoint.getFields().put("dateLastValueReported", (String) device.getDateLastValueReported().getValue());
 			}
 			if(device.getDateModified()!=null) {
-				timeseriesPoint.getFields().put("DateModified", (String) device.getDateModified().getValue());
+				timeseriesPoint.getFields().put("dateModified", (String) device.getDateModified().getValue());
 			}
 			if(device.getValue()!=null && device.getControlledProperty()!=null) {
 				Pattern pattern = Pattern.compile("[+-]?([0-9]*[.])?[0-9]+");

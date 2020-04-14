@@ -61,7 +61,8 @@ public class VehicleModelServices {
 			if(!vehicleModelDoesAlreadyExist(vehicleModel)) 
 				result = createMindSphereAssetFromVehicleModel(vehicleModel, false);
 			
-			result = createMindSphereTimeSeriesFromVehicleModel(vehicleModel);
+			if(result)
+				result = createMindSphereTimeSeriesFromVehicleModel(vehicleModel);
 			
 			if(result) {
 				serviceResult.setResult("VehicleModel added succesfully");
@@ -92,98 +93,103 @@ public class VehicleModelServices {
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(vehicleModel.getType()!=null) {
+			keys.add("entityType");
+			values.add(vehicleModel.getType());
+			varDefDataTypes.add("String");
+		}
 		if(vehicleModel.getSource()!=null) {
-			keys.add("Source");
+			keys.add("source");
 			values.add(vehicleModel.getSource());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getDataProvider()!=null) {
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add(vehicleModel.getDataProvider());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getName()!=null) {
-			keys.add("VehicleModelName");
+			keys.add("entityName");
 			values.add(vehicleModel.getName());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getVehicleType()!=null) {
-			keys.add("VehicleType");
+			keys.add("vehicleType");
 			values.add(vehicleModel.getVehicleType());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getBrandName()!=null) {
-			keys.add("BrandName");
+			keys.add("brandName");
 			values.add(vehicleModel.getBrandName());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getModelName()!=null) {
-			keys.add("ModelName");
+			keys.add("modelName");
 			values.add(vehicleModel.getModelName());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getManufacturerName()!=null) {
-			keys.add("ManufacturerName");
+			keys.add("manufacturerName");
 			values.add(vehicleModel.getManufacturerName());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getVehicleModelDate()!=null) {
-			keys.add("VehicleModelDate");
+			keys.add("vehicleModelDate");
 			values.add(vehicleModel.getVehicleModelDate());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getCargoVolume()!=null) {
-			keys.add("CargoVolume");
+			keys.add("cargoVolume");
 			values.add(vehicleModel.getCargoVolume().toString());
 			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getFuelType()!=null) {
-			keys.add("FuelType");
+			keys.add("fuelType");
 			values.add(vehicleModel.getFuelType());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getFuelConsumption()!=null) {
-			keys.add("FuelConsumption");
+			keys.add("fuelConsumption");
 			values.add(vehicleModel.getFuelConsumption().toString());
 			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getHeight()!=null) {
-			keys.add("Height");
+			keys.add("height");
 			values.add(vehicleModel.getHeight().toString());
 			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getWidth()!=null) {
-			keys.add("Width");
+			keys.add("width");
 			values.add(vehicleModel.getWidth().toString());
 			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getDepth()!=null) {
-			keys.add("Depth");
+			keys.add("depth");
 			values.add(vehicleModel.getDepth().toString());
 			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getWeight()!=null) {
-			keys.add("Weight");
+			keys.add("weight");
 			values.add(vehicleModel.getWeight().toString());
 			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getVehicleEngine()!=null) {
-			keys.add("VehicleEngine");
+			keys.add("vehicleEngine");
 			values.add(vehicleModel.getVehicleEngine());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getUrl()!=null) {
-			keys.add("Url");
+			keys.add("url");
 			values.add(vehicleModel.getUrl());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getImage()!=null) {
-			keys.add("Image");
+			keys.add("image");
 			values.add(vehicleModel.getImage());
 			varDefDataTypes.add("String");
 		}
 		if(vehicleModel.getDateCreated()!=null) {
-			keys.add("DateCreated");
+			keys.add("dateCreated");
 			values.add(vehicleModel.getDateCreated());
 			varDefDataTypes.add("Timestamp");
 		}
@@ -191,7 +197,7 @@ public class VehicleModelServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 
-		List<String> properties = Stream.of("DateModified").collect(Collectors.toList());
+		List<String> properties = Stream.of("dateModified").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), vehicleModel.getDescription(), properties, uoms, dataTypes);
@@ -222,7 +228,7 @@ public class VehicleModelServices {
 			timeseriesPoint.getFields().put("_time", instant);
 		
 			if(vehicleModel.getDateModified()!=null){
-				timeseriesPoint.getFields().put("DateModified",vehicleModel.getDateModified());
+				timeseriesPoint.getFields().put("dateModified",vehicleModel.getDateModified());
 			}
 			
 			timeSeriesList.add(timeseriesPoint);

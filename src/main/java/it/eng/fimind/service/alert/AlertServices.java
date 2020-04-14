@@ -63,7 +63,8 @@ public class AlertServices {
 			if(!alertDoesAlreadyExist(alert)) 
 				result = createMindSphereAssetFromAlert(alert, false);
 			
-			result = createMindSphereTimeSeriesFromAlert(alert);
+			if(result)
+				result = createMindSphereTimeSeriesFromAlert(alert);
 			
 			if(result) {
 				serviceResult.setResult("Alert added succesfully");
@@ -91,10 +92,11 @@ public class AlertServices {
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
 		Location mindSphereLocation = null;
-		if(alert.getLocation()!=null) {
-			if(alert.getLocation().getType().equals("Point")) 
-				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(alert.getLocation());
-		}else if(alert.getAddress()!=null) 
+		if(alert.getLocation()!=null && alert.getAddress()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocAddrToMiLocation(alert.getLocation(), alert.getAddress());
+		else if(alert.getLocation()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(alert.getLocation());
+		else if(alert.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(alert.getAddress());
 		
 		
@@ -102,43 +104,48 @@ public class AlertServices {
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(alert.getType()!=null) {
+			keys.add("entityType");
+			values.add(alert.getType());
+			varDefDataTypes.add("String");
+		}
 		if(alert.getSource()!=null) {
-			keys.add("Source");
+			keys.add("source");
 			values.add(alert.getSource());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getDataProvider()!=null) {
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add(alert.getDataProvider());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getCategory()!=null) {
-			keys.add("Category");
+			keys.add("category");
 			values.add(alert.getCategory());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getSubCategory()!=null) {
-			keys.add("SubCategory");
+			keys.add("subCategory");
 			values.add(alert.getSubCategory());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getValidFrom()!=null) {
-			keys.add("ValidFrom");
+			keys.add("validFrom");
 			values.add(alert.getValidFrom());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(alert.getValidTo()!=null) {
-			keys.add("ValidTo");
+			keys.add("validTo");
 			values.add(alert.getValidTo());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(alert.getAlertSource()!=null) {
-			keys.add("AlertSource");
+			keys.add("alertSource");
 			values.add(alert.getAlertSource());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getData()!=null) {
-			keys.add("Data");
+			keys.add("data");
 			values.add(alert.getData().toString());
 			varDefDataTypes.add("String");
 		}
@@ -146,7 +153,7 @@ public class AlertServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
-		List<String> properties = Stream.of("DateIssued", "Severity").collect(Collectors.toList());
+		List<String> properties = Stream.of("dateIssued", "severity").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), alert.getDescription(), properties, uoms, dataTypes);
@@ -178,10 +185,10 @@ public class AlertServices {
 			timeseriesPoint.getFields().put("_time", instant);
 			
 			if(alert.getDateIssued()!=null) {
-				timeseriesPoint.getFields().put("DateIssued", alert.getDateIssued());
+				timeseriesPoint.getFields().put("dateIssued", alert.getDateIssued());
 			}
 			if(alert.getSeverity()!=null) {
-				timeseriesPoint.getFields().put("Severity", alert.getSeverity());
+				timeseriesPoint.getFields().put("severity", alert.getSeverity());
 			}
 			
 			timeSeriesList.add(timeseriesPoint);

@@ -62,7 +62,8 @@ public class BuildingServices {
 			if(!buildingDoesAlreadyExist(building)) 
 				result = createMindSphereAssetFromBuilding(building, false);
 			
-			result = createMindSphereTimeSeriesFromBuilding(building);
+			if(result)
+				result = createMindSphereTimeSeriesFromBuilding(building);
 			
 			if(result) {
 				serviceResult.setResult("Building added succesfully");
@@ -90,10 +91,11 @@ public class BuildingServices {
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
 		Location mindSphereLocation = null;
-		if(building.getLocation()!=null) {
-			if(building.getLocation().getType().equals("Point")) 
-				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(building.getLocation());
-		}else if(building.getAddress()!=null) 
+		if(building.getLocation()!=null && building.getAddress()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocAddrToMiLocation(building.getLocation(), building.getAddress());
+		else if(building.getLocation()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(building.getLocation());
+		else if(building.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(building.getAddress());
 		
 		
@@ -101,48 +103,53 @@ public class BuildingServices {
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(building.getType()!=null) {
+			keys.add("entityType");
+			values.add(building.getType());
+			varDefDataTypes.add("String");
+		}
 		if(building.getSource()!=null) {
-			keys.add("Source");
+			keys.add("source");
 			values.add(building.getSource());
 			varDefDataTypes.add("String");
 		}
 		if(building.getDataProvider()!=null) {
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add(building.getDataProvider());
 			varDefDataTypes.add("String");
 		}
 		if(building.getDateCreated()!=null) {
-			keys.add("DateCreated");
+			keys.add("dateCreated");
 			values.add(building.getDateCreated());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(building.getOwner()!=null) {
-			keys.add("Owner");
+			keys.add("owner");
 			values.add(building.getOwner().toString());
 			varDefDataTypes.add("String");
 		}
 		if(building.getCategory()!=null) {
-			keys.add("Category");
+			keys.add("category");
 			values.add(building.getCategory().toString());
 			varDefDataTypes.add("String");
 		}
 		if(building.getOccupier()!=null) {
-			keys.add("Occupier");
+			keys.add("occupier");
 			values.add(building.getOccupier().toString());
 			varDefDataTypes.add("String");
 		}
 		if(building.getFloorsAboveGround()!=null) {
-			keys.add("FloorsAboveGround");
+			keys.add("floorsAboveGround");
 			values.add(building.getFloorsAboveGround().toString());
 			varDefDataTypes.add("Integer");
 		}		
 		if(building.getFloorsBelowGround()!=null) {
-			keys.add("FloorsBelowGround");
+			keys.add("floorsBelowGround");
 			values.add(building.getFloorsBelowGround().toString());
 			varDefDataTypes.add("Integer");
 		}
 		if(building.getMapUrl()!=null) {
-			keys.add("RefMap");
+			keys.add("refMap");
 			values.add(building.getMapUrl());
 			varDefDataTypes.add("String");
 		}
@@ -150,7 +157,7 @@ public class BuildingServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = Stream.of("DataModfiied", "OpeningHours").collect(Collectors.toList());
+		List<String> properties = Stream.of("dataModfiied", "openingHours").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), building.getDescription(), properties, uoms, dataTypes);
@@ -181,10 +188,10 @@ public class BuildingServices {
 			timeseriesPoint.getFields().put("_time", instant);
 			
 			if(building.getDateModified()!=null) {
-				timeseriesPoint.getFields().put("DateModified", (String) building.getDateModified());
+				timeseriesPoint.getFields().put("dateModified", (String) building.getDateModified());
 			}
 			if(building.getOpeningHours()!=null) {
-				timeseriesPoint.getFields().put("OpeningHours", building.getOpeningHours().toString());
+				timeseriesPoint.getFields().put("openingHours", building.getOpeningHours().toString());
 			}
 		
 			timeSeriesList.add(timeseriesPoint);

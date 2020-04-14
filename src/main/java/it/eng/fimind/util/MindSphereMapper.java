@@ -42,6 +42,20 @@ public class MindSphereMapper {
 		return VariableDefinition.DataTypeEnum.STRING;
 	}
 	
+	public Location fiLocAddrToMiLocation(it.eng.fimind.model.fiware.common.Location fiLocation, it.eng.fimind.model.fiware.common.Address fiAddress) {
+		Location mindSphereLocation = new Location();
+		if(fiLocation.getType().equals("Point")) {
+			mindSphereLocation.setLatitude(BigDecimal.valueOf(Double.valueOf(fiLocation.getCoordinates().get(0).toString())));
+			mindSphereLocation.setLongitude(BigDecimal.valueOf(Double.valueOf(fiLocation.getCoordinates().get(1).toString())));
+		}
+		mindSphereLocation.setCountry(fiAddress.getAddressCountry());
+		mindSphereLocation.setRegion(fiAddress.getAddressRegion());
+		mindSphereLocation.setLocality(fiAddress.getAddressLocality());
+		mindSphereLocation.setStreetAddress(fiAddress.getStreetAddress());
+		mindSphereLocation.setPostalCode(fiAddress.getPostalCode());
+		return mindSphereLocation;	
+	}
+	
 	public Location fiLocationToMiLocation(it.eng.fimind.model.fiware.common.Location fiLocation) {
 		Location mindSphereLocation = new Location();
 		if(fiLocation.getType().equals("Point")) {
@@ -129,3 +143,5 @@ public class MindSphereMapper {
 		return aspectType;
 	}
 }
+
+//You cannot use the following standard names: id, name, description, tenant, etag, scope, properties, propertySets, extends, variables, aspects, parentTypeId, timezone, type, parent

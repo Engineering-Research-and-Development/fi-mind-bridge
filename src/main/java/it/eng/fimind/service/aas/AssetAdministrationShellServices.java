@@ -62,7 +62,8 @@ public class AssetAdministrationShellServices {
 			if(!aasDoesAlreadyExist(aas)) 
 				result = createMindSphereAssetFromAAS(aas, false);
 			
-			result = createMindSphereTimeSeriesFromAAS(aas);
+			if(result)
+				result = createMindSphereTimeSeriesFromAAS(aas);
 			
 			if(result) {
 				serviceResult.setResult("AssetAdministrationShell added succesfully");
@@ -98,8 +99,16 @@ public class AssetAdministrationShellServices {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 
-		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
-		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+		List<String> varDefDataTypes = new ArrayList<String>();
+		if(aas.getType()!=null) {
+			keys.add("entityType");
+			values.add(aas.getType());
+			varDefDataTypes.add("String");
+		}
+		List<VariableDefinition> assetVariablesDefinitions = mindSphereMapper.fiPropertiesToMiVariablesDefinitions(keys, values, varDefDataTypes);
+		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		List<String> properties = new ArrayList<String>();
 		List<String> uoms = new ArrayList<String>();

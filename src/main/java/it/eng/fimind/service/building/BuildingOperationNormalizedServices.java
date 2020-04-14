@@ -61,7 +61,8 @@ public class BuildingOperationNormalizedServices {
 			if(!buildingOperationDoesAlreadyExist(buildingOperation)) 
 				result = createMindSphereAssetFromBuildingOperation(buildingOperation, false);
 			
-			result = createMindSphereTimeSeriesFromBuildingOperation(buildingOperation);
+			if(result)
+				result = createMindSphereTimeSeriesFromBuildingOperation(buildingOperation);
 			
 			if(result) {
 				serviceResult.setResult("BuildingOperation added succesfully");
@@ -91,58 +92,63 @@ public class BuildingOperationNormalizedServices {
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(buildingOperation.getType()!=null) {
+			keys.add("entityType");
+			values.add(buildingOperation.getType());
+			varDefDataTypes.add("String");
+		}
 		if(buildingOperation.getSource()!=null)
 		{
-			keys.add("Source");
+			keys.add("source");
 			values.add((String) buildingOperation.getSource().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getDataProvider()!=null)
 		{
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add((String) buildingOperation.getDataProvider().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getDateCreated()!=null)
 		{
-			keys.add("DateCreated");		
+			keys.add("dateCreated");		
 			values.add((String) buildingOperation.getDateCreated().getValue());
 			varDefDataTypes.add("Timestamp");
 
 		}
 		if(buildingOperation.getRefBuilding()!=null)
 		{
-			keys.add("RefBuilding");
+			keys.add("refBuilding");
 			values.add((String) buildingOperation.getRefBuilding().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getRefOperator()!=null)
 		{
-			keys.add("RefOperator");		
+			keys.add("refOperator");		
 			values.add((String) buildingOperation.getRefOperator().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getRefRelatedBuildingOperation()!=null)
 		{
-			keys.add("RefRelatedBuildingOperation");
+			keys.add("refRelatedBuildingOperation");
 			values.add((String) buildingOperation.getRefRelatedBuildingOperation().getValue().toString());
 			varDefDataTypes.add("String");
 		}
 		if(buildingOperation.getStartDate()!=null)
 		{
-			keys.add("StartDate");		
+			keys.add("startDate");		
 			values.add((String) buildingOperation.getStartDate().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getEndDate()!=null)
 		{
-			keys.add("EndDate");
+			keys.add("endDate");
 			values.add((String) buildingOperation.getEndDate().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(buildingOperation.getRefRelatedDeviceOperation()!=null)
 		{	
-			keys.add("RefRelatedDeviceOperation");
+			keys.add("refRelatedDeviceOperation");
 			values.add((String) buildingOperation.getRefRelatedDeviceOperation().getValue().toString());
 			varDefDataTypes.add("String");
 		}
@@ -150,15 +156,14 @@ public class BuildingOperationNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 		
 	
-		List<String> properties = Stream.of("DateModified", "OperationType","Status","Result","DateStarted", "DateFinished").collect(Collectors.toList());
+		List<String> properties = Stream.of("dateModified", "operationType","status","result","dateStarted", "dateFinished").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "Dimensionless","Dimensionless","Dimensionless", "t", "t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "String", "String", "String", "Timestamp", "Timestamp").collect(Collectors.toList());
 		if(buildingOperation.getOperationSequence()!=null) {
 			for (int i=0; i<buildingOperation.getOperationSequence().getValue().size(); i++) {
 				String property = buildingOperation.getOperationSequence().getValue().get(i).toString().split("=")[0];
-				String uom = "Undefined";
 				properties.add(property);
-				uoms.add(uom);
+				uoms.add("Undefined");
 				dataTypes.add("Double");
 			}
 		}
@@ -191,24 +196,24 @@ public class BuildingOperationNormalizedServices {
 			
 			if(buildingOperation.getDateModified()!=null)
 			{
-				timeseriesPoint.getFields().put("DateModified", (String) buildingOperation.getDateModified().getValue());
+				timeseriesPoint.getFields().put("dateModified", (String) buildingOperation.getDateModified().getValue());
 			}
 			if(buildingOperation.getOperationType()!=null) {
-				timeseriesPoint.getFields().put("OperationType", (String) buildingOperation.getOperationType().getValue());
+				timeseriesPoint.getFields().put("operationType", (String) buildingOperation.getOperationType().getValue());
 			}
 			if(buildingOperation.getStatus()!=null) {
-				timeseriesPoint.getFields().put("Status", (String) buildingOperation.getStatus().getValue());
+				timeseriesPoint.getFields().put("status", (String) buildingOperation.getStatus().getValue());
 			}
 			if(buildingOperation.getResult()!=null) {
-				timeseriesPoint.getFields().put("Result", (String) buildingOperation.getResult().getValue());
+				timeseriesPoint.getFields().put("result", (String) buildingOperation.getResult().getValue());
 			}
 			if(buildingOperation.getDateStarted()!=null)
 			{
-				timeseriesPoint.getFields().put("DateStarted", (String) buildingOperation.getDateStarted().getValue());
+				timeseriesPoint.getFields().put("dateStarted", (String) buildingOperation.getDateStarted().getValue());
 			}
 			if(buildingOperation.getDateFinished()!=null)
 			{
-				timeseriesPoint.getFields().put("DateFinished", (String) buildingOperation.getDateFinished().getValue());
+				timeseriesPoint.getFields().put("dateFinished", (String) buildingOperation.getDateFinished().getValue());
 			}
 			if(buildingOperation.getOperationSequence()!=null) {
 				for (int i=0; i<buildingOperation.getOperationSequence().getValue().size(); i++) {

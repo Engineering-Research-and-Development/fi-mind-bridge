@@ -256,7 +256,7 @@ public class MindSphereGateway {
 			asset.setName(id+"Asset");
 			asset.setParentId(getRootAsset());
 			asset.setTypeId("engineer."+id+"AssetType");
-			
+
 			asset.setLocation(location);
 			asset.setVariables(variables);
 			
@@ -274,20 +274,20 @@ public class MindSphereGateway {
 			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
 			saveAspectTypeRequest.setId("engineer."+id+"AspectType");
 			saveAspectTypeRequest.setAspecttype(aspectType);
-			
+
 			List<AssetTypeAspects> aspects = new ArrayList<>();
 		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
 		    assetTypeAspects.setAspectTypeId("engineer."+id+"AspectType");
 		    assetTypeAspects.setName(id+"AspectType");	    
-		    aspects.add(assetTypeAspects);
-		 
+		    aspects.add(assetTypeAspects);	
+		    
 			AssetType assetType = new AssetType();
 		    assetType.setAspects(aspects);
 		    assetType.setScope(ScopeEnum.PRIVATE);
 		    assetType.setName(id+"AssetType");
 		    assetType.setParentTypeId("core.basicasset");
 		    assetType.setVariables(variablesDefinition);
-	    
+		    
 		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
 		    saveAssetTypeRequest.setId("engineer."+id+"AssetType");
 		    saveAssetTypeRequest.setAssettype(assetType);
@@ -313,7 +313,6 @@ public class MindSphereGateway {
 			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
 			saveAspectTypeRequest.setId("engineer."+id+"AspectType");
 			saveAspectTypeRequest.setAspecttype(aspectType);
-			aspectTypeClient.saveAspectType(saveAspectTypeRequest);
 
 			List<AssetTypeAspects> aspects = new ArrayList<>();
 		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
@@ -331,8 +330,7 @@ public class MindSphereGateway {
 		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
 		    saveAssetTypeRequest.setId("engineer."+id+"AssetType");
 		    saveAssetTypeRequest.setAssettype(assetType);
-			assetTypeClient.saveAssetType(saveAssetTypeRequest);
-		    	
+			
 			Asset asset = new Asset();
 			asset.setName(id+"Asset");
 			asset.setParentId(getRootAsset());
@@ -365,7 +363,6 @@ public class MindSphereGateway {
 			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
 			saveAspectTypeRequest.setId("engineer."+id+"AspectType");
 			saveAspectTypeRequest.setAspecttype(aspectType);
-			aspectTypeClient.saveAspectType(saveAspectTypeRequest);
 
 			List<AssetTypeAspects> aspects = new ArrayList<>();
 		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
@@ -383,8 +380,7 @@ public class MindSphereGateway {
 		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
 		    saveAssetTypeRequest.setId("engineer."+id+"AssetType");
 		    saveAssetTypeRequest.setAssettype(assetType);
-			assetTypeClient.saveAssetType(saveAssetTypeRequest);
-		    	
+			
 			Asset asset = new Asset();
 			asset.setName(id+"Asset");
 			asset.setParentId(getRootAsset());

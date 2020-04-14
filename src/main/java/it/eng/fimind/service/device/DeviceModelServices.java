@@ -63,7 +63,8 @@ public class DeviceModelServices {
 			if(!deviceModelDoesAlreadyExist(deviceModel)) 
 				result = createMindSphereAssetFromDeviceModel(deviceModel, false);
 			
-			result = createMindSphereTimeSeriesFromDeviceModel(deviceModel);
+			if(result)
+				result = createMindSphereTimeSeriesFromDeviceModel(deviceModel);
 	
 			if(result) {
 				serviceResult.setResult("DeviceModel added succesfully");
@@ -94,78 +95,83 @@ public class DeviceModelServices {
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(deviceModel.getType()!=null) {
+			keys.add("entityType");
+			values.add(deviceModel.getType());
+			varDefDataTypes.add("String");
+		}
 		if(deviceModel.getSource()!=null) {
-			keys.add("Source");
+			keys.add("source");
 			values.add(deviceModel.getSource());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDataProvider()!=null) {
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add(deviceModel.getDataProvider());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getCategory()!=null) {
-			keys.add("Category");
+			keys.add("category");
 			values.add(deviceModel.getCategory().toString());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDeviceClass()!=null) {
-			keys.add("DeviceClass");
+			keys.add("deviceClass");
 			values.add(deviceModel.getDeviceClass());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getFunction()!=null) {
-			keys.add("Function");
+			keys.add("function");
 			values.add(deviceModel.getFunction().toString());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getSupportedProtocol()!=null) {
-			keys.add("SupportedProtocol");
+			keys.add("supportedProtocol");
 			values.add(deviceModel.getSupportedProtocol().toString());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getSupportedUnits()!=null) {
-			keys.add("SupportedUnits");
+			keys.add("supportedUnits");
 			values.add(deviceModel.getSupportedUnits().toString());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getEnergyLimitationClass()!=null) {
-			keys.add("EnergyLimitationClass");		
+			keys.add("energyLimitationClass");		
 			values.add(deviceModel.getEnergyLimitationClass());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getBrandName()!=null) {
-			keys.add("BrandName");
+			keys.add("brandName");
 			values.add(deviceModel.getBrandName());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getModelName()!=null) {
-			keys.add("ModelName");
+			keys.add("modelName");
 			values.add(deviceModel.getModelName());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getManufacturerName()!=null) {
-			keys.add("ManufacturerName");
+			keys.add("manufacturerName");
 			values.add(deviceModel.getManufacturerName());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getName()!=null) {
-			keys.add("DeviceModelName");
+			keys.add("entityName");
 			values.add(deviceModel.getName());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDocumentation()!=null) {
-			keys.add("Documentation");
+			keys.add("documentation");
 			values.add(deviceModel.getDocumentation());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getImage()!=null) {
-			keys.add("Image");
+			keys.add("image");
 			values.add(deviceModel.getImage());
 			varDefDataTypes.add("String");
 		}
 		if(deviceModel.getDateCreated()!=null) {
-			keys.add("DateCreated");
+			keys.add("dateCreated");
 			values.add(deviceModel.getDateCreated());
 			varDefDataTypes.add("Timestamp");
 		}
@@ -173,7 +179,7 @@ public class DeviceModelServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 			
 		
-		List<String> properties = Stream.of("DateModified").collect(Collectors.toList());
+		List<String> properties = Stream.of("dateModified").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp").collect(Collectors.toList());
 		if(deviceModel.getControlledProperty()!=null && deviceModel.getSupportedUnits()!=null) {
@@ -213,7 +219,7 @@ public class DeviceModelServices {
 			timeseriesPoint.getFields().put("_time", instant);
 			
 			if(deviceModel.getDateModified()!=null) {
-				timeseriesPoint.getFields().put("DateModified", deviceModel.getDateModified());
+				timeseriesPoint.getFields().put("dateModified", deviceModel.getDateModified());
 			}
 			
 			timeSeriesList.add(timeseriesPoint);

@@ -65,7 +65,8 @@ public class DeviceServices {
 			if(!deviceDoesAlreadyExist(device)) 
 				result = createMindSphereAssetFromDevice(device, false);
 			
-			result = createMindSphereTimeSeriesFromDevice(device);
+			if(result)
+				result = createMindSphereTimeSeriesFromDevice(device);
 			
 			if(result) {
 				serviceResult.setResult("Device added succesfully");
@@ -93,10 +94,11 @@ public class DeviceServices {
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 		
 		Location mindSphereLocation = null;
-		if(device.getLocation()!=null) {
-			if(device.getLocation().getType().equals("Point")) 
-				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(device.getLocation());
-		}else if(device.getAddress()!=null) 
+		if(device.getLocation()!=null && device.getAddress()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocAddrToMiLocation(device.getLocation(), device.getAddress());
+		else if(device.getLocation()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(device.getLocation());
+		else if(device.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(device.getAddress());
 		
 		
@@ -104,108 +106,93 @@ public class DeviceServices {
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(device.getType()!=null) {
+			keys.add("entityType");
+			values.add(device.getType());
+			varDefDataTypes.add("String");
+		}
 		if(device.getSource()!=null) {
-			keys.add("Source");
+			keys.add("source");
 			values.add(device.getSource());
 			varDefDataTypes.add("String");
 		}
 		if(device.getDataProvider()!=null) {
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add(device.getDataProvider());
 			varDefDataTypes.add("String");
 		}
 		if(device.getCategory()!=null) {
-			keys.add("Category");
+			keys.add("category");
 			values.add(device.getCategory().toString());
 			varDefDataTypes.add("String");
 		}
 		if(device.getMnc()!=null) {
-			keys.add("Mnc");
+			keys.add("mnc");
 			values.add(device.getMnc());
 			varDefDataTypes.add("String");
 		}
 		if(device.getMcc()!=null) {
-			keys.add("Mcc");
+			keys.add("mcc");
 			values.add(device.getMcc());
 			varDefDataTypes.add("String");
 		}
 		if(device.getMacAddress()!=null) {
-			keys.add("MacAddress");
+			keys.add("macAddress");
 			values.add(device.getMacAddress().toString());
 			varDefDataTypes.add("String");
 		}
 		if(device.getSupportedProtocol()!=null) {
-			keys.add("SupportedProtocol");
+			keys.add("supportedProtocol");
 			values.add(device.getSupportedProtocol().toString());
 			varDefDataTypes.add("String");
 		}
 		if(device.getConfiguration()!=null) {
-			keys.add("Configuration");
+			keys.add("configuration");
 			values.add(device.getConfiguration());
 			varDefDataTypes.add("String");
 		}
 		if(device.getName()!=null) {
-			keys.add("DeviceName");
+			keys.add("entityName");
 			values.add(device.getName());
 			varDefDataTypes.add("String");
 		}
 		if(device.getDateInstalled()!=null) {
-			keys.add("DateInstalled");
+			keys.add("dateInstalled");
 			values.add(device.getDateInstalled());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getDateFirstUsed()!=null) {
-			keys.add("DateFirstUsed");
+			keys.add("dateFirstUsed");
 			values.add(device.getDateFirstUsed());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getDateManufactured()!=null) {
-			keys.add("DateManufactured");
+			keys.add("dateManufactured");
 			values.add(device.getDateManufactured());
 			varDefDataTypes.add("Timestamp");
 		}
-		if(device.getHardwareVersion()!=null) {
-			keys.add("HardwareVersion");
-			values.add(device.getHardwareVersion());
-			varDefDataTypes.add("String");
-		}
-		if(device.getSoftwareVersion()!=null) {
-			keys.add("SoftwareVersion");
-			values.add(device.getSoftwareVersion());
-			varDefDataTypes.add("String");
-		}
-		if(device.getFirmwareVersion()!=null) {
-			keys.add("FirmwareVersion");
-			values.add(device.getFirmwareVersion());
-			varDefDataTypes.add("String");
-		}
-		if(device.getOsVersion()!=null) {
-			keys.add("OsVersion");
-			values.add(device.getOsVersion());
-			varDefDataTypes.add("String");
-		}
 		if(device.getSerialNumber()!=null) {
-			keys.add("SerialNumber");
+			keys.add("serialNumber");
 			values.add(device.getSerialNumber());
 			varDefDataTypes.add("String");
 		}
 		if(device.getProvider()!=null) {
-			keys.add("Provider");
+			keys.add("provider");
 			values.add(device.getProvider());
 			varDefDataTypes.add("String");
 		}
 		if(device.getRefDeviceModel()!=null) {
-			keys.add("RefDeviceModel");
+			keys.add("refDeviceModel");
 			values.add(device.getRefDeviceModel());
 			varDefDataTypes.add("String");
 		}
 		if(device.getDateCreated()!=null) {
-			keys.add("DateCreated");
+			keys.add("dateCreated");
 			values.add(device.getDateCreated());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(device.getOwner()!=null) {
-			keys.add("Owner");
+			keys.add("owner");
 			values.add(device.getOwner().toString());
 			varDefDataTypes.add("String");
 		}
@@ -213,14 +200,14 @@ public class DeviceServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 		
-		List<String> properties = Stream.of("ControlledAssets","IpAddress", "DateLastCalibration","BatteryLevel","Rssi","DeviceState", "DateLastValueReported", "DateModified").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "t","%/100","%/100", "Dimensionless", "t", "t").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("String","String", "Timestamp","Double","Double","String", "Timestamp", "Timestamp").collect(Collectors.toList());
+		List<String> properties = Stream.of("controlledAssets", "ipAddress", "hardwareVersion", "softwareVersion", "firmwareVersion", "osVersion", "dateLastCalibration","batteryLevel","rssi","deviceState", "dateLastValueReported", "dateModified").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "t","%/100","%/100", "Dimensionless", "t", "t").collect(Collectors.toList());
+		List<String> dataTypes = Stream.of("String","String", "String","String", "String","String", "Timestamp","Double","Double","String", "Timestamp", "Timestamp").collect(Collectors.toList());
 		if(device.getControlledProperty()!=null) {
 			for (int i=0; i<device.getControlledProperty().size(); i++) {
 				String property = device.getControlledProperty().get(i);
 				properties.add(property);
-				uoms.add("Dimensionless");
+				uoms.add("Not Available");
 				dataTypes.add("Double");
 			}
 		}
@@ -252,28 +239,40 @@ public class DeviceServices {
 			timeseriesPoint.getFields().put("_time", instant);
 			
 			if(device.getControlledAsset()!=null) {
-				timeseriesPoint.getFields().put("ControlledAssets", device.getControlledAsset().toString());
+				timeseriesPoint.getFields().put("controlledAssets", device.getControlledAsset().toString());
 			}
 			if(device.getIpAddress()!=null) {
-				timeseriesPoint.getFields().put("IpAddress", device.getIpAddress().toString());
+				timeseriesPoint.getFields().put("ipAddress", device.getIpAddress().toString());
+			}
+			if(device.getHardwareVersion()!=null) {
+				timeseriesPoint.getFields().put("hardwareVersion", device.getHardwareVersion());
+			}
+			if(device.getSoftwareVersion()!=null) {
+				timeseriesPoint.getFields().put("softwareVersion", device.getSoftwareVersion());
+			}
+			if(device.getFirmwareVersion()!=null) {
+				timeseriesPoint.getFields().put("firmwareVersion", device.getFirmwareVersion());
+			}
+			if(device.getOsVersion()!=null) {
+				timeseriesPoint.getFields().put("osVersion", device.getOsVersion());
 			}
 			if(device.getDateLastCalibration()!=null) {
-				timeseriesPoint.getFields().put("DateLastCalibration", device.getDateLastCalibration());
+				timeseriesPoint.getFields().put("dateLastCalibration", device.getDateLastCalibration());
 			}
 			if(device.getBatteryLevel()!=null) {
-				timeseriesPoint.getFields().put("BatteryLevel", device.getBatteryLevel());
+				timeseriesPoint.getFields().put("batteryLevel", device.getBatteryLevel());
 			}
 			if(device.getRssi()!=null) {
-				timeseriesPoint.getFields().put("Rssi", device.getRssi());
+				timeseriesPoint.getFields().put("rssi", device.getRssi());
 			}
 			if(device.getDeviceState()!=null) {
-				timeseriesPoint.getFields().put("DeviceState", device.getDeviceState());
+				timeseriesPoint.getFields().put("deviceState", device.getDeviceState());
 			}
 			if(device.getDateLastValueReported()!=null) {
-				timeseriesPoint.getFields().put("DateLastValueReported", device.getDateLastValueReported());
+				timeseriesPoint.getFields().put("dateLastValueReported", device.getDateLastValueReported());
 			}
 			if(device.getDateModified()!=null) {
-				timeseriesPoint.getFields().put("DateModified", device.getDateModified());
+				timeseriesPoint.getFields().put("dateModified", device.getDateModified());
 			}	
 			if(device.getValue()!=null && device.getControlledProperty()!=null) {
 				Pattern pattern = Pattern.compile("[+-]?([0-9]*[.])?[0-9]+");

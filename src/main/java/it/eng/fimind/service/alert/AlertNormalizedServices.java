@@ -63,7 +63,8 @@ public class AlertNormalizedServices {
 			if(!alertDoesAlreadyExist(alert)) 
 				result = createMindSphereAssetFromAlert(alert, false);
 			
-			result = createMindSphereTimeSeriesFromAlert(alert);
+			if(result)
+				result = createMindSphereTimeSeriesFromAlert(alert);
 			
 			if(result) {
 				serviceResult.setResult("AlertNormalized added succesfully");
@@ -90,53 +91,60 @@ public class AlertNormalizedServices {
 		MindSphereMapper mindSphereMapper = new MindSphereMapper();
 
 		Location mindSphereLocation = null;
-		if(alert.getLocation()!=null) {
-			if(alert.getLocation().getValue().getType().equals("Point")) 
-				mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(alert.getLocation().getValue());
-		}else if(alert.getAddress()!=null) 
+		if(alert.getLocation()!=null && alert.getAddress()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocAddrToMiLocation(alert.getLocation().getValue(), alert.getAddress().getValue());
+		else if(alert.getLocation()!=null)
+			mindSphereLocation = mindSphereMapper.fiLocationToMiLocation(alert.getLocation().getValue());
+		else if(alert.getAddress()!=null) 
 			mindSphereLocation = mindSphereMapper.fiAddressToMiLocation(alert.getAddress().getValue());
+		
 		
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
 		List<String> varDefDataTypes = new ArrayList<String>();
 
+		if(alert.getType()!=null) {
+			keys.add("entityType");
+			values.add(alert.getType());
+			varDefDataTypes.add("String");
+		}
 		if(alert.getSource()!=null) {
-			keys.add("Source");
+			keys.add("source");
 			values.add((String) alert.getSource().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getDataProvider()!=null) {
-			keys.add("DataProvider");
+			keys.add("dataProvider");
 			values.add((String) alert.getDataProvider().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getCategory()!=null) {
-			keys.add("Category");
+			keys.add("category");
 			values.add((String) alert.getCategory().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getSubCategory()!=null) {
-			keys.add("SubCategory");
+			keys.add("subCategory");
 			values.add((String) alert.getSubCategory().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getValidFrom()!=null) {
-			keys.add("ValidFrom");
+			keys.add("validFrom");
 			values.add((String) alert.getValidFrom().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(alert.getValidTo()!=null) {
-			keys.add("ValidTo");
+			keys.add("validTo");
 			values.add((String) alert.getValidTo().getValue());
 			varDefDataTypes.add("Timestamp");
 		}
 		if(alert.getAlertSource()!=null) {
-			keys.add("AlertSource");
+			keys.add("alertSource");
 			values.add((String) alert.getAlertSource().getValue());
 			varDefDataTypes.add("String");
 		}
 		if(alert.getData()!=null) {
-			keys.add("Data");
+			keys.add("data");
 			values.add((String) alert.getData().getValue());
 			varDefDataTypes.add("String");
 		}
@@ -144,7 +152,7 @@ public class AlertNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = Stream.of("DateIssued", "Severity").collect(Collectors.toList());
+		List<String> properties = Stream.of("dateIssued", "severity").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), (String) alert.getDescription().getValue(), properties, uoms, dataTypes);
@@ -175,10 +183,10 @@ public class AlertNormalizedServices {
 			timeseriesPoint.getFields().put("_time", instant);
 			
 			if(alert.getDateIssued()!=null) {
-				timeseriesPoint.getFields().put("DateIssued",(String) alert.getDateIssued().getValue());
+				timeseriesPoint.getFields().put("dateIssued",(String) alert.getDateIssued().getValue());
 			}
 			if(alert.getSeverity()!=null) {
-				timeseriesPoint.getFields().put("Severity",(String) alert.getSeverity().getValue());
+				timeseriesPoint.getFields().put("severity",(String) alert.getSeverity().getValue());
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
