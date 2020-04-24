@@ -1,6 +1,6 @@
 # FI-MIND (FIWARE-MINDSPHERE) Bridge
 The FI-MIND bridge close the gap between MindSphere and FIWARE environments, easing the process of sharing assets and context data (legacy factory systems, non-production IoT data sources, etc.) between the two worlds.
-![FI-MIND Schema](https://github.com/Engineering-Research-and-Development/fi-mind-bridge/blob/master/docs/images/FI-MIND.png)
+![FI-MIND Schema](docs/images/FI-MIND.png)
 
 ## Contents
 
@@ -64,14 +64,14 @@ This channel let you export a subset of FIWARE Data Models into Mindsphere Envir
 |-----------------------------|:--------------------------:|--------------------------|:--------------------------:|
 |  [AeroAllergenObserved](https://fiware-datamodels.readthedocs.io/en/latest/Environment/AeroAllergenObserved/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
 |  [AirQualityObserved](https://fiware-datamodels.readthedocs.io/en/latest/Environment/AirQualityObserved/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
-|  [Alert](https://fiware-datamodels.readthedocs.io/en/latest/Alert/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](https://github.com/Engineering-Research-and-Development/fi-mind-bridge/docs/alert.md)  |
+|  [Alert](https://fiware-datamodels.readthedocs.io/en/latest/Alert/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/alert.md)  |
 |  [ArrivalEstimation](https://fiware-datamodels.readthedocs.io/en/latest/UrbanMobility/ArrivalEstimation/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
 |  [Beach](https://fiware-datamodels.readthedocs.io/en/latest/PointOfInterest/Beach/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
 |  [BikeHireDockingStation](https://fiware-datamodels.readthedocs.io/en/latest/Transportation/Bike/BikeHireDockingStation/doc/spec/index.html)     |  :x:  |Out of Domain|  |
-|  [Building](https://fiware-datamodels.readthedocs.io/en/latest/Building/Building/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](https://github.com/Engineering-Research-and-Development/fi-mind-bridge/docs/building.md)  |
-|  [BuildingOperation](https://fiware-datamodels.readthedocs.io/en/latest/Building/BuildingOperation/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](https://github.com/Engineering-Research-and-Development/fi-mind-bridge/docs/buildingoperation.md)  |
-|  [Device](https://fiware-datamodels.readthedocs.io/en/latest/Device/Device/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](https://github.com/Engineering-Research-and-Development/fi-mind-bridge/docs/device.md)  |
-|  [DeviceModel](https://github.com/Engineering-Research-and-Development/fi-mind-bridge/docs/devicemodel.md)  |  :white_check_mark:  |  |  :books: [Documentation](docs/DEVICEMODEL.md)  |
+|  [Building](https://fiware-datamodels.readthedocs.io/en/latest/Building/Building/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/building.md)  |
+|  [BuildingOperation](https://fiware-datamodels.readthedocs.io/en/latest/Building/BuildingOperation/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/buildingoperation.md)  |
+|  [Device](https://fiware-datamodels.readthedocs.io/en/latest/Device/Device/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/device.md)   |
+|  [DeviceModel](https://fiware-datamodels.readthedocs.io/en/latest/Device/DeviceModel/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/devicemodel.md)   |
 |  [EVChargingStation](https://fiware-datamodels.readthedocs.io/en/latest/Transportation/EVChargingStation/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
 |  [FlowerBed](https://fiware-datamodels.readthedocs.io/en/latest/ParksAndGardens/FlowerBed/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
 |  [Garden](https://fiware-datamodels.readthedocs.io/en/latest/ParksAndGardens/Garden/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
@@ -116,7 +116,7 @@ This channel let you export a subset of FIWARE Data Models into Mindsphere Envir
 |  [WasteContainerIsle](https://fiware-datamodels.readthedocs.io/en/latest/WasteManagement/WasteContainerIsle/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
 |  [WasteContainerModel](https://fiware-datamodels.readthedocs.io/en/latest/WasteManagement/WasteContainerModel/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
 |  [WaterQualityObserved](https://fiware-datamodels.readthedocs.io/en/latest/Environment/WaterQualityObserved/doc/spec/index.html)  |  :x:  |  Out of Domain  |  |
-|  [WeatherForecast](https://fiware-datamodels.readthedocs.io/en/latest/Weather/WeatherForecast/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/weatherforecast.md)  
+|  [WeatherForecast](https://fiware-datamodels.readthedocs.io/en/latest/Weather/WeatherForecast/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/weatherforecast.md)  |
 |  [WeatherObserved](https://fiware-datamodels.readthedocs.io/en/latest/Weather/WeatherObserved/doc/spec/index.html)  |  :white_check_mark:  |  |  :books: [Documentation](docs/weatherobserved.md)  |
 
 ##### MindSphere to FIWARE
