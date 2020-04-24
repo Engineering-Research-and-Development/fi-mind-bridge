@@ -83,7 +83,7 @@ public class DeviceServices {
 	private Boolean deviceDoesAlreadyExist(Device device)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+device.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+device.getId()+"\"}");
 		return assets.size()>0;
 	}
 	
@@ -229,7 +229,7 @@ public class DeviceServices {
 
 	public boolean createMindSphereTimeSeriesFromDevice(Device device) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+device.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+device.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
 			Date now = new Date();

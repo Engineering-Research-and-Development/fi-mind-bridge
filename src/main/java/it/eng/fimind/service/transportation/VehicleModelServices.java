@@ -79,7 +79,7 @@ public class VehicleModelServices {
 	private Boolean vehicleModelDoesAlreadyExist(VehicleModel vehicleModel)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+vehicleModel.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+vehicleModel.getId()+"\"}");
 		return assets.size()>0;
 	}
 	
@@ -218,7 +218,7 @@ public class VehicleModelServices {
 	
 	public boolean createMindSphereTimeSeriesFromVehicleModel(VehicleModel vehicleModel) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+vehicleModel.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+vehicleModel.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
 			Date now = new Date();

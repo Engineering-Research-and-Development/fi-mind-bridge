@@ -80,7 +80,7 @@ public class BuildingNormalizedServices {
 	private Boolean buildingDoesAlreadyExist(BuildingNormalized building)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+building.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+building.getId()+"\"}");
 		return assets.size()>0;
 	}
 	
@@ -157,7 +157,7 @@ public class BuildingNormalizedServices {
 		List<Variable> assetVariables = mindSphereMapper.fiPropertiesToMiVariables(keys, values, varDefDataTypes);
 
 	
-		List<String> properties = Stream.of("dataModfiied", "openingHours").collect(Collectors.toList());
+		List<String> properties = Stream.of("dateModfiied", "openingHours").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), (String) building.getDescription().getValue(), properties, uoms, dataTypes);
@@ -178,7 +178,7 @@ public class BuildingNormalizedServices {
 	
 	public boolean createMindSphereTimeSeriesFromBuilding(BuildingNormalized building) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+building.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+building.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
 			Date now = new Date();

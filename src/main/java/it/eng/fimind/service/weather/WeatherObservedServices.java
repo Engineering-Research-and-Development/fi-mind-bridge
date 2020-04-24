@@ -80,7 +80,7 @@ public class WeatherObservedServices {
 	private Boolean weatherObservedDoesAlreadyExist(WeatherObserved weatherObserved)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+weatherObserved.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+weatherObserved.getId()+"\"}");
 		return assets.size()>0;
 	}
 	
@@ -163,7 +163,7 @@ public class WeatherObservedServices {
 	
 	public boolean createMindSphereTimeSeriesFromWeatherObserved(WeatherObserved weatherObserved) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+weatherObserved.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+weatherObserved.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
 			Date now = new Date();

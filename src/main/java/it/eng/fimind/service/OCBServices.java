@@ -138,7 +138,7 @@ public class OCBServices {
 					for (Entry<String, String> entry : aspect_variables_mappings.entrySet()) {
 						String key = entry.getKey();
 						String valueType = aspect_variables_mappings.get(key);
-						
+														
 						if(valueType.equals("BOOLEAN"))
 							ocb_payload.addProperty(key, false);
 						else if(valueType.equals("INT"))

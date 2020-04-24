@@ -388,7 +388,6 @@ public class MindSphereGateway {
 		    assetTypeAspects.setAspectTypeId("engineer."+id);
 		    assetTypeAspects.setName(id);	    
 		    aspects.add(assetTypeAspects);	
-		    aspectTypeClient.saveAspectType(saveAspectTypeRequest);
 		    
 			AssetType assetType = new AssetType();
 		    assetType.setAspects(aspects);

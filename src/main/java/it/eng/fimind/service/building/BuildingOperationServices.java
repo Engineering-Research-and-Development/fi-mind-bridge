@@ -79,7 +79,7 @@ public class BuildingOperationServices {
 	private Boolean buildingOperationDoesAlreadyExist(BuildingOperation buildingOperation)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+buildingOperation.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+buildingOperation.getId()+"\"}");
 		return assets.size()>0;
 	}
 	
@@ -186,7 +186,7 @@ public class BuildingOperationServices {
 	
 	public boolean createMindSphereTimeSeriesFromBuildingOperation(BuildingOperation buildingOperation) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+buildingOperation.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+buildingOperation.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
 			Date now = new Date();

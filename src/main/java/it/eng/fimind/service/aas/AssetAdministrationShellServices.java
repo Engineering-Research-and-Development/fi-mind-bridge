@@ -79,16 +79,16 @@ public class AssetAdministrationShellServices {
 	@SuppressWarnings("unused")
 	private void getEverythingFromAAS(AssetAdministrationShell aas) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"\"}");
 		logger.debug(assets.get(0));
-		logger.debug(mindSphereGateway.getAspectById("engineer."+aas.getId()+"AspectType"));
-		logger.debug(mindSphereGateway.getTimeSeries(assets.get(0).getAssetId(), aas.getId()+"AspectType"));
+		logger.debug(mindSphereGateway.getAspectById("engineer."+aas.getId()));
+		logger.debug(mindSphereGateway.getTimeSeries(assets.get(0).getAssetId(), aas.getId()));
 	}
 	
 	private Boolean aasDoesAlreadyExist(AssetAdministrationShell aas)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"\"}");
 		return assets.size()>0;
 	}
 	
