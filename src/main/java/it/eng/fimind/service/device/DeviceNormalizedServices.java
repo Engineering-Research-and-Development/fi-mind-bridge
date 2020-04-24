@@ -52,12 +52,12 @@ public class DeviceNormalizedServices {
 		logger.debug("Id ="+device.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- DeviceNormalized ---");
+			logger.debug("DEBUG MODE FOR --- DeviceNormalized ---");
 			createMindSphereAssetFromDevice(device, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!deviceDoesAlreadyExist(device)) 
 				result = createMindSphereAssetFromDevice(device, false);
 			
@@ -210,7 +210,7 @@ public class DeviceNormalizedServices {
 		
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result =  mindSphereGateway.saveAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
@@ -284,7 +284,7 @@ public class DeviceNormalizedServices {
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), device.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), device.getId(), timeSeriesList);
 			logger.debug("DeviceNormalized updated");
 		} catch (Exception e) {
 			// Exception handling

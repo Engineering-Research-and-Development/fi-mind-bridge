@@ -53,12 +53,12 @@ public class BuildingNormalizedServices {
 		logger.debug("Id ="+building.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- BuildingNormalized ---");
+			logger.debug("DEBUG MODE FOR --- BuildingNormalized ---");
 			createMindSphereAssetFromBuilding(building, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!buildingDoesAlreadyExist(building)) 
 				result = createMindSphereAssetFromBuilding(building, false);
 			
@@ -164,7 +164,7 @@ public class BuildingNormalizedServices {
 		
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result =  mindSphereGateway.saveAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
@@ -195,7 +195,7 @@ public class BuildingNormalizedServices {
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), building.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), building.getId(), timeSeriesList);
 			logger.debug("BuildingNormalized updated");
 		
 		} catch (Exception e) {

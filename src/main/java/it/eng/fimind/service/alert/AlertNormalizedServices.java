@@ -54,12 +54,12 @@ public class AlertNormalizedServices {
 		logger.debug("Id ="+alert.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- AlertNormalized ---");
+			logger.debug("DEBUG MODE FOR --- AlertNormalized ---");
 			createMindSphereAssetFromAlert(alert, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!alertDoesAlreadyExist(alert)) 
 				result = createMindSphereAssetFromAlert(alert, false);
 			
@@ -159,7 +159,7 @@ public class AlertNormalizedServices {
 		
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result = mindSphereGateway.saveAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
@@ -190,7 +190,7 @@ public class AlertNormalizedServices {
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), alert.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), alert.getId(), timeSeriesList);
 			logger.debug("AlertNormalized updated");
 		
 		} catch (Exception e) {

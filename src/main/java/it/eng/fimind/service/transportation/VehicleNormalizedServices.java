@@ -53,12 +53,12 @@ public class VehicleNormalizedServices {
 		logger.debug("Id ="+vehicle.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- VehicleNormalized ---");
+			logger.debug("DEBUG MODE FOR --- VehicleNormalized ---");
 			createMindSphereAssetFromVehicle(vehicle, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!vehicleDoesAlreadyExist(vehicle)) 
 				result = createMindSphereAssetFromVehicle(vehicle, false);
 			
@@ -210,7 +210,7 @@ public class VehicleNormalizedServices {
 		
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(vehicle.getId(), assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(vehicle.getId(), assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result = mindSphereGateway.saveAsset(vehicle.getId(), assetVariablesDefinitions, assetVariables, aspectType);
@@ -258,7 +258,7 @@ public class VehicleNormalizedServices {
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), vehicle.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), vehicle.getId(), timeSeriesList);
 			logger.debug("VehicleNormalized updated");
 
 		} catch (Exception e) {

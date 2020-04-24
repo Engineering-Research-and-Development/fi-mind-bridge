@@ -53,12 +53,12 @@ public class WeatherObservedServices {
 		logger.debug("Id ="+weatherObserved.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- WeatherObserved ---");
+			logger.debug("DEBUG MODE FOR --- WeatherObserved ---");
 			createMindSphereAssetFromWeatherObserved(weatherObserved, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!weatherObservedDoesAlreadyExist(weatherObserved)) 
 				result = createMindSphereAssetFromWeatherObserved(weatherObserved, false);
 			
@@ -149,7 +149,7 @@ public class WeatherObservedServices {
 
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(weatherObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(weatherObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result = mindSphereGateway.saveAsset(weatherObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
@@ -222,7 +222,7 @@ public class WeatherObservedServices {
 			}
 
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), weatherObserved.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), weatherObserved.getId(), timeSeriesList);
 			logger.debug("WeatherObserved updated");
 
 		} catch (Exception e) {

@@ -53,12 +53,12 @@ public class AssetAdministrationShellServices {
 		logger.debug("Id ="+aas.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- AssetAdministrationShell ---");
+			logger.debug("DEBUG MODE FOR --- AssetAdministrationShell ---");
 			createMindSphereAssetFromAAS(aas, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!aasDoesAlreadyExist(aas)) 
 				result = createMindSphereAssetFromAAS(aas, false);
 			
@@ -80,9 +80,9 @@ public class AssetAdministrationShellServices {
 	private void getEverythingFromAAS(AssetAdministrationShell aas) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"Asset\"}");
-		System.out.println(assets.get(0));
-		System.out.println(mindSphereGateway.getAspectById("engineer."+aas.getId()+"AspectType"));
-		System.out.println(mindSphereGateway.getTimeSeries(assets.get(0).getAssetId(), aas.getId()+"AspectType"));
+		logger.debug(assets.get(0));
+		logger.debug(mindSphereGateway.getAspectById("engineer."+aas.getId()+"AspectType"));
+		logger.debug(mindSphereGateway.getTimeSeries(assets.get(0).getAssetId(), aas.getId()+"AspectType"));
 	}
 	
 	private Boolean aasDoesAlreadyExist(AssetAdministrationShell aas)
@@ -129,7 +129,7 @@ public class AssetAdministrationShellServices {
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(aas.getId(), "None", properties, uoms, dataTypes);
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result = mindSphereGateway.saveAsset(aas.getId(), assetVariablesDefinitions, assetVariables, aspectType);
@@ -143,7 +143,7 @@ public class AssetAdministrationShellServices {
 	
 	public boolean createMindSphereTimeSeriesFromAAS(AssetAdministrationShell aas) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
 			Date now = new Date();
@@ -167,7 +167,7 @@ public class AssetAdministrationShellServices {
 			}
 
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), aas.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), aas.getId(), timeSeriesList);
 			logger.debug("AssetAdministrationShell updated");
 		
 		} catch (Exception e) {

@@ -118,7 +118,7 @@ public class MindSphereMapper {
 		
 		AspectType aspectType = new AspectType();
 		
-		aspectType.setName(id+"Aspect");
+		aspectType.setName(id);
 		aspectType.setDescription(description);
 		aspectType.setScope(ScopeEnum.PRIVATE);
 		aspectType.setCategory(CategoryEnum.DYNAMIC);

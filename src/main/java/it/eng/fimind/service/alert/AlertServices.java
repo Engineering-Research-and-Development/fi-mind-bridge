@@ -54,12 +54,12 @@ public class AlertServices {
 		logger.debug("Id ="+alert.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- Alert ---");
+			logger.debug("DEBUG MODE FOR --- Alert ---");
 			createMindSphereAssetFromAlert(alert, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!alertDoesAlreadyExist(alert)) 
 				result = createMindSphereAssetFromAlert(alert, false);
 			
@@ -81,7 +81,7 @@ public class AlertServices {
 	private Boolean alertDoesAlreadyExist(Alert alert)
 	{
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"\"}");
 		return assets.size()>0;
 	}
 	
@@ -160,7 +160,7 @@ public class AlertServices {
 		
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result = mindSphereGateway.saveAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
@@ -174,8 +174,7 @@ public class AlertServices {
 	
 	public boolean createMindSphereTimeSeriesFromAlert(Alert alert) {
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();		
-
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"Asset\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
 			Date now = new Date();
@@ -192,7 +191,7 @@ public class AlertServices {
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), alert.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), alert.getId(), timeSeriesList);
 			logger.debug("Alert updated");
 		
 		} catch (Exception e) {

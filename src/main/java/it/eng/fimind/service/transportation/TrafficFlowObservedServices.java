@@ -53,12 +53,12 @@ public class TrafficFlowObservedServices {
 		logger.debug("Id ="+trafficFlowObserved.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- TrafficFlowObserved ---");
+			logger.debug("DEBUG MODE FOR --- TrafficFlowObserved ---");
 			createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!trafficFlowObservedDoesAlreadyExist(trafficFlowObserved)) 
 				result = createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved, false);
 			
@@ -165,7 +165,7 @@ public class TrafficFlowObservedServices {
 		
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result = mindSphereGateway.saveAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType);
@@ -226,7 +226,7 @@ public class TrafficFlowObservedServices {
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), trafficFlowObserved.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), trafficFlowObserved.getId(), timeSeriesList);
 			logger.debug("TrafficFlowObserved updated");
 
 		} catch (Exception e) {

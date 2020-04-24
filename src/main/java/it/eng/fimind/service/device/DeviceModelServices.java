@@ -54,12 +54,12 @@ public class DeviceModelServices {
 		logger.debug("Id ="+deviceModel.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			System.out.println("DEBUG MODE FOR --- DeviceModel ---");
+			logger.debug("DEBUG MODE FOR --- DeviceModel ---");
 			createMindSphereAssetFromDeviceModel(deviceModel, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();
 		}else {
-			Boolean result = false;
+			Boolean result = true;
 			if(!deviceModelDoesAlreadyExist(deviceModel)) 
 				result = createMindSphereAssetFromDeviceModel(deviceModel, false);
 			
@@ -195,7 +195,7 @@ public class DeviceModelServices {
 		
 		
 		if(isDebugMode) {
-			System.out.println(mindSphereGateway.createAsset(deviceModel.getId(), assetVariablesDefinitions, assetVariables, aspectType));
+			logger.debug(mindSphereGateway.createAsset(deviceModel.getId(), assetVariablesDefinitions, assetVariables, aspectType));
 			result = true;
 		}else {
 			result =  mindSphereGateway.saveAsset(deviceModel.getId(), assetVariablesDefinitions, assetVariables, aspectType);
@@ -223,7 +223,7 @@ public class DeviceModelServices {
 			}
 			
 			timeSeriesList.add(timeseriesPoint);
-			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), deviceModel.getId()+"AspectType", timeSeriesList);
+			mindSphereGateway.putTimeSeries(assets.get(0).getAssetId(), deviceModel.getId(), timeSeriesList);
 			logger.debug("DeviceModel updated");
 		} catch (Exception e) {
 			// Exception handling

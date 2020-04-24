@@ -12,9 +12,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 public class OCBGateway {
-	String ocb_url;
+	private static Logger logger = Logger.getLogger(OCBGateway.class);
 	
+	String ocb_url;
+
 	public OCBGateway(){
 		ClassLoader classLoader = getClass().getClassLoader();
 		File file = new File(classLoader.getResource("config.properties").getFile());
@@ -27,14 +31,14 @@ public class OCBGateway {
 			ocb_url = prop.getProperty("ocb-url");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}catch (IOException e) {
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 	
-	public void pushToOCB(String jsonBody){
+	public Boolean pushToOCB(String jsonBody){
 		try {
 			URL obj = new URL(ocb_url+"/v2/entities?options=keyValues");
 						
@@ -55,7 +59,7 @@ public class OCBGateway {
 			// For POST only - END
 	
 			int responseCode = con.getResponseCode();
-			System.out.println("POST Response Code :: " + responseCode);
+			logger.debug("POST Response Code :: " + responseCode);
 	
 			if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
 				BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -69,17 +73,21 @@ public class OCBGateway {
 				in.close();
 	
 				// print result
-				System.out.println(response.toString());
+				logger.debug(response.toString());
+				return true;
 			} else {
-				System.out.println("POST request not worked");
+				logger.error("POST request not worked");
+				return false;
 			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage());
+			return false;
 		}
 		catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage());
+			return false;
 		}
 	}
 
