@@ -186,16 +186,20 @@ curl -X POST \
   -d '{
     "id":"fiware_device",
     "type": "Device",
-    "category": "security",
-    "subCategory": "robbery",
-    "location": {
-        "type": "Point",
-        "coordinates": [-3.712247222222222, 40.423852777777775]
-    },
-    "dateIssued": "2017-04-25T09:25:55.00Z",
-    "description": "Potential robbery in main building",
-    "alertSource": "Camera1234",
-    "severity": "informational"
+    "category": ["sensor"],
+    "controlledProperty": ["fillingLevel","temperature"],
+    "controlledAsset":["wastecontainer-Osuna-100"],
+    "ipAddress": ["192.14.56.78"],
+    "mcc": "214",
+    "mnc": "07",
+    "batteryLevel": 0.75,
+    "serialNumber": "9845A",
+    "refDeviceModel":"myDevice-wastecontainer-sensor-345",
+    "rssi": 0.86,
+    "value": "l=0.22;t=21.2",
+    "deviceState": "ok",
+    "dateFirstUsed": "2014-09-11T11:00:00Z",
+    "owner": ["http://person.org/leon"]
 }'
 ```
 
