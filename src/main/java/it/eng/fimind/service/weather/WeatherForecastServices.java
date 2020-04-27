@@ -140,7 +140,7 @@ public class WeatherForecastServices {
 		List<String> properties = Stream.of("dateModified", "dateRetrieved", "dateIssued", "validity", "validFrom", "validTo", "weatherType", "visibility", "temperature", "feelsLikeTemperature", "relativeHumidity", "precipitationProbability", "windDirection", "windSpeed", "minTemperature", "minFeelsLikeTemperature", "minRelativeHumidity", "maxTemperature", "maxFeelsLikeTemperature", "maxRelativeHumidity").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "t", "t", "t", "t", "t", "Dimensionless", "Dimensionless", "c°", "c°", "%", "%/100", "°", "m/s", "c°", "c°", "%", "c°", "c°", "%").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "Timestamp", "String", "Timestamp", "Timestamp", "String", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherForecast.getId(), "None", properties, uoms, dataTypes);
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherForecast.getId(), properties, uoms, dataTypes);
 		
 
 		if(isDebugMode) {

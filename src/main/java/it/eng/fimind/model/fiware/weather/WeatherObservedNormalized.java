@@ -21,6 +21,8 @@ public class WeatherObservedNormalized {
 	@NotNull(message = "{weatherobserved.null.dateObserved}")
 	private Attribute dateObserved;
 	private Attribute source;
+	private Attribute stationCode;
+	private Attribute stationName;
 	private Attribute refDevice;
 	private Attribute refPointOfInterest;
 	private Attribute weatherType;
@@ -97,6 +99,18 @@ public class WeatherObservedNormalized {
 	}
 	public void setSource(Attribute source) {
 		this.source = source;
+	}
+	public Attribute getStationCode() {
+		return stationCode;
+	}
+	public void setStationCode(Attribute stationCode) {
+		this.stationCode = stationCode;
+	}
+	public Attribute getStationName() {
+		return stationName;
+	}
+	public void setStationName(Attribute stationName) {
+		this.stationName = stationName;
 	}
 	public Attribute getRefDevice() {
 		return refDevice;

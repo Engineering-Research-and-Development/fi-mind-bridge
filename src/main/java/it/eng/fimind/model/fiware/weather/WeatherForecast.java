@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import it.eng.fimind.model.fiware.common.Address;
+import it.eng.fimind.model.fiware.common.DayMeasurements;
 import it.eng.fimind.model.fiware.common.Location;
 
 public class WeatherForecast {

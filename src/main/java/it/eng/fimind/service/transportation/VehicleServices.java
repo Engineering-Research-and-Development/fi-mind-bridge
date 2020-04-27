@@ -123,6 +123,11 @@ public class VehicleServices {
 			values.add(vehicle.getCategory().toString());
 			varDefDataTypes.add("String");
 		}
+		if(vehicle.getCargoWeight()!=null) {
+			keys.add("cargoWeight");
+			values.add(vehicle.getCargoWeight().toString());
+			varDefDataTypes.add("Double");
+		}
 		if(vehicle.getVehicleIdentificationNumber()!=null) {
 			keys.add("vehicleIdentificationNumber");
 			values.add(vehicle.getVehicleIdentificationNumber());
@@ -205,8 +210,12 @@ public class VehicleServices {
 		List<String> properties = Stream.of("location", "previousLocation", "speed", "heading", "mileageFromOdometer","serviceStatus", "dateModfied").collect(Collectors.toList());
 		List<String> uoms = Stream.of("Coordinates","Coordinates","km/h", "°", "km","Dimensionless", "t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("String","String","Double","Double","Double", "String", "Timestamp").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), vehicle.getDescription(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(vehicle.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), (String) vehicle.getDescription(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), properties, uoms, dataTypes);
+					
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(vehicle.getId(), assetVariablesDefinitions, assetVariables, aspectType));

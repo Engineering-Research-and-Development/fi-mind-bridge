@@ -20,6 +20,8 @@ public class WeatherObserved {
 	@NotNull(message = "{weatherobserved.null.dateObserved}")
 	private String dateObserved;
 	private String source;
+	private String stationCode;
+	private String stationName;
 	private String refDevice;
 	private String refPointOfInterest;
 	@Pattern(message = "{weatherobserved.wrong.weatherType}", regexp = "clearNight|sunnyDay|slightlyCloudy|partlyCloudy|mist|fog|highClouds|cloudy|veryCloudy|overcast|lightRainShower|drizzle|lightRain|heavyRainShower|heavyRain|sleetShower|sleet|hailShower|hail|shower|lightSnow|snow|heavySnowShower|heavySnow|thunderShower|thunder", flags=Pattern.Flag.CASE_INSENSITIVE)
@@ -98,6 +100,18 @@ public class WeatherObserved {
 	}
 	public void setSource(String source) {
 		this.source = source;
+	}
+	public String getStationCode() {
+		return stationCode;
+	}
+	public void setStationCode(String stationCode) {
+		this.stationCode = stationCode;
+	}
+	public String getStationName() {
+		return stationName;
+	}
+	public void setStationName(String stationName) {
+		this.stationName = stationName;
 	}
 	public String getRefDevice() {
 		return refDevice;

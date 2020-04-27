@@ -200,8 +200,12 @@ public class VehicleModelServices {
 		List<String> properties = Stream.of("dateModified").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), vehicleModel.getDescription(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(vehicleModel.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), (String) vehicleModel.getDescription(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), properties, uoms, dataTypes);
+					
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(vehicleModel.getId(), assetVariablesDefinitions, assetVariables, aspectType));

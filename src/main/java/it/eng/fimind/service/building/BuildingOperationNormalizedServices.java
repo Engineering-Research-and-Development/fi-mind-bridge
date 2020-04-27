@@ -167,8 +167,12 @@ public class BuildingOperationNormalizedServices {
 				dataTypes.add("Double");
 			}
 		}
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), (String) buildingOperation.getDescription().getValue(), properties, uoms, dataTypes);
-
+		AspectType aspectType;
+		if(buildingOperation.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), (String) buildingOperation.getDescription().getValue(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), properties, uoms, dataTypes);
+			
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(buildingOperation.getId(), assetVariablesDefinitions, assetVariables, aspectType));

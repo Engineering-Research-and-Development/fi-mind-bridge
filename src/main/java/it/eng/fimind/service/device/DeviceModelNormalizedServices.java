@@ -187,8 +187,12 @@ public class DeviceModelNormalizedServices {
 				dataTypes.add("Double");
 			}
 		}
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(deviceModel.getId(), (String) deviceModel.getDescription().getValue(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(deviceModel.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(deviceModel.getId(), (String) deviceModel.getDescription().getValue(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(deviceModel.getId(), properties, uoms, dataTypes);
+			
 
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(deviceModel.getId(), assetVariablesDefinitions, assetVariables, aspectType));

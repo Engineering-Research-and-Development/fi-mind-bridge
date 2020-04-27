@@ -95,10 +95,10 @@ curl -X POST \
         "value": "onRoute"
     },
     "cargoWeight": {
-        "value": 314
+        "value": 314.0
     },
     "speed": {
-        "value": 50,
+        "value": 50.0,
         "metadata": {
             "timestamp": {
                 "type": "DateTime",
@@ -129,8 +129,8 @@ curl -X POST \
         "coordinates": [-3.164485591715449, 40.62785133667262]
     },
     "name": "C Recogida 1",
-    "speed": 50,
-    "cargoWeight": 314,
+    "speed": 50.0,
+    "cargoWeight": 314.0,
     "serviceStatus": "onRoute",
     "serviceProvided": ["garbageCollection", "wasteContainerCleaning"],
     "areaServed": "Centro",
@@ -195,8 +195,8 @@ curl -X POST \
         "coordinates": [-3.164485591715449, 40.62785133667262]
     },
     "name": "C Recogida 1",
-    "speed": 50,
-    "cargoWeight": 314,
+    "speed": 50.0,
+    "cargoWeight": 314.0,
     "serviceStatus": "onRoute",
     "serviceProvided": ["garbageCollection", "wasteContainerCleaning"],
     "areaServed": "Centro",

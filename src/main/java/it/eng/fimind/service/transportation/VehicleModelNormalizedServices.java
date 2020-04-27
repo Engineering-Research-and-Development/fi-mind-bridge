@@ -140,7 +140,7 @@ public class VehicleModelNormalizedServices {
 		}
 		if(vehicleModel.getCargoVolume()!=null) {
 			keys.add("cargoVolume");
-			values.add((String) vehicleModel.getCargoVolume().getValue());
+			values.add((String) vehicleModel.getCargoVolume().getValue().toString());
 			varDefDataTypes.add("Double");
 		}
 		if(vehicleModel.getFuelType()!=null) {
@@ -200,8 +200,12 @@ public class VehicleModelNormalizedServices {
 		List<String> properties = Stream.of("dateModified").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), (String) vehicleModel.getDescription().getValue(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(vehicleModel.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), (String) vehicleModel.getDescription().getValue(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicleModel.getId(), properties, uoms, dataTypes);
+				
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(vehicleModel.getId(), assetVariablesDefinitions, assetVariables, aspectType));

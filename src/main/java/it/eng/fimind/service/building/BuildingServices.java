@@ -160,8 +160,12 @@ public class BuildingServices {
 		List<String> properties = Stream.of("dateModified", "openingHours").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), building.getDescription(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(building.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), (String) building.getDescription(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(building.getId(), properties, uoms, dataTypes);
+					
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(building.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));

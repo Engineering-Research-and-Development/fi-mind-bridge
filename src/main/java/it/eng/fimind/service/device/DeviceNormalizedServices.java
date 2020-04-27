@@ -196,18 +196,22 @@ public class DeviceNormalizedServices {
 
 	
 		List<String> properties = Stream.of("controlledAssets", "ipAddress", "hardwareVersion", "softwareVersion", "firmwareVersion", "osVersion", "dateLastCalibration","batteryLevel","rssi","deviceState", "dateLastValueReported", "dateModified").collect(Collectors.toList());
-		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "t","%/100","%/100", "Dimensionless", "t", "t").collect(Collectors.toList());
+		List<String> uoms = Stream.of("Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "Dimensionless", "t", "%/100","%/100", "Dimensionless", "t", "t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("String","String", "String","String", "String","String", "Timestamp","Double","Double","String", "Timestamp", "Timestamp").collect(Collectors.toList());
 		if(device.getControlledProperty()!=null) {
 			for (int i=0; i<device.getControlledProperty().getValue().size(); i++) {
 				String property = device.getControlledProperty().getValue().get(i).toString();
 				properties.add(property);
-				uoms.add("Not Available");
+				uoms.add("Undefined");
 				dataTypes.add("Double");
 			}
 		}
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), (String) device.getDescription().getValue(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(device.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), (String) device.getDescription().getValue(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), properties, uoms, dataTypes);
+
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(device.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));
@@ -240,25 +244,25 @@ public class DeviceNormalizedServices {
 				timeseriesPoint.getFields().put("ipAddress", (String) device.getIpAddress().getValue().toString());
 			}
 			if(device.getHardwareVersion()!=null) {
-				timeseriesPoint.getFields().put("hardwareVersion", device.getHardwareVersion().getValue());
+				timeseriesPoint.getFields().put("hardwareVersion", (String) device.getHardwareVersion().getValue());
 			}
 			if(device.getSoftwareVersion()!=null) {
-				timeseriesPoint.getFields().put("softwareVersion", device.getSoftwareVersion().getValue());
+				timeseriesPoint.getFields().put("softwareVersion", (String) device.getSoftwareVersion().getValue());
 			}
 			if(device.getFirmwareVersion()!=null) {
-				timeseriesPoint.getFields().put("firmwareVersion", device.getFirmwareVersion().getValue());
+				timeseriesPoint.getFields().put("firmwareVersion", (String) device.getFirmwareVersion().getValue());
 			}
 			if(device.getOsVersion()!=null) {
-				timeseriesPoint.getFields().put("osVersion", device.getOsVersion().getValue());
+				timeseriesPoint.getFields().put("osVersion", (String) device.getOsVersion().getValue());
 			}
 			if(device.getDateLastCalibration()!=null) {
 				timeseriesPoint.getFields().put("dateLastCalibration", (String) device.getDateLastCalibration().getValue());
 			}
 			if(device.getBatteryLevel()!=null) {
-				timeseriesPoint.getFields().put("batteryLevel", (String) device.getBatteryLevel().getValue());
+				timeseriesPoint.getFields().put("batteryLevel", Double.valueOf(device.getBatteryLevel().getValue().toString()));
 			}
 			if(device.getRssi()!=null) {
-				timeseriesPoint.getFields().put("rssi", (String) device.getRssi().getValue());
+				timeseriesPoint.getFields().put("rssi", Double.valueOf(device.getRssi().getValue().toString()));
 			}
 			if(device.getDeviceState()!=null) {
 				timeseriesPoint.getFields().put("deviceState", (String) device.getDeviceState().getValue());

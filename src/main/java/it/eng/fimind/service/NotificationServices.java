@@ -84,14 +84,12 @@ public class NotificationServices {
 		ObjectMapper mapper = new ObjectMapper();
 		//JSON from String to Object
 		try {
-			NotificationContent notificationContent = mapper.readValue(data, NotificationContent.class);
+			NotificationContent notificationContent = mapper.readValue(unmapForbiddenChars(data), NotificationContent.class);
 			logger.debug("notificationContent="+notificationContent);
 			
 			// TODO: add notification management
 			for (it.eng.fimind.model.Entity entity:notificationContent.getData()) {
 				logger.debug("entity.getType()="+entity.getType());
-				
-				data = unmapForbiddenChars(data);
 				
 				if (entity.getType().equalsIgnoreCase("Alert")){
 					logger.debug("Alert");

@@ -72,6 +72,9 @@ curl -X POST \
     },
     "controlledProperty": {
         "value": ["fillingLevel", "temperature"]
+    },
+    "supportedUnits": {
+        "value": ["%", "c°"]
     }
 }'
 ```
@@ -92,7 +95,8 @@ curl -X POST \
     "manufacturerName": "myDevice Inc.",
     "category": ["sensor"],
     "function": ["sensing"],
-    "controlledProperty": ["fillingLevel", "temperature"]
+    "controlledProperty": ["fillingLevel", "temperature"],
+    "supportedUnits": ["%", "c°"]
 }'
 ```
 
@@ -151,7 +155,8 @@ curl -X POST \
     "manufacturerName": "myDevice Inc.",
     "category": ["sensor"],
     "function": ["sensing"],
-    "controlledProperty": ["fillingLevel", "temperature"]
+    "controlledProperty": ["fillingLevel", "temperature"],
+    "supportedUnits": ["%", "c°"]
     }
 }'
 ```

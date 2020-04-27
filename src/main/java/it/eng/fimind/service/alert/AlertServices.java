@@ -156,8 +156,12 @@ public class AlertServices {
 		List<String> properties = Stream.of("dateIssued", "severity").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "Dimensionless").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "String").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), alert.getDescription(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(alert.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), (String) alert.getDescription(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(alert.getId(), properties, uoms, dataTypes);
+					
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(alert.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));

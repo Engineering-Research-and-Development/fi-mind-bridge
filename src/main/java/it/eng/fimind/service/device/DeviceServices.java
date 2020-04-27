@@ -207,11 +207,15 @@ public class DeviceServices {
 			for (int i=0; i<device.getControlledProperty().size(); i++) {
 				String property = device.getControlledProperty().get(i);
 				properties.add(property);
-				uoms.add("Not Available");
+				uoms.add("Undefined");
 				dataTypes.add("Double");
 			}
 		}
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), device.getDescription(), properties, uoms, dataTypes);
+		AspectType aspectType;
+		if(device.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), (String) device.getDescription(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(device.getId(), properties, uoms, dataTypes);
 		
 		
 		if(isDebugMode) {

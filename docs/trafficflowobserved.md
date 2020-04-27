@@ -57,6 +57,9 @@ curl -X POST \
     "dateObserved": {
         "value": "2016-12-07T11:10:00/2016-12-07T11:15:00"
     },
+    "vehicleType": {
+        "value": "car"
+    },
     "laneDirection": {
         "value": "forward"
     },
@@ -121,6 +124,7 @@ curl -X POST \
   -d '{
 	"id":"fimind_trafficFlowObserved",
     "type": "TrafficFlowObserved",
+    "vehicleType": "car",
     "laneId": 1,
     "address": {
         "streetAddress": "Avenida de Salamanca",
@@ -197,6 +201,7 @@ curl -X POST \
   -d '{
     "id":"fiware_trafficFlowObserved",
     "type": "TrafficFlowObserved",
+    "vehicleType": "car",
     "laneId": 1,
     "address": {
         "streetAddress": "Avenida de Salamanca",

@@ -142,6 +142,35 @@ public class MindSphereMapper {
 		
 		return aspectType;
 	}
+
+	public AspectType fiStateToMiAspectType(String id, List<String> keys, List<String> values, List<String> dataTypes)
+	{
+		
+		AspectType aspectType = new AspectType();
+		
+		aspectType.setName(id);
+		aspectType.setScope(ScopeEnum.PRIVATE);
+		aspectType.setCategory(CategoryEnum.DYNAMIC);
+		
+		List<AspectVariable> aspectVariables = new ArrayList<AspectVariable>();
+		
+		for(int i=0; i<keys.size();i++) {
+			AspectVariable var = new AspectVariable();
+			var.setName(keys.get(i));
+			var.setUnit(values.get(i));
+			var.setDataType(getAspectVariableDataType(dataTypes.get(i)));
+			if(dataTypes.get(i).equalsIgnoreCase("String")) {
+				var.setLength(255);
+			}
+			var.setSearchable(true);
+			var.setQualityCode(true);
+			aspectVariables.add(var);
+		}
+		
+		aspectType.setVariables(aspectVariables);
+		
+		return aspectType;
+	}
 }
 
 //You cannot use the following standard names: id, name, description, tenant, etag, scope, properties, propertySets, extends, variables, aspects, parentTypeId, timezone, type, parent

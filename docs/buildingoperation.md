@@ -93,6 +93,10 @@ curl -X POST \
         "type": "Relationship",
         "value": "building-a85e3da145c1"
     },
+    refOperator": {
+        "type": "Relationship",
+        "value": "operator-1af45ge"
+    },
     "result": {
         "value": "ok"
     },
@@ -128,6 +132,7 @@ curl -X POST \
     "source": "http://www.example.com",
     "dataProvider": "OperatorA",
     "refBuilding": "building-a85e3da145c1",
+    "refOperator": "operator-1af45ge",
     "operationType": "airConditioning",
     "description": "Air conditioning levels reduced due to out of hours",
     "result": "ok",
@@ -202,6 +207,7 @@ curl -X POST \
     "source": "http://www.example.com",
     "dataProvider": "OperatorA",
     "refBuilding": "building-a85e3da145c1",
+    "refOperator": "operator-1af45ge",
     "operationType": "airConditioning",
     "description": "Air conditioning levels reduced due to out of hours",
     "result": "ok",
@@ -210,7 +216,7 @@ curl -X POST \
     "dateStarted": "2016-08-08T10:18:16Z",
     "dateFinished": "2016-08-20T10:18:16Z",
     "status": "finished",
-    "operationSequence": ["fan_power=0", "set_temperature=24"],
+    "operationSequence": ["fan_power%3D0", "set_temperature%3D24"],
     "refRelatedBuildingOperation": [
         "b4fb8bff-1a8f-455f-8cc0-ca43c069f865",
         "55c24793-3437-4157-9bda-667c9e1531fc"

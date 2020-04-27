@@ -160,9 +160,13 @@ public class TrafficFlowObservedServices {
 		
 		List<String> properties = Stream.of("dateModified", "dateObserved", "dateObservedFrom", "dateObservedTo", "intensity","occupancy", "averageVehicleSpeed", "averageVehicleLength", "congested", "averageHeadwayTime", "averageGapDistance", "reversedLane").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "t", "t", "t", "Dimensionless", "Dimensionless", "km/h", "m", "Dimensionless", "s", "m", "Dimensionless").collect(Collectors.toList());
-		List<String> dataTypes = Stream.of("Timestamp", "String", "Timestamp", "Timestamp", "Integer", "Integer", "Double", "Double", "Boolean", "Double", "Double", "Boolean").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), trafficFlowObserved.getDescription(), properties, uoms, dataTypes);
-		
+		List<String> dataTypes = Stream.of("Timestamp", "String", "Timestamp", "Timestamp", "Integer", "Double", "Double", "Double", "Boolean", "Double", "Double", "Boolean").collect(Collectors.toList());
+		AspectType aspectType;
+		if(trafficFlowObserved.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), (String) trafficFlowObserved.getDescription(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(trafficFlowObserved.getId(), properties, uoms, dataTypes);
+				
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(trafficFlowObserved.getId(), mindSphereLocation, assetVariablesDefinitions, assetVariables, aspectType));

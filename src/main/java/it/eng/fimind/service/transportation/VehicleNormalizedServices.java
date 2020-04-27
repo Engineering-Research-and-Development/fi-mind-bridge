@@ -124,6 +124,11 @@ public class VehicleNormalizedServices {
 			values.add((String) vehicle.getCategory().getValue().toString());
 			varDefDataTypes.add("String");
 		}
+		if(vehicle.getCargoWeight()!=null) {
+			keys.add("cargoWeight");
+			values.add((String) vehicle.getCargoWeight().getValue().toString());
+			varDefDataTypes.add("Double");
+		}
 		if(vehicle.getVehicleIdentificationNumber()!=null) {
 			keys.add("vehicleIdentificationNumber");
 			values.add((String) vehicle.getVehicleIdentificationNumber().getValue());
@@ -206,8 +211,12 @@ public class VehicleNormalizedServices {
 		List<String> properties = Stream.of("location", "previousLocation", "speed", "heading", "mileageFromOdometer","serviceStatus", "dateModfied").collect(Collectors.toList());
 		List<String> uoms = Stream.of("Coordinates","Coordinates","km/h", "°", "km","Dimensionless", "t").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("String","String","Double","Double","Double", "String", "Timestamp").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), (String) vehicle.getDescription().getValue(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(vehicle.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), (String) vehicle.getDescription().getValue(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(vehicle.getId(), properties, uoms, dataTypes);
+					
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(vehicle.getId(), assetVariablesDefinitions, assetVariables, aspectType));
@@ -237,18 +246,18 @@ public class VehicleNormalizedServices {
 				String curr_location = vehicle.getLocation().getValue().getCoordinates().get(0) + "," +  vehicle.getLocation().getValue().getCoordinates().get(1);
 				timeseriesPoint.getFields().put("location",curr_location);
 			}
-			if(vehicle.getLocation()!=null) {
+			if(vehicle.getPreviousLocation()!=null) {
 				String prev_location = vehicle.getPreviousLocation().getValue().getCoordinates().get(0) + "," +  vehicle.getPreviousLocation().getValue().getCoordinates().get(1);
 				timeseriesPoint.getFields().put("previousLocation",prev_location);
 			}
 			if(vehicle.getSpeed()!=null) {
-				timeseriesPoint.getFields().put("speed",(Double) vehicle.getSpeed().getValue());
+				timeseriesPoint.getFields().put("speed", Double.valueOf(vehicle.getSpeed().getValue().toString()));
 			}
 			if(vehicle.getHeading()!=null) {
-				timeseriesPoint.getFields().put("heading",(Double) vehicle.getHeading().getValue());
+				timeseriesPoint.getFields().put("heading", Double.valueOf(vehicle.getHeading().getValue().toString()));
 			}
 			if(vehicle.getMileageFromOdometer()!=null) {
-				timeseriesPoint.getFields().put("mileageFromOdometer",(Double) vehicle.getMileageFromOdometer().getValue());
+				timeseriesPoint.getFields().put("mileageFromOdometer", Double.valueOf(vehicle.getMileageFromOdometer().getValue().toString()));
 			}
 			if(vehicle.getServiceStatus()!=null) {
 				timeseriesPoint.getFields().put("serviceStatus",(String) vehicle.getServiceStatus().getValue());

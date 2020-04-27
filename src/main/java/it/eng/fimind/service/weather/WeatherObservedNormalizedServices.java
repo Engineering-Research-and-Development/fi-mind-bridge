@@ -133,6 +133,16 @@ public class WeatherObservedNormalizedServices {
 			values.add((String) weatherObserved.getSource().getValue());
 			varDefDataTypes.add("String");
 		}
+		if(weatherObserved.getStationCode()!=null) {
+			keys.add("stationCode");
+			values.add((String) weatherObserved.getStationCode().getValue());
+			varDefDataTypes.add("String");
+		}
+		if(weatherObserved.getStationName()!=null) {
+			keys.add("stationName");
+			values.add((String) weatherObserved.getStationName().getValue());
+			varDefDataTypes.add("String");
+		}
 		if(weatherObserved.getRefDevice()!=null) {
 			keys.add("refDevice");
 			values.add((String) weatherObserved.getRefDevice().getValue());
@@ -150,7 +160,7 @@ public class WeatherObservedNormalizedServices {
 		List<String> properties = Stream.of("dateModified","dateObserved","weatherType", "dewPoint", "visibility", "temperature", "relativeHumidity", "precipitation", "windDirection", "windSpeed", "atmosphericPressure", "pressureTendency", "solarRadiation", "illuminance", "streamGauge", "snowHeight").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "t","Dimensionless", "c°", "Dimensionless", "c°", "%", "l/m2", "°", "m/s", "hPa", "Dimensionless", "W/m2", "lux", "cm", "cm").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "String", "Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherObserved.getId(), "None", properties, uoms, dataTypes);
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherObserved.getId(), properties, uoms, dataTypes);
 		
 		
 		if(isDebugMode) {
@@ -187,43 +197,43 @@ public class WeatherObservedNormalizedServices {
 				timeseriesPoint.getFields().put("weatherType",(String) weatherObserved.getWeatherType().getValue());
 			}
 			if(weatherObserved.getDewPoint()!=null) {
-				timeseriesPoint.getFields().put("dewPoint",(Double) weatherObserved.getDewPoint().getValue());
+				timeseriesPoint.getFields().put("dewPoint", Double.valueOf(weatherObserved.getDewPoint().getValue().toString()));
 			}
 			if(weatherObserved.getVisibility()!=null) {
 				timeseriesPoint.getFields().put("visibility",(String) weatherObserved.getVisibility().getValue());
 			}
 			if(weatherObserved.getTemperature()!=null) {
-				timeseriesPoint.getFields().put("temperature",(Double) weatherObserved.getTemperature().getValue());
+				timeseriesPoint.getFields().put("temperature", Double.valueOf(weatherObserved.getTemperature().getValue().toString()));
 			}
 			if(weatherObserved.getRelativeHumidity()!=null) {
-				timeseriesPoint.getFields().put("relativeHumidity",(Double) weatherObserved.getRelativeHumidity().getValue());
+				timeseriesPoint.getFields().put("relativeHumidity", Double.valueOf(weatherObserved.getRelativeHumidity().getValue().toString()));
 			}
 			if(weatherObserved.getPrecipitation()!=null) {
-				timeseriesPoint.getFields().put("precipitation",(Double) weatherObserved.getPrecipitation().getValue());
+				timeseriesPoint.getFields().put("precipitation", Double.valueOf(weatherObserved.getPrecipitation().getValue().toString()));
 			}
 			if(weatherObserved.getWindDirection()!=null) {
-				timeseriesPoint.getFields().put("windDirection",(Double) weatherObserved.getWindDirection().getValue());
+				timeseriesPoint.getFields().put("windDirection", Double.valueOf(weatherObserved.getWindDirection().getValue().toString()));
 			}
 			if(weatherObserved.getWindSpeed()!=null) {
-				timeseriesPoint.getFields().put("windSpeed",(Double) weatherObserved.getWindSpeed().getValue());
+				timeseriesPoint.getFields().put("windSpeed", Double.valueOf(weatherObserved.getWindSpeed().getValue().toString()));
 			}
 			if(weatherObserved.getAtmosphericPressure()!=null) {
-				timeseriesPoint.getFields().put("atmosphericPressure",(Double) weatherObserved.getAtmosphericPressure().getValue());
+				timeseriesPoint.getFields().put("atmosphericPressure", Double.valueOf(weatherObserved.getAtmosphericPressure().getValue().toString()));
 			}
 			if(weatherObserved.getPressureTendency()!=null) {
-				timeseriesPoint.getFields().put("pressureTendency",(Double) weatherObserved.getPressureTendency().getValue());
+				timeseriesPoint.getFields().put("pressureTendency", Double.valueOf(weatherObserved.getPressureTendency().getValue().toString()));
 			}
 			if(weatherObserved.getSolarRadiation()!=null) {
-				timeseriesPoint.getFields().put("solarRadiation",(Double) weatherObserved.getSolarRadiation().getValue());
+				timeseriesPoint.getFields().put("solarRadiation", Double.valueOf(weatherObserved.getSolarRadiation().getValue().toString()));
 			}
 			if(weatherObserved.getIlluminance()!=null) {
-				timeseriesPoint.getFields().put("illuminance",(Double) weatherObserved.getIlluminance().getValue());
+				timeseriesPoint.getFields().put("illuminance", Double.valueOf(weatherObserved.getIlluminance().getValue().toString()));
 			}
 			if(weatherObserved.getStreamGauge()!=null) {
-				timeseriesPoint.getFields().put("streamGauge",(Double) weatherObserved.getStreamGauge().getValue());
+				timeseriesPoint.getFields().put("streamGauge", Double.valueOf(weatherObserved.getStreamGauge().getValue().toString()));
 			}
 			if(weatherObserved.getSnowHeight()!=null) {
-				timeseriesPoint.getFields().put("snowHeight",(Double) weatherObserved.getSnowHeight().getValue());
+				timeseriesPoint.getFields().put("snowHeight", Double.valueOf(weatherObserved.getSnowHeight().getValue().toString()));
 			}
 
 			timeSeriesList.add(timeseriesPoint);

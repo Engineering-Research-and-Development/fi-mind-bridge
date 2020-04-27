@@ -1,4 +1,4 @@
-package it.eng.fimind.model.fiware.weather;
+package it.eng.fimind.model.fiware.common;
 
 public class DayMeasurements {
 	private Double temperature;

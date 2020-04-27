@@ -5,6 +5,7 @@ import javax.validation.constraints.Pattern;
 
 import it.eng.fimind.model.fiware.common.AddressNormalized;
 import it.eng.fimind.model.fiware.common.Attribute;
+import it.eng.fimind.model.fiware.common.DayMeasurementsNormalized;
 import it.eng.fimind.model.fiware.common.LocationNormalized;
 
 public class WeatherForecastNormalized {

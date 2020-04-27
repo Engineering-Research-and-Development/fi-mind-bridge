@@ -128,6 +128,16 @@ public class WeatherObservedServices {
 			values.add(weatherObserved.getSource());
 			varDefDataTypes.add("String");
 		}
+		if(weatherObserved.getStationCode()!=null) {
+			keys.add("stationCode");
+			values.add(weatherObserved.getStationCode());
+			varDefDataTypes.add("String");
+		}
+		if(weatherObserved.getStationName()!=null) {
+			keys.add("stationName");
+			values.add(weatherObserved.getStationName());
+			varDefDataTypes.add("String");
+		}
 		if(weatherObserved.getRefDevice()!=null) {
 			keys.add("refDevice");
 			values.add(weatherObserved.getRefDevice());
@@ -145,7 +155,7 @@ public class WeatherObservedServices {
 		List<String> properties = Stream.of("dateModified","dateObserved","weatherType", "dewPoint", "visibility", "temperature", "relativeHumidity", "precipitation", "windDirection", "windSpeed", "atmosphericPressure", "pressureTendency", "solarRadiation", "illuminance", "streamGauge", "snowHeight").collect(Collectors.toList());
 		List<String> uoms = Stream.of("t", "t","Dimensionless", "c°", "Dimensionless", "c°", "%", "l/m2", "°", "m/s", "hPa", "Dimensionless", "W/m2", "lux", "cm", "cm").collect(Collectors.toList());
 		List<String> dataTypes = Stream.of("Timestamp", "Timestamp", "String", "Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double").collect(Collectors.toList());
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherObserved.getId(), "None", properties, uoms, dataTypes);
+		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(weatherObserved.getId(), properties, uoms, dataTypes);
 
 		
 		if(isDebugMode) {

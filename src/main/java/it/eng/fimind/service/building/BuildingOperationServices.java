@@ -168,8 +168,12 @@ public class BuildingOperationServices {
 				dataTypes.add("Double");
 			}
 		}
-		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), buildingOperation.getDescription(), properties, uoms, dataTypes);
-		
+		AspectType aspectType;
+		if(buildingOperation.getDescription()!=null)
+			aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), (String) buildingOperation.getDescription(), properties, uoms, dataTypes);
+		else
+			aspectType = mindSphereMapper.fiStateToMiAspectType(buildingOperation.getId(), properties, uoms, dataTypes);
+					
 		
 		if(isDebugMode) {
 			logger.debug(mindSphereGateway.createAsset(buildingOperation.getId(), assetVariablesDefinitions, assetVariables, aspectType));
@@ -197,7 +201,7 @@ public class BuildingOperationServices {
 			
 			if(buildingOperation.getDateModified()!=null)
 			{
-				timeseriesPoint.getFields().put("dateModified", (String) buildingOperation.getDateModified());
+				timeseriesPoint.getFields().put("dateModified", buildingOperation.getDateModified());
 			}
 			if(buildingOperation.getOperationType()!=null) {
 				timeseriesPoint.getFields().put("operationType", buildingOperation.getOperationType());

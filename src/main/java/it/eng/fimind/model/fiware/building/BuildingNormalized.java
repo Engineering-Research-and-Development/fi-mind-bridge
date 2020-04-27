@@ -8,7 +8,6 @@ import it.eng.fimind.model.fiware.common.AddressNormalized;
 import it.eng.fimind.model.fiware.common.Attribute;
 import it.eng.fimind.model.fiware.common.LocationNormalized;
 import it.eng.fimind.model.fiware.common.MultiAttribute;
-import it.eng.fimind.model.fiware.common.OpeningHoursNormalized;
 
 public class BuildingNormalized {
 	@NotNull(message = "{building.null.id}")
@@ -32,7 +31,7 @@ public class BuildingNormalized {
 	private Attribute floorsBelowGround ;
 	private Attribute mapUrl;
 
-	private OpeningHoursNormalized openingHours;
+	private MultiAttribute openingHours;
 
 	public String getId() {
 		return id;
@@ -130,10 +129,10 @@ public class BuildingNormalized {
 	public void setMapUrl(Attribute mapUrl) {
 		this.mapUrl = mapUrl;
 	}
-	public OpeningHoursNormalized getOpeningHours() {
+	public MultiAttribute getOpeningHours() {
 		return openingHours;
 	}
-	public void setOpeningHours(OpeningHoursNormalized openingHours) {
+	public void setOpeningHours(MultiAttribute openingHours) {
 		this.openingHours = openingHours;
 	}
 }
