@@ -31,7 +31,7 @@ Deploy WAR file (generated into target folder), as usual, in your web server.
 
 |     |     Service     |                          Description                          |
 | --- | :-------------: | :-----------------------------------------------------------: |
-| GET | `/ocb-export?:asset_id` | Export an existing MindSphere asset into Orion Context Broker |
+| POST | `/ocb-export` | Export an existing MindSphere asset into Orion Context Broker |
 | POST | `/fiware-notification` | Notification service to ingest data coming after subscription to Orion Context Broker |
 | POST | `/alert` | Export an Alert entity into MindSphere |
 | POST | `/alertNormalized` | Export a NGSI compliant Alert entity into MindSphere |
@@ -130,7 +130,16 @@ Exporting is not restricted to FIWARE Data Models only, **every MindSphere asset
 ###### Example
 
 ```sh
-curl http://{server-url}:{server-port}/fimind/webapi/ocb-export?asset_id={asset_id}
+curl -X POST \
+  http://{server-url}:{server-port}/fimind/webapi/ocb-export?asset_id={asset_id}
+  -H 'accept: application/json' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -d '{
+    "assetId":"mindsphere_asset_id",
+    "fiwareService":"connector",
+    "fiwareServicePath":"/demo"
+  }'
 
 ```
 
@@ -144,9 +153,9 @@ to the request.
 
 ##### Example
 
+> Request
 
 ```sh
-> Request
 curl -X POST \
   http://{server-url}:{server-port}/fimind/webapi/alert \
   -H 'accept: application/json' \
@@ -166,10 +175,11 @@ curl -X POST \
     "description": "Potential robbery in main building",
     "alertSource": "Camera1234",
     "severity": "informational"
-}'
+  }'
 ```
-```json
 > Response
+
+```json
 {
     "result": "Test gone fine",
     "message": null

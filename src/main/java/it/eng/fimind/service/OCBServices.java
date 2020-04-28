@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.GET;
+import javax.validation.Valid;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +27,7 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.Location;
 import com.siemens.mindsphere.sdk.assetmanagement.model.Variable;
 import com.siemens.mindsphere.sdk.timeseries.model.Timeseries;
 
+import it.eng.fimind.model.ExportTemplate;
 import it.eng.fimind.util.MindSphereGateway;
 import it.eng.fimind.util.OCBGateway;
 import it.eng.fimind.util.ServiceResult;
@@ -57,23 +57,21 @@ public class OCBServices {
 		return result;
 	}
 	
-	@GET
+	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get(@HeaderParam("debug-mode") String debugMode, @Context UriInfo info) { 
+	public Response get(@HeaderParam("debug-mode") String debugMode, @Valid ExportTemplate template) { 
 		ServiceResult serviceResult = new ServiceResult();	
-		logger.debug("[OCBServices] GET Request");
+		logger.debug("[OCBServices] POST Request");
 		
-		String asset_id = info.getQueryParameters().getFirst("asset_id");
-
 		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
 		OCBGateway ocbGateway = new OCBGateway();
 		
 		//Asset Variables mappings
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+asset_id+"\"}");
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+template.getAssetId()+"\"}");
 		if(assets.size()>0) {
 			AssetResource asset = assets.get(0);
 			JsonObject ocb_payload = new JsonObject();
-			ocb_payload.addProperty("id", asset_id);
+			ocb_payload.addProperty("id", template.getAssetId());
 			
 			//Assets mappings
 			List<Variable> variables = asset.getVariables();
@@ -89,70 +87,73 @@ public class OCBServices {
 			}
 			
 			//Aspect variables mappings
-			List<AssetTypeResource> assetTypes = mindSphereGateway.getFilteredAssetTypes("ASC", "{\"id\":{\"in\":[\"engineer."+asset_id+"\"]}}&exploded=true");
+			List<AssetTypeResource> assetTypes = mindSphereGateway.getFilteredAssetTypes("ASC", "{\"id\":{\"in\":[\"engineer."+template.getAssetId()+"\"]}}&exploded=true");
 			
 			List<String> aspect_ids = new ArrayList<String>();
 			Map<String,String> aspect_variables_mappings = new HashMap<String,String>();
 
-			for(int i=0;i<assetTypes.get(0).getAspects().size();i++) {
-				AssetTypeResourceAspects curr_aspectType = assetTypes.get(0).getAspects().get(i);
-				aspect_ids.add(curr_aspectType.getName());
-				
-				List<AspectVariable> curr_aspect_variables = curr_aspectType.getAspectType().getVariables();
-				for(int j=0;j<curr_aspect_variables.size();j++) {
-					AspectVariable curr_aspect_variable = curr_aspect_variables.get(j);
-					aspect_variables_mappings.put(curr_aspect_variable.getName(), curr_aspect_variable.getDataType().toString());
-				}
-			}		
-
-			for(int i=0;i<aspect_ids.size();i++)
-			{
-				String aspect_id = aspect_ids.get(i);
-				List<Timeseries> timeSeriesList = mindSphereGateway.getTimeSeries(assets.get(0).getAssetId(), aspect_id);
-				if(timeSeriesList.size()>0) 
-				{				
-					Timeseries timeSeries = timeSeriesList.get(0); //should we fetch more than latest one?
-					Map<String,Object> map = timeSeries.getFields();
+			if(assetTypes.size()>0) {
+				for(int i=0;i<assetTypes.get(0).getAspects().size();i++) {
+					AssetTypeResourceAspects curr_aspectType = assetTypes.get(0).getAspects().get(i);
+					aspect_ids.add(curr_aspectType.getName());
 					
-					for (Map.Entry<String, Object> entry : map.entrySet()) {
-						String key = entry.getKey();
-						Object valueObject = entry.getValue();
-						String valueType = aspect_variables_mappings.get(key);
-						
-						if(valueType.equals("BOOLEAN"))
-							ocb_payload.addProperty(key, (Boolean) valueObject);
-						else if(valueType.equals("INT"))
-							ocb_payload.addProperty(key, (Integer) valueObject);
-						else if(valueType.equals("LONG"))
-							ocb_payload.addProperty(key, (Long) valueObject);
-						else if(valueType.equals("DOUBLE"))
-							ocb_payload.addProperty(key, (Double) valueObject);
-						else if(valueType.equals("STRING"))
-							ocb_payload.addProperty(key, (String) valueObject);
-						else //BIG_STRING and TIMESTAMP
-							ocb_payload.addProperty(key, (String) valueObject);
+					List<AspectVariable> curr_aspect_variables = curr_aspectType.getAspectType().getVariables();
+					for(int j=0;j<curr_aspect_variables.size();j++) {
+						AspectVariable curr_aspect_variable = curr_aspect_variables.get(j);
+						aspect_variables_mappings.put(curr_aspect_variable.getName(), curr_aspect_variable.getDataType().toString());
 					}
 				}
-				else
+						
+
+				for(int i=0;i<aspect_ids.size();i++)
 				{
-					for (Entry<String, String> entry : aspect_variables_mappings.entrySet()) {
-						String key = entry.getKey();
-						String valueType = aspect_variables_mappings.get(key);
-														
-						if(valueType.equals("BOOLEAN"))
-							ocb_payload.addProperty(key, false);
-						else if(valueType.equals("INT"))
-							ocb_payload.addProperty(key, 0);
-						else if(valueType.equals("LONG"))
-							ocb_payload.addProperty(key, 0);
-						else if(valueType.equals("DOUBLE"))
-							ocb_payload.addProperty(key, 0.0);
-						else if(valueType.equals("STRING"))
-							ocb_payload.addProperty(key, "");
-						else //BIG_STRING and TIMESTAMP
-							ocb_payload.addProperty(key, "");
+					String aspect_id = aspect_ids.get(i);
+					List<Timeseries> timeSeriesList = mindSphereGateway.getTimeSeries(assets.get(0).getAssetId(), aspect_id);
+					if(timeSeriesList.size()>0) 
+					{				
+						Timeseries timeSeries = timeSeriesList.get(0); //should we fetch more than latest one?
+						Map<String,Object> map = timeSeries.getFields();
+						
+						for (Map.Entry<String, Object> entry : map.entrySet()) {
+							String key = entry.getKey();
+							Object valueObject = entry.getValue();
+							String valueType = aspect_variables_mappings.get(key);
+							
+							if(valueType.equals("BOOLEAN"))
+								ocb_payload.addProperty(key, (Boolean) valueObject);
+							else if(valueType.equals("INT"))
+								ocb_payload.addProperty(key, (Integer) valueObject);
+							else if(valueType.equals("LONG"))
+								ocb_payload.addProperty(key, (Long) valueObject);
+							else if(valueType.equals("DOUBLE"))
+								ocb_payload.addProperty(key, (Double) valueObject);
+							else if(valueType.equals("STRING"))
+								ocb_payload.addProperty(key, (String) valueObject);
+							else //BIG_STRING and TIMESTAMP
+								ocb_payload.addProperty(key, (String) valueObject);
+						}
 					}
-				}	
+					else
+					{
+						for (Entry<String, String> entry : aspect_variables_mappings.entrySet()) {
+							String key = entry.getKey();
+							String valueType = aspect_variables_mappings.get(key);
+															
+							if(valueType.equals("BOOLEAN"))
+								ocb_payload.addProperty(key, false);
+							else if(valueType.equals("INT"))
+								ocb_payload.addProperty(key, 0);
+							else if(valueType.equals("LONG"))
+								ocb_payload.addProperty(key, 0);
+							else if(valueType.equals("DOUBLE"))
+								ocb_payload.addProperty(key, 0.0);
+							else if(valueType.equals("STRING"))
+								ocb_payload.addProperty(key, "");
+							else //BIG_STRING and TIMESTAMP
+								ocb_payload.addProperty(key, "");
+						}
+					}	
+				}
 			}
 			
 			//Location/Address  mappings
@@ -253,11 +254,11 @@ public class OCBServices {
 				serviceResult.setResult(ocb_payload_str);
 				return Response.status(200).entity(serviceResult).build();
 			}else{
-				if(ocbGateway.pushToOCB(ocb_payload_str)) {
+				if(ocbGateway.pushToOCB(ocb_payload_str,template.getFiwareService(),template.getFiwareServicePath())) {
 					serviceResult.setResult("Entity imported succesfully to OCB!");
 					return Response.status(200).entity(serviceResult).build();
 				}else {
-					serviceResult.setResult("There was some problem trying to import your Asset to OCB, check your FI-MIND logs!");
+					serviceResult.setResult("There was some problem trying to import your Asset into OCB, check your FI-MIND logs!");
 					return Response.status(500).entity(serviceResult).build();
 				}
 			}		

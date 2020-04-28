@@ -38,7 +38,7 @@ public class OCBGateway {
 		}
 	}
 	
-	public Boolean pushToOCB(String jsonBody){
+	public Boolean pushToOCB(String jsonBody, String fiwareService, String fiwareServicePath){
 		try {
 			URL obj = new URL(ocb_url+"/v2/entities?options=keyValues");
 						
@@ -46,8 +46,8 @@ public class OCBGateway {
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("POST");
 			con.setRequestProperty("content-type", "application/json");
-			con.setRequestProperty("fiware-service", "connector");
-			con.setRequestProperty("fiware-servicepath", "/mindsphere");
+			con.setRequestProperty("fiware-service", fiwareService);
+			con.setRequestProperty("fiware-servicepath", fiwareServicePath);
 			con.setDoOutput(true);
 
 			// For POST only - START
