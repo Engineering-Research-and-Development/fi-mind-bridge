@@ -133,6 +133,11 @@ public class BuildingNormalizedServices {
 			values.add((String) building.getCategory().getValue().toString());
 			varDefDataTypes.add("String");
 		}
+		if(building.getContainedInPlace()!=null) {
+			keys.add("containedInPlace");
+			values.add((String) building.getContainedInPlace().getValue().getCoordinates().toString());
+			varDefDataTypes.add("String");
+		}
 		if(building.getOccupier()!=null) {
 			keys.add("occupier");
 			values.add((String) building.getOccupier().getValue().toString());

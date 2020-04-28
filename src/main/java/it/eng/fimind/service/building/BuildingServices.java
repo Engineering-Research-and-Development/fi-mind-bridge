@@ -133,6 +133,11 @@ public class BuildingServices {
 			values.add(building.getCategory().toString());
 			varDefDataTypes.add("String");
 		}
+		if(building.getContainedInPlace()!=null) {
+			keys.add("containedInPlace");
+			values.add(building.getContainedInPlace().getCoordinates().toString());
+			varDefDataTypes.add("String");
+		}
 		if(building.getOccupier()!=null) {
 			keys.add("occupier");
 			values.add(building.getOccupier().toString());
