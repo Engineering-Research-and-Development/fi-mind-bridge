@@ -131,7 +131,7 @@ Exporting is not restricted to FIWARE Data Models only, **every MindSphere asset
 
 ```sh
 curl -X POST \
-  http://{server-url}:{server-port}/fimind/webapi/ocb-export
+  http://{server-url}:{server-port}/fimind/webapi/ocb-export \
   -H 'accept: application/json' \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
