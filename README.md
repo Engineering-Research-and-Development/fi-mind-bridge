@@ -189,3 +189,6 @@ curl -X POST \
 WebServer logs will, then,  display the proper mapping of the given entity for MindSphere.
 
 ## License
+The FI-MIND bridge is licensed under the
+
+GNU Affero General Public License v3.0
