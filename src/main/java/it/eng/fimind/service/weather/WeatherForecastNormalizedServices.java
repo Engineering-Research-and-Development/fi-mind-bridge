@@ -1,9 +1,7 @@
 package it.eng.fimind.service.weather;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -176,11 +174,10 @@ public class WeatherForecastNormalizedServices {
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+weatherForecast.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
-			Date now = new Date();
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-			String instant = df.format(now);
-			Timeseries timeseriesPoint=new Timeseries();
-			timeseriesPoint.getFields().put("_time", instant);
+
+			Timeseries timeseriesPoint = new Timeseries();
+			
+			timeseriesPoint.getFields().put("_time", Instant.now().toString());
 		
 			if(weatherForecast.getDateModified()!=null) {
 				timeseriesPoint.getFields().put("dateModified",(String) weatherForecast.getDateModified().getValue());

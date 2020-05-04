@@ -171,6 +171,7 @@ public class MindSphereMapper {
 		
 		return aspectType;
 	}
+
 }
 
 //You cannot use the following standard names: id, name, description, tenant, etag, scope, properties, propertySets, extends, variables, aspects, parentTypeId, timezone, type, parent

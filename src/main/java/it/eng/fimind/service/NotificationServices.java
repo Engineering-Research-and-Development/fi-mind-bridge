@@ -1,9 +1,7 @@
 package it.eng.fimind.service;
 
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -142,12 +140,8 @@ public class NotificationServices {
 					String val = (String) entity.getAttributes().get("value").getValue();
 					String resultVal = java.net.URLDecoder.decode(val, StandardCharsets.UTF_8.name());
 						
-					Date now = new Date();
-					DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-					String instant = df.format(now);
-					
 					TimeInstant ti = new TimeInstant();
-					ti.setValue(instant);
+					ti.setValue(Instant.now().toString());
 					ti.setType("DateTime");
 					Metadata mt = new Metadata();			
 					mt.setTimeInstant(ti);

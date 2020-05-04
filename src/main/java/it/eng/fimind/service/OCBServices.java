@@ -88,7 +88,14 @@ public class OCBServices {
 			
 			//Aspect variables mappings
 			List<AssetTypeResource> assetTypes = mindSphereGateway.getFilteredAssetTypes("ASC", "{\"id\":{\"in\":[\"engineer."+template.getAssetId()+"\"]}}&exploded=true");
+
 			
+			System.out.println("-----------asset----------");
+			System.out.println(asset);
+			System.out.println("--------assetTypes--------");
+			System.out.println(assetTypes);
+			System.out.println("--------------------------");
+
 			List<String> aspect_ids = new ArrayList<String>();
 			Map<String,String> aspect_variables_mappings = new HashMap<String,String>();
 

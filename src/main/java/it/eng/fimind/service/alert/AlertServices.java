@@ -1,9 +1,7 @@
 package it.eng.fimind.service.alert;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -181,11 +179,10 @@ public class AlertServices {
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
-			Date now = new Date();
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-			String instant = df.format(now);
+			
 			Timeseries timeseriesPoint = new Timeseries();
-			timeseriesPoint.getFields().put("_time", instant);
+			
+			timeseriesPoint.getFields().put("_time", Instant.now().toString());
 			
 			if(alert.getDateIssued()!=null) {
 				timeseriesPoint.getFields().put("dateIssued", alert.getDateIssued());

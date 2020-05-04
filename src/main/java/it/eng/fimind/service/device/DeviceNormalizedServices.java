@@ -1,9 +1,7 @@
 package it.eng.fimind.service.device;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -231,11 +229,10 @@ public class DeviceNormalizedServices {
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+device.getId()+"\"}");
 		try {
 			List<Timeseries> timeSeriesList = new ArrayList<Timeseries>();
-			Date now = new Date();
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-			String instant = df.format(now);
+
 			Timeseries timeseriesPoint = new Timeseries();
-			timeseriesPoint.getFields().put("_time", instant);
+			
+			timeseriesPoint.getFields().put("_time", Instant.now().toString());
 					
 			if(device.getControlledAsset()!=null) {
 				timeseriesPoint.getFields().put("controlledAssets", (String) device.getControlledAsset().getValue().toString());
