@@ -121,7 +121,7 @@ This channel let you export a subset of FIWARE Data Models into Mindsphere Envir
 
 ##### MindSphere to FIWARE
 
-Given an existing asset in MindSphere, FIMIND let you export the resource to FIWARE, simply by passing its __asset_id__ as a query parameter of a HTTP GET request under the path of /ocb-export.
+Given an existing asset in MindSphere, FIMIND let you export the resource to FIWARE, simply by passing: __assetId__, __fiwareService__ and __fiwareServicePath__ as body of a HTTP POST request under the path of /ocb-export.
 
 The export process will extract asset variables and aspect variables of the chosen asset mapping them in the proper format to be ingested by [Orion Context Broker](https://fiware-orion.readthedocs.io/en/master/).
 
@@ -189,3 +189,6 @@ curl -X POST \
 WebServer logs will, then,  display the proper mapping of the given entity for MindSphere.
 
 ## License
+The FI-MIND bridge is licensed under the
+
+GNU Affero General Public License v3.0
