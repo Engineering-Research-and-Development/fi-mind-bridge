@@ -40,12 +40,14 @@ public class DeviceModelNormalizedServices {
 	public String getIt() {
 		return "Device Model Service: got it!!";
 	}
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid DeviceModelNormalized deviceModel) { 
+		logger.debug("[DeviceModelNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+deviceModel.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){

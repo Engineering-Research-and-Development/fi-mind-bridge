@@ -22,6 +22,10 @@ import com.siemens.mindsphere.sdk.assetmanagement.model.AssetType.ScopeEnum;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetTypeAspects;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetTypeListResource;
 import com.siemens.mindsphere.sdk.assetmanagement.model.AssetTypeResource;
+import com.siemens.mindsphere.sdk.assetmanagement.model.AssetTypeResourceAspects;
+import com.siemens.mindsphere.sdk.assetmanagement.model.DeleteAspectTypeRequest;
+import com.siemens.mindsphere.sdk.assetmanagement.model.DeleteAssetRequest;
+import com.siemens.mindsphere.sdk.assetmanagement.model.DeleteAssetTypeRequest;
 import com.siemens.mindsphere.sdk.assetmanagement.model.GetAspectTypeRequest;
 import com.siemens.mindsphere.sdk.assetmanagement.model.GetAssetTypeRequest;
 import com.siemens.mindsphere.sdk.assetmanagement.model.GetRootAssetRequest;
@@ -50,6 +54,8 @@ public class MindSphereGateway {
 	private AssettypeClient assetTypeClient;
 	private AssetsClient assetsClient;
 	private StructureClient structureClient;
+	
+	public String tenant;
 			
 	private MindSphereGateway(){
 		try {
@@ -102,6 +108,8 @@ public class MindSphereGateway {
                     .restClientConfig(config)
                     .build();
 			
+			tenant = prop.getProperty("tenant");
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,7 +125,10 @@ public class MindSphereGateway {
 		}
 		return instance;
 	}
-
+	
+	public String getTenant() {
+		return this.tenant;
+	}
 	
 	public List<Timeseries> getTimeSeries(String entity, String propertySetName){
 		List<Timeseries> timeSeries = null;
@@ -245,16 +256,91 @@ public class MindSphereGateway {
 		return structureVariables;
 	}
 	
+	public Boolean deleteAsset(String id) {
+		Boolean success = false;
+		DeleteAssetRequest  requestObject = new DeleteAssetRequest();
+		requestObject.setId(id);
+		requestObject.setIfMatch("0");
+		
+		try {
+			assetsClient.deleteAsset(requestObject);
+			success = true;
+		}catch (MindsphereException e) {
+		    // Exception handling
+			success = false;
+			e.printStackTrace();
+		}
+		return success;
+	}
+	
+	public Boolean deleteAssetType(String id) {
+		Boolean success = false;
+		DeleteAssetTypeRequest  requestObject = new DeleteAssetTypeRequest();
+		requestObject.setId(id);
+		requestObject.setIfMatch("0");
+		
+		try {
+			assetTypeClient.deleteAssetType(requestObject);
+			success = true;
+		}catch (MindsphereException e) {
+		    // Exception handling
+			success = false;
+			e.printStackTrace();
+		}
+		return success;
+	}
+	
+	public Boolean deleteAspectType(String id) {
+		Boolean success = false;
+		DeleteAspectTypeRequest  requestObject = new DeleteAspectTypeRequest();
+		requestObject.setId(id);
+		requestObject.setIfMatch("0");
+
+		try {
+			aspectTypeClient.deleteAspectType(requestObject);
+			success = true;
+		}catch (MindsphereException e) {
+		    // Exception handling
+			success = false;
+			e.printStackTrace();
+		}
+		return success;
+	}
+	
+	public Boolean deleteAssetOnCascade(String id) {
+		Boolean success = false;
+
+		List<AssetResource> assets = getFilteredAssets("ASC", "{\"name\":\""+id+"\"}");
+		List<AssetTypeResource> assetTypes = getFilteredAssetTypes("ASC", "{\"id\":{\"in\":[\""+tenant+"."+id+"\"]}}&exploded=true");
+
+		
+		if(assets.size()>0) {	
+			deleteAsset(assets.get(0).getAssetId());
+			deleteAssetType(assets.get(0).getTypeId());
+		}
+		
+		if(assetTypes.size()>0) {
+			for(int i=0;i<assetTypes.get(0).getAspects().size();i++) {
+				AssetTypeResourceAspects curr_aspectType = assetTypes.get(0).getAspects().get(i);
+				deleteAspectType(curr_aspectType.getAspectType().getId());
+			}
+		}
+		
+		success = true;
+		
+		return success;
+	}
+	
 	
 	public Asset createAsset(String id, Location location, List<VariableDefinition> variablesDefinition, List<Variable> variables, AspectType aspectType) {
 		try {
 			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
-			saveAspectTypeRequest.setId("engineer."+id);
+			saveAspectTypeRequest.setId(tenant+"."+id);
 			saveAspectTypeRequest.setAspecttype(aspectType);
 
 			List<AssetTypeAspects> aspects = new ArrayList<>();
 		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
-		    assetTypeAspects.setAspectTypeId("engineer."+id);
+		    assetTypeAspects.setAspectTypeId(tenant+"."+id);
 		    assetTypeAspects.setName(id);	    
 		    aspects.add(assetTypeAspects);	
 		    
@@ -266,13 +352,13 @@ public class MindSphereGateway {
 		    assetType.setVariables(variablesDefinition);
 		    
 		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
-		    saveAssetTypeRequest.setId("engineer."+id);
+		    saveAssetTypeRequest.setId(tenant+"."+id);
 		    saveAssetTypeRequest.setAssettype(assetType);
 			
 			Asset asset = new Asset();
 			asset.setName(id);
 			asset.setParentId(getRootAsset());
-			asset.setTypeId("engineer."+id);
+			asset.setTypeId(tenant+"."+id);
 
 			asset.setLocation(location);
 			asset.setVariables(variables);
@@ -289,12 +375,12 @@ public class MindSphereGateway {
 	public Asset createAsset(String id, List<VariableDefinition> variablesDefinition, List<Variable> variables, AspectType aspectType) {
 		try {
 			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
-			saveAspectTypeRequest.setId("engineer."+id);
+			saveAspectTypeRequest.setId(tenant+"."+id);
 			saveAspectTypeRequest.setAspecttype(aspectType);
 
 			List<AssetTypeAspects> aspects = new ArrayList<>();
 		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
-		    assetTypeAspects.setAspectTypeId("engineer."+id);
+		    assetTypeAspects.setAspectTypeId(tenant+"."+id);
 		    assetTypeAspects.setName(id);	    
 		    aspects.add(assetTypeAspects);	
 		    
@@ -306,13 +392,13 @@ public class MindSphereGateway {
 		    assetType.setVariables(variablesDefinition);
 		    
 		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
-		    saveAssetTypeRequest.setId("engineer."+id);
+		    saveAssetTypeRequest.setId(tenant+"."+id);
 		    saveAssetTypeRequest.setAssettype(assetType);
 			
 			Asset asset = new Asset();
 			asset.setName(id);
 			asset.setParentId(getRootAsset());
-			asset.setTypeId("engineer."+id);
+			asset.setTypeId(tenant+"."+id);
 									
 			asset.setVariables(variables);
 			
@@ -328,13 +414,13 @@ public class MindSphereGateway {
 	public Boolean saveAsset(String id, Location location, List<VariableDefinition> variablesDefinition, List<Variable> variables, AspectType aspectType) {
 		try {
 			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
-			saveAspectTypeRequest.setId("engineer."+id);
+			saveAspectTypeRequest.setId(tenant+"."+id);
 			saveAspectTypeRequest.setAspecttype(aspectType);		
 			aspectTypeClient.saveAspectType(saveAspectTypeRequest);
 			
 			List<AssetTypeAspects> aspects = new ArrayList<>();
 		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
-		    assetTypeAspects.setAspectTypeId("engineer."+id);
+		    assetTypeAspects.setAspectTypeId(tenant+"."+id);
 		    assetTypeAspects.setName(id);	    
 		    aspects.add(assetTypeAspects);	
 		    
@@ -346,14 +432,14 @@ public class MindSphereGateway {
 		    assetType.setVariables(variablesDefinition);
 		    
 		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
-		    saveAssetTypeRequest.setId("engineer."+id);
+		    saveAssetTypeRequest.setId(tenant+"."+id);
 		    saveAssetTypeRequest.setAssettype(assetType);
  			assetTypeClient.saveAssetType(saveAssetTypeRequest);
  			
 			Asset asset = new Asset();
 			asset.setName(id);
 			asset.setParentId(getRootAsset());
-			asset.setTypeId("engineer."+id);
+			asset.setTypeId(tenant+"."+id);
 			
 			asset.setLocation(location);
 			asset.setVariables(variables);
@@ -379,13 +465,13 @@ public class MindSphereGateway {
 	public Boolean saveAsset(String id, List<VariableDefinition> variablesDefinition, List<Variable> variables, AspectType aspectType) {
 		try {
 			SaveAspectTypeRequest saveAspectTypeRequest = new SaveAspectTypeRequest();
-			saveAspectTypeRequest.setId("engineer."+id);
+			saveAspectTypeRequest.setId(tenant+"."+id);
 			saveAspectTypeRequest.setAspecttype(aspectType);
 			aspectTypeClient.saveAspectType(saveAspectTypeRequest);
 
 			List<AssetTypeAspects> aspects = new ArrayList<>();
 		    AssetTypeAspects assetTypeAspects = new AssetTypeAspects();
-		    assetTypeAspects.setAspectTypeId("engineer."+id);
+		    assetTypeAspects.setAspectTypeId(tenant+"."+id);
 		    assetTypeAspects.setName(id);	    
 		    aspects.add(assetTypeAspects);	
 		    
@@ -397,14 +483,14 @@ public class MindSphereGateway {
 		    assetType.setVariables(variablesDefinition);
 		    
 		    SaveAssetTypeRequest saveAssetTypeRequest = new SaveAssetTypeRequest();
-		    saveAssetTypeRequest.setId("engineer."+id);
+		    saveAssetTypeRequest.setId(tenant+"."+id);
 		    saveAssetTypeRequest.setAssettype(assetType);
  			assetTypeClient.saveAssetType(saveAssetTypeRequest);
  			
 			Asset asset = new Asset();
 			asset.setName(id);
 			asset.setParentId(getRootAsset());
-			asset.setTypeId("engineer."+id);
+			asset.setTypeId(tenant+"."+id);
 			
 			asset.setVariables(variables);
 			
@@ -427,11 +513,11 @@ public class MindSphereGateway {
 	}
 }
 
-//saveAspectTypeRequest.setId("engineer."+id+"AspectType");
-//assetTypeAspects.setAspectTypeId("engineer."+id+"AspectType");
+//saveAspectTypeRequest.setId(tenant+"."+id+"AspectType");
+//assetTypeAspects.setAspectTypeId(tenant+"."+id+"AspectType");
 //assetTypeAspects.setName(id+"AspectType");	   
 //assetType.setName(id+"AssetType");
-//saveAssetTypeRequest.setId("engineer."+id+"AssetType");
+//saveAssetTypeRequest.setId(tenant+"."+id+"AssetType");
 //saveAssetTypeRequest.setAssettype(assetType);
 //asset.setName(id+"Asset");
-//asset.setTypeId("engineer."+id+"AssetType");
+//asset.setTypeId(tenant+"."+id+"AssetType");

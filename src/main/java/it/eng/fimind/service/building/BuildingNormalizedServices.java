@@ -42,12 +42,14 @@ public class BuildingNormalizedServices {
 	public String getIt() {
 		return "BuildingNormalized Service: got it!!";
 	}
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid BuildingNormalized building) { 
+		logger.debug("[BuildingNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+building.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){

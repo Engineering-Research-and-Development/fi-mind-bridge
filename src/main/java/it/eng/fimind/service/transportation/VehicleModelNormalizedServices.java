@@ -41,12 +41,14 @@ public class VehicleModelNormalizedServices {
 	public String getIt() {
 		return "VehicleModelNormalized Services : got it!!";
 	}
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid VehicleModelNormalized vehicleModel) { 
+		logger.debug("[VehicleModelNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+vehicleModel.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){

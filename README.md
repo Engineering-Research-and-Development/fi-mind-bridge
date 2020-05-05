@@ -33,26 +33,36 @@ Deploy WAR file (generated into target folder), as usual, in your web server.
 | --- | :-------------: | :-----------------------------------------------------------: |
 | POST | `/ocb-export` | Export an existing MindSphere asset into Orion Context Broker |
 | POST | `/fiware-notification` | Notification service to ingest data coming after subscription to Orion Context Broker |
-| POST | `/alert` | Export an Alert entity into MindSphere |
-| POST | `/alertNormalized` | Export a NGSI compliant Alert entity into MindSphere |
-| POST | `/building` | Export a Building entity into MindSphere |
-| POST | `/buildingNormalized` | Export a NGSI compliant Building entity into MindSphere |
-| POST | `/buildingOperation` | Export a Building Operation entity into MindSphere |
-| POST | `/buildingOperationNormalized` | Export a NGSI compliant Building Operation entity into MindSphere |
-| POST | `/device` | Export a Device entity into MindSphere |
-| POST | `/deviceNormalized` | Export a NGSI compliant Device entity into MindSphere |
-| POST | `/deviceModel` | Export a Device Model entity into MindSphere |
-| POST | `/deviceModelNormalized` | Export a NGSI compliant Device Model entity into MindSphere |
-| POST | `/trafficFlowObserved` | Export a TrafficFlowObserved entity into MindSphere |
-| POST | `/trafficFlowObservedNormalized` | Export a NGSI compliant TrafficFlowObserved entity into MindSphere |
-| POST | `/vehicle` | Export a Vehicle entity into MindSphere |
-| POST | `/vehicleNormalized` | Export a NGSI compliant Vehicle entity into MindSphere |
-| POST | `/vehicleModel` | Export a Vehicle Model entity into MindSphere |
-| POST | `/vehicleModelNormalized` | Export a NGSI compliant Vehicle Model entity into MindSphere |
-| POST | `/weatherForecast` | Export a Weather Forecast entity into MindSphere |
-| POST | `/weatherForecastNormalized` | Export a NGSI compliant WeatherForecast entity into MindSphere |
-| POST | `/weatherObserved` | Export a Weather Observed entity into MindSphere |
-| POST | `/weatherObservedNormalized` | Export a NGSI compliant Weather Observed entity into MindSphere |
+| POST | `/alert` | Import an Alert Data Model into MindSphere |
+| DELETE | `/alert?id={alert_id}` | Delete an Alert Asset from MindSphere |
+| POST | `/alertNormalized` | Import a NGSI compliant Alert Data Model into MindSphere |
+| POST | `/building` | Import a Building Data Model into MindSphere |
+| DELETE | `/building?id={building_id}` | Delete a Building Asset from MindSphere |
+| POST | `/buildingNormalized` | Import a NGSI compliant Building Data Model into MindSphere |
+| POST | `/buildingOperation` | Import a BuildingOperation Data Model into MindSphere |
+| DELETE | `/buildingOperation?id={buildingOperation_id}` | Delete a BuildingOperation Asset from MindSphere |
+| POST | `/buildingOperationNormalized` | Import a NGSI compliant Building Operation Data Model into MindSphere |
+| POST | `/device` | Import a Device Data Model into MindSphere |
+| DELETE | `/device?id={device_id}` | Delete a Device Asset from MindSphere |
+| POST | `/deviceNormalized` | Import a NGSI compliant Device Data Model into MindSphere |
+| POST | `/deviceModel` | Import a Device Model Data Model into MindSphere |
+| DELETE | `/deviceModel?id={deviceModel_id}` | Delete a DeviceModel Asset from MindSphere |
+| POST | `/deviceModelNormalized` | Import a NGSI compliant Device Model Data Model into MindSphere |
+| POST | `/trafficFlowObserved` | Import a TrafficFlowObserved Data Model into MindSphere |
+| DELETE | `/trafficFlowObserved?id={trafficFlowObserved_id}` | Delete a TrafficFlowObserved Asset from MindSphere |
+| POST | `/trafficFlowObservedNormalized` | Import a NGSI compliant TrafficFlowObserved Data Model into MindSphere |
+| POST | `/vehicle` | Import a Vehicle Data Model into MindSphere |
+| DELETE | `/vehicle?id={vehicle_id}` | Delete a Vehicle Asset from MindSphere |
+| POST | `/vehicleNormalized` | Import a NGSI compliant Vehicle Data Model into MindSphere |
+| POST | `/vehicleModel` | Import a VehicleModel Data Model into MindSphere |
+| DELETE | `/vehicleModel?id={vehicleModel_id}` | Delete a VehicleModel Asset from MindSphere |
+| POST | `/vehicleModelNormalized` | Import a NGSI compliant VehicleModel Data Model into MindSphere |
+| POST | `/weatherForecast` | Import a Weather Forecast Data Model into MindSphere |
+| DELETE | `/weatherForecast?id={weatherForecast_id}` | Delete a WeatherForecast Asset from MindSphere |
+| POST | `/weatherForecastNormalized` | Import a NGSI compliant WeatherForecast Data Model into MindSphere |
+| POST | `/weatherObserved` | Import a Weather Observed Data Model into MindSphere |
+| DELETE | `/weatherObserved?id={weatherObserved_id}` | Delete a WeatherObserved Asset from MindSphere |
+| POST | `/weatherObservedNormalized` | Import a NGSI compliant Weather Observed Data Model into MindSphere |
 
 ## Supported Features
 FI-MIND helps you setting up a two-way channel to share context data between FIWARE and MindSphere, back and forth. The two different channels are described below:

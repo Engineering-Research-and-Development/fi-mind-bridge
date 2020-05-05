@@ -46,11 +46,13 @@ public class BuildingOperationNormalizedServices {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid BuildingOperationNormalized buildingOperation) { 
+		logger.debug("[BuildingOperationNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+buildingOperation.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
-			logger.debug("DEBUG MODE FOR --- BuildingOperation ---");
+			logger.debug("DEBUG MODE FOR --- BuildingOperationNormalized ---");
 			createMindSphereAssetFromBuildingOperation(buildingOperation, true);
 			serviceResult.setResult("Test gone fine");
 			return Response.status(200).entity(serviceResult).build();

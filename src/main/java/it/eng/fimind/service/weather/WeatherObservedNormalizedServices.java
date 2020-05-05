@@ -42,12 +42,14 @@ public class WeatherObservedNormalizedServices {
 	public String getIt() {
 		return "WeatherObservedNormalized Service: got it!!";
 	}
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid WeatherObservedNormalized weatherObserved) { 
+		logger.debug("[WeatherObservedNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+weatherObserved.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){

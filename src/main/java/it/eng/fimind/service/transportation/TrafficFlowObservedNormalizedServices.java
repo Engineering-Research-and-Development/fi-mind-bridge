@@ -42,12 +42,14 @@ public class TrafficFlowObservedNormalizedServices {
 	public String getIt() {
 		return "TrafficFlowObservedNormalized Service: got it!!";
 	}
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid TrafficFlowObservedNormalized trafficFlowObserved) { 
+		logger.debug("[TrafficFlowObservedNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+trafficFlowObserved.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){

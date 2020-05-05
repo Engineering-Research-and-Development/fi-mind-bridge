@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -43,11 +45,31 @@ public class AssetAdministrationShellServices {
 		return "AssetAdministrationShell Service: got it!!";
 	}
 
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteIt(@QueryParam("id") String id) {
+		logger.debug("[AssetAdministrationShellServices] DELETE Request");
+		ServiceResult serviceResult = new ServiceResult();
+
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		if(mindSphereGateway.deleteAssetOnCascade(id))
+		{
+			serviceResult.setMessage("Deleted successfully!");
+			return Response.status(200).entity(serviceResult).build();
+		}
+		else {
+			serviceResult.setResult("Something went wrong, check your FI-MIND logs");
+			return Response.status(500).entity(serviceResult).build();
+		}
+	}
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid AssetAdministrationShell aas) { 
+		logger.debug("[AssetAdministrationShellServices] POST Request");	
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+aas.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){

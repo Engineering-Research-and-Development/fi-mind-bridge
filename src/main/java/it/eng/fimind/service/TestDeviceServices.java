@@ -35,9 +35,12 @@ public class TestDeviceServices {
 		
 		Device device = new Device();	
 		device.setId(id);
+		//defining an aspect variable for our device
 		device.setBatteryLevel((float) 45.4);
+		//defining an asset variable for our device
 		device.setType("Device");
-		DeviceServices deviceServices = new DeviceServices();		
+		DeviceServices deviceServices = new DeviceServices();	
+		//invoking ingestion service 
         deviceServices.createDataInJSON(null, device);				 
         
 		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+id+"\"}");
@@ -48,9 +51,17 @@ public class TestDeviceServices {
 			logger.error("'aspects' element of upper response is empty -> "+ assets.get(0).getAspects());
 			logger.debug("--------assetTypes--------");
 			logger.debug(assetTypes.get(0));
-			logger.error("'aspects' element of upper response is NOT empty -> " + assetTypes.get(0).getAspects());
+			logger.error("'aspects' element of upper response is NOT empty");
 
 		}
+		
+		//the same problem occurs with assets that are created on MindSphere webapp, in this case
+		//neither asset variables can be fetched via sdk 
+		
+		
+		//delete asset on cascade -- uncomment if you want to 
+		//mindSphereGateway.deleteAssetOnCascade(id);
+		
 		
 		return Response.status(200).entity(serviceResult).build();
 	}

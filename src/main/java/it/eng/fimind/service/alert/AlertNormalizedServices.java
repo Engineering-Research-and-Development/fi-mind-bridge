@@ -43,12 +43,14 @@ public class AlertNormalizedServices {
 	public String getIt() {
 		return "AlertNormalized Service: got it!!";
 	}
-
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid AlertNormalized alert) { 
+		logger.debug("[AlertNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+		
 		logger.debug("Id ="+alert.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){

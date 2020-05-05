@@ -46,7 +46,9 @@ public class DeviceNormalizedServices {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDataInJSON(@HeaderParam("debug-mode") String debugMode, @Valid DeviceNormalized device) { 
+		logger.debug("[DeviceNormalizedServices] POST Request");
 		ServiceResult serviceResult = new ServiceResult();
+	
 		logger.debug("Id ="+device.getId());
 		
 		if(debugMode!=null && debugMode.equals("true")){
