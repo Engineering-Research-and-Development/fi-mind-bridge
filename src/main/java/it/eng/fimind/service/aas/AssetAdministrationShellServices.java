@@ -79,7 +79,8 @@ public class AssetAdministrationShellServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!aasDoesAlreadyExist(aas)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(aas.getId())) 
 				result = createMindSphereAssetFromAAS(aas, false);
 			
 			if(result)
@@ -103,13 +104,6 @@ public class AssetAdministrationShellServices {
 		logger.debug(assets.get(0));
 		logger.debug(mindSphereGateway.getAspectById("engineer."+aas.getId()));
 		logger.debug(mindSphereGateway.getTimeSeries(assets.get(0).getAssetId(), aas.getId()));
-	}
-	
-	private Boolean aasDoesAlreadyExist(AssetAdministrationShell aas)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+aas.getId()+"\"}");
-		return assets.size()>0;
 	}
 	
 	public Boolean createMindSphereAssetFromAAS(AssetAdministrationShell aas, Boolean isDebugMode) 

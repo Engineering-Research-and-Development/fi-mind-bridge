@@ -78,7 +78,8 @@ public class VehicleModelServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!vehicleModelDoesAlreadyExist(vehicleModel)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(vehicleModel.getId()))
 				result = createMindSphereAssetFromVehicleModel(vehicleModel, false);
 			
 			if(result)
@@ -93,14 +94,6 @@ public class VehicleModelServices {
 				return Response.status(500).entity(serviceResult).build();
 			}
 		}
-	}
-
-	
-	private Boolean vehicleModelDoesAlreadyExist(VehicleModel vehicleModel)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+vehicleModel.getId()+"\"}");
-		return assets.size()>0;
 	}
 	
 	public Boolean createMindSphereAssetFromVehicleModel(VehicleModel vehicleModel, Boolean isDebugMode) {

@@ -80,7 +80,8 @@ public class AlertServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!alertDoesAlreadyExist(alert)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(alert.getId()))
 				result = createMindSphereAssetFromAlert(alert, false);
 			
 			if(result)
@@ -97,14 +98,6 @@ public class AlertServices {
 		}
 	}
 
-	
-	private Boolean alertDoesAlreadyExist(Alert alert)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"\"}");
-		return assets.size()>0;
-	}
-	
 	public Boolean createMindSphereAssetFromAlert(Alert alert, Boolean isDebugMode) {
 		Boolean result = false;
 		

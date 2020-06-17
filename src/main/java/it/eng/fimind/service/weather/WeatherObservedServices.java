@@ -79,7 +79,8 @@ public class WeatherObservedServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!weatherObservedDoesAlreadyExist(weatherObserved)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(weatherObserved.getId()))
 				result = createMindSphereAssetFromWeatherObserved(weatherObserved, false);
 			
 			if(result)
@@ -96,14 +97,6 @@ public class WeatherObservedServices {
 		}
 	}
 
-	
-	private Boolean weatherObservedDoesAlreadyExist(WeatherObserved weatherObserved)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+weatherObserved.getId()+"\"}");
-		return assets.size()>0;
-	}
-	
 	public Boolean createMindSphereAssetFromWeatherObserved(WeatherObserved weatherObserved, Boolean isDebugMode) {
 		Boolean result = false;
 		

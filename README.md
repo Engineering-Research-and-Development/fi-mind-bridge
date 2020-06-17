@@ -33,36 +33,40 @@ Deploy WAR file (generated into target folder), as usual, in your web server.
 | --- | :-------------: | :-----------------------------------------------------------: |
 | POST | `/ocb-export` | Export an existing MindSphere asset into Orion Context Broker |
 | POST | `/fiware-notification` | Notification service to ingest data coming after subscription to Orion Context Broker |
-| POST | `/alert` | Import an Alert Data Model into MindSphere |
+||
+| POST | `/alert` | Import an Alert entity into MindSphere |
 | DELETE | `/alert?id={alert_id}` | Delete an Alert Asset from MindSphere |
-| POST | `/alertNormalized` | Import a NGSI compliant Alert Data Model into MindSphere |
-| POST | `/building` | Import a Building Data Model into MindSphere |
+| POST | `/alertNormalized` | Import a NGSI compliant Alert entity into MindSphere |
+| POST | `/building` | Import a Building entity into MindSphere |
 | DELETE | `/building?id={building_id}` | Delete a Building Asset from MindSphere |
-| POST | `/buildingNormalized` | Import a NGSI compliant Building Data Model into MindSphere |
-| POST | `/buildingOperation` | Import a BuildingOperation Data Model into MindSphere |
+| POST | `/buildingNormalized` | Import a NGSI compliant Building entity into MindSphere |
+| POST | `/buildingOperation` | Import a BuildingOperation entity into MindSphere |
 | DELETE | `/buildingOperation?id={buildingOperation_id}` | Delete a BuildingOperation Asset from MindSphere |
-| POST | `/buildingOperationNormalized` | Import a NGSI compliant Building Operation Data Model into MindSphere |
-| POST | `/device` | Import a Device Data Model into MindSphere |
+| POST | `/buildingOperationNormalized` | Import a NGSI compliant Building Operation entity into MindSphere |
+| POST | `/device` | Import a Device entity into MindSphere |
 | DELETE | `/device?id={device_id}` | Delete a Device Asset from MindSphere |
-| POST | `/deviceNormalized` | Import a NGSI compliant Device Data Model into MindSphere |
-| POST | `/deviceModel` | Import a Device Model Data Model into MindSphere |
+| POST | `/deviceNormalized` | Import a NGSI compliant Device entity into MindSphere |
+| POST | `/deviceModel` | Import a Device Model entity into MindSphere |
 | DELETE | `/deviceModel?id={deviceModel_id}` | Delete a DeviceModel Asset from MindSphere |
-| POST | `/deviceModelNormalized` | Import a NGSI compliant Device Model Data Model into MindSphere |
-| POST | `/trafficFlowObserved` | Import a TrafficFlowObserved Data Model into MindSphere |
+| POST | `/deviceModelNormalized` | Import a NGSI compliant Device Model entity into MindSphere |
+| POST | `/trafficFlowObserved` | Import a TrafficFlowObserved entity into MindSphere |
 | DELETE | `/trafficFlowObserved?id={trafficFlowObserved_id}` | Delete a TrafficFlowObserved Asset from MindSphere |
-| POST | `/trafficFlowObservedNormalized` | Import a NGSI compliant TrafficFlowObserved Data Model into MindSphere |
-| POST | `/vehicle` | Import a Vehicle Data Model into MindSphere |
+| POST | `/trafficFlowObservedNormalized` | Import a NGSI compliant TrafficFlowObserved entity into MindSphere |
+| POST | `/vehicle` | Import a Vehicle entity into MindSphere |
 | DELETE | `/vehicle?id={vehicle_id}` | Delete a Vehicle Asset from MindSphere |
-| POST | `/vehicleNormalized` | Import a NGSI compliant Vehicle Data Model into MindSphere |
-| POST | `/vehicleModel` | Import a VehicleModel Data Model into MindSphere |
+| POST | `/vehicleNormalized` | Import a NGSI compliant Vehicle entity into MindSphere |
+| POST | `/vehicleModel` | Import a VehicleModel entity into MindSphere |
 | DELETE | `/vehicleModel?id={vehicleModel_id}` | Delete a VehicleModel Asset from MindSphere |
-| POST | `/vehicleModelNormalized` | Import a NGSI compliant VehicleModel Data Model into MindSphere |
-| POST | `/weatherForecast` | Import a Weather Forecast Data Model into MindSphere |
+| POST | `/vehicleModelNormalized` | Import a NGSI compliant VehicleModel entity into MindSphere |
+| POST | `/weatherForecast` | Import a Weather Forecast entity into MindSphere |
 | DELETE | `/weatherForecast?id={weatherForecast_id}` | Delete a WeatherForecast Asset from MindSphere |
-| POST | `/weatherForecastNormalized` | Import a NGSI compliant WeatherForecast Data Model into MindSphere |
-| POST | `/weatherObserved` | Import a Weather Observed Data Model into MindSphere |
+| POST | `/weatherForecastNormalized` | Import a NGSI compliant WeatherForecast entity into MindSphere |
+| POST | `/weatherObserved` | Import a Weather Observed entity into MindSphere |
 | DELETE | `/weatherObserved?id={weatherObserved_id}` | Delete a WeatherObserved Asset from MindSphere |
-| POST | `/weatherObservedNormalized` | Import a NGSI compliant Weather Observed Data Model into MindSphere |
+| POST | `/weatherObservedNormalized` | Import a NGSI compliant Weather Observed entity into MindSphere |
+||
+| POST | `/aas` | Import an Asset Administration Shell entity into MindSphere |
+| DELETE | `/aas?id={aas_id}` | Delete an Asset Administration Shell Asset from MindSphere |
 
 ## Supported Features
 FI-MIND helps you setting up a two-way channel to share context data between FIWARE and MindSphere, back and forth. The two different channels are described below:
@@ -135,7 +139,7 @@ Given an existing asset in MindSphere, FIMIND let you export the resource to FIW
 
 The export process will extract asset variables and aspect variables of the chosen asset mapping them in the proper format to be ingested by [Orion Context Broker](https://fiware-orion.readthedocs.io/en/master/).
 
-Exporting is not restricted to FIWARE Data Models only, **every MindSphere asset** can be exported even though the mapping **won't be reversible without extending the current APIs.**
+Exporting is not restricted to FIWARE Data Models only, **every MindSphere asset** can be exported even though the mapping **may not be reversible without extending the current APIs.**
 
 ###### Example
 
@@ -152,6 +156,15 @@ curl -X POST \
   }'
 
 ```
+
+##### Asset Administration Shell to MindSphere
+FI-MIND bridge, expressing its interest in Industry 4.0 trend, enables support for [Asset Administration Shell (AAS)](https://www.zvei.org/en/subjects/industrie-4-0/details-of-the-asset-administration-shell/), a key concept of I4.0, used to describe an asset electronically in a standardized manner.  Its purpose is to exchange asset-related data among industrial assets and between assets and production orchestration systems or engineering tools. Given the high complexity of a AAS model,
+
+FI-MIND bridge currently only supports an unidirectional binding, thus, not allowing you to export a AAS model from the corresponding Mindsphere Asset.
+
+| __**ZVEI Data Model**__   | __**Status**__   | __**Comment**__   |__**FI-MIND Documentation**__   |
+|-----------------------------|:--------------------------:|--------------------------|:--------------------------:|
+|  [Asset Administration Shell](https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/vws-in-detail-presentation.pdf?__blob=publicationFile&v=10)  |  :construction:  |  |  :books: [Documentation](docs/aas.md)  |
 
 ## Testing
 You can test POST REST API by adding the header:

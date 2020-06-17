@@ -78,7 +78,8 @@ public class BuildingOperationServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!buildingOperationDoesAlreadyExist(buildingOperation)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(buildingOperation.getId())) 
 				result = createMindSphereAssetFromBuildingOperation(buildingOperation, false);
 			
 			if(result)
@@ -93,14 +94,6 @@ public class BuildingOperationServices {
 				return Response.status(500).entity(serviceResult).build();
 			}
 		}
-	}
-	
-	
-	private Boolean buildingOperationDoesAlreadyExist(BuildingOperation buildingOperation)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+buildingOperation.getId()+"\"}");
-		return assets.size()>0;
 	}
 	
 	public Boolean createMindSphereAssetFromBuildingOperation(BuildingOperation buildingOperation, Boolean isDebugMode) {

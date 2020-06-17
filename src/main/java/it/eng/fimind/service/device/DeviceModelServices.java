@@ -80,7 +80,8 @@ public class DeviceModelServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!deviceModelDoesAlreadyExist(deviceModel)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(deviceModel.getId()))
 				result = createMindSphereAssetFromDeviceModel(deviceModel, false);
 			
 			if(result)
@@ -95,14 +96,6 @@ public class DeviceModelServices {
 				return Response.status(500).entity(serviceResult).build();
 			}
 		}
-	}
-	
-	
-	private Boolean deviceModelDoesAlreadyExist(DeviceModel deviceModel)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+deviceModel.getId()+"\"}");
-		return assets.size()>0;
 	}
 	
 	public Boolean createMindSphereAssetFromDeviceModel(DeviceModel deviceModel, Boolean isDebugMode) {

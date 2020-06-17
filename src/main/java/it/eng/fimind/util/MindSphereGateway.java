@@ -199,6 +199,13 @@ public class MindSphereGateway {
 		return assetListResource.getEmbedded().getAssets();
 	}
 	
+	public Boolean assetDoesAlreadyExist(String id)
+	{
+		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+id+"\"}");
+		return assets.size()>0;
+	}
+	
 	public AspectTypeResource getAspectById(String id){
 		AspectTypeResource aspect = null;
 		GetAspectTypeRequest requestObject = new GetAspectTypeRequest();

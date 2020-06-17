@@ -60,7 +60,8 @@ public class AlertNormalizedServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!alertDoesAlreadyExist(alert)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(alert.getId()))
 				result = createMindSphereAssetFromAlert(alert, false);
 			
 			if(result)
@@ -75,13 +76,6 @@ public class AlertNormalizedServices {
 				return Response.status(500).entity(serviceResult).build();
 			}
 		}
-	}
-
-	private Boolean alertDoesAlreadyExist(AlertNormalized alert)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+alert.getId()+"\"}");
-		return assets.size()>0;
 	}
 	
 	private Boolean createMindSphereAssetFromAlert(AlertNormalized alert, Boolean isDebugMode) {

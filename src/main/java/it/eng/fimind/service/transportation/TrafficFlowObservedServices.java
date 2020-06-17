@@ -79,7 +79,8 @@ public class TrafficFlowObservedServices {
 			return Response.status(200).entity(serviceResult).build();
 		}else {
 			Boolean result = true;
-			if(!trafficFlowObservedDoesAlreadyExist(trafficFlowObserved)) 
+			MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
+			if(!mindSphereGateway.assetDoesAlreadyExist(trafficFlowObserved.getId()))
 				result = createMindSphereAssetFromTrafficFlowObserved(trafficFlowObserved, false);
 			
 			if(result)
@@ -94,14 +95,6 @@ public class TrafficFlowObservedServices {
 				return Response.status(500).entity(serviceResult).build();
 			}
 		}
-	}
-	
-	
-	private Boolean trafficFlowObservedDoesAlreadyExist(TrafficFlowObserved trafficFlowObserved)
-	{
-		MindSphereGateway mindSphereGateway = MindSphereGateway.getMindSphereGateway();
-		List<AssetResource> assets = mindSphereGateway.getFilteredAssets("ASC", "{\"name\":\""+trafficFlowObserved.getId()+"\"}");
-		return assets.size()>0;
 	}
 	
 	public Boolean createMindSphereAssetFromTrafficFlowObserved(TrafficFlowObserved trafficFlowObserved, Boolean isDebugMode) 
