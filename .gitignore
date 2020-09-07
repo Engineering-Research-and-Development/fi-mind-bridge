@@ -1,3 +1,5 @@
 target
 bin
 src/main/resources/config.properties
+src/main/resources/config.properties
+src/main/resources/config.properties.old

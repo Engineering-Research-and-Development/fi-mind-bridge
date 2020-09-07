@@ -135,9 +135,16 @@ public class AssetAdministrationShellServices {
 				continue;
 			for (int j=0; j<current_submodel.getSubmodelElements().size();j++) {
 				SubmodelElements current_submodelElement = current_submodel.getSubmodelElements().get(j);	
-				properties.add(current_submodelElement.getIdShort());
-				uoms.add(current_submodelElement.getMimeType());
-				dataTypes.add(current_submodelElement.getValueType().getDataObjectType().getName());
+				String property = current_submodelElement.getIdShort().trim().replaceAll("\\s","_");
+				String uom = current_submodelElement.getMimeType();
+				String dataType = current_submodelElement.getValueType().getDataObjectType().getName();
+				Object value = current_submodelElement.getValue();
+				if(value.toString().contains("..") && dataType.equals("integer")) //is a range
+					dataType="string";			
+				properties.add(property);
+				uoms.add(uom);
+				dataTypes.add(dataType);
+				
 			}
 		}
 		AspectType aspectType = mindSphereMapper.fiStateToMiAspectType(aas.getId(), "None", properties, uoms, dataTypes);
@@ -173,7 +180,7 @@ public class AssetAdministrationShellServices {
 				
 				for (int j=0; j<current_submodel.getSubmodelElements().size();j++) {
 					SubmodelElements current_submodelElement = current_submodel.getSubmodelElements().get(j);	
-					String property = current_submodelElement.getIdShort();
+					String property = current_submodelElement.getIdShort().trim().replaceAll("\\s","_");
 					Object value = current_submodelElement.getValue();
 					timeseriesPoint.getFields().put(property,value.toString());
 				}

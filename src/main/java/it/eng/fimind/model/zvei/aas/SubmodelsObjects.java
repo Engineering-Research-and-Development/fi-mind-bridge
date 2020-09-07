@@ -3,15 +3,24 @@ package it.eng.fimind.model.zvei.aas;
 import java.util.List;
 
 public class SubmodelsObjects {
+	private KeysObject hasDataSpecification;
 	private KeysObject semanticId;
 	private List<Object> qualifiers;
 	private Identification identification;
+	private Administration administration;
 	private String idShort;
 	private String category;
 	private NameObject modelType;
 	private String kind;
 	private List<SubmodelElements> submodelElements;
+	private String descriptions;
 	
+	public KeysObject getHasDataSpecification() {
+		return hasDataSpecification;
+	}
+	public void setHasDataSpecification(KeysObject hasDataSpecification) {
+		this.hasDataSpecification = hasDataSpecification;
+	}
 	public KeysObject getSemanticId() {
 		return semanticId;
 	}
@@ -29,6 +38,12 @@ public class SubmodelsObjects {
 	}
 	public void setIdentification(Identification identification) {
 		this.identification = identification;
+	}
+	public Administration getAdministration() {
+		return administration;
+	}
+	public void setAdministration(Administration administration) {
+		this.administration = administration;
 	}
 	public String getIdShort() {
 		return idShort;
@@ -60,6 +75,11 @@ public class SubmodelsObjects {
 	public void setSubmodelElements(List<SubmodelElements> submodelElements) {
 		this.submodelElements = submodelElements;
 	}
-
+	public String getDescriptions() {
+		return descriptions;
+	}
+	public void setDescriptions(String descriptions) {
+		this.descriptions = descriptions;
+	}
 
 }

@@ -5,6 +5,8 @@ import java.util.List;
 public class SubmodelElements {
 	private String mimeType;
 	private Object value;
+	private String valueId;
+	private KeysObject hasDataSpecification;
 	private KeysObject semanticId;
 	private List<Object> constraints;
 	private String idShort;
@@ -12,6 +14,7 @@ public class SubmodelElements {
 	private NameObject modelType;
 	private ValueType valueType;
 	private String kind;
+	private String descriptions;
 	private Boolean ordered;
 	private Boolean allowDuplicates;
 	
@@ -26,6 +29,18 @@ public class SubmodelElements {
 	}
 	public void setValue(Object value) {
 		this.value = value;
+	}
+	public String getValueId() {
+		return valueId;
+	}
+	public void setValueId(String valueId) {
+		this.valueId = valueId;
+	}
+	public KeysObject getHasDataSpecification() {
+		return hasDataSpecification;
+	}
+	public void setHasDataSpecification(KeysObject hasDataSpecification) {
+		this.hasDataSpecification = hasDataSpecification;
 	}
 	public KeysObject getSemanticId() {
 		return semanticId;
@@ -68,6 +83,12 @@ public class SubmodelElements {
 	}
 	public void setKind(String kind) {
 		this.kind = kind;
+	}
+	public String getDescriptions() {
+		return descriptions;
+	}
+	public void setDescriptions(String descriptions) {
+		this.descriptions = descriptions;
 	}
 	public Boolean getOrdered() {
 		return ordered;

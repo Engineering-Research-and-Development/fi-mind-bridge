@@ -4,28 +4,92 @@ The FI-MIND bridge close the gap between MindSphere and FIWARE environments, eas
 
 ## Contents
 
--   [Configuration](#configuration)
--   [Deploy](#deploy)
+-   [Install](#install)
+  -   [Docker install](#docker---recommended)
+  -   [WebServer Install](#webserver)
 -   [API](#api)
 -   [Supported Features](#supported-features)
 -   [Testing](#testing)
 -   [License](#license)
 
-## Configuration
-Configure MINDSPHERE settings in *config.properties* file:
+## Getting Started - install
+
+Currently two options are available to install the fi-mind bridge:
+
+### Docker - Recommended
+
+Configure MINDSPHERE *config.properties* setting file located in *fi-mind-bridge/conf* :
+```sh
+ocb-url=http://orion:1026
+client-id={mindpshere-client-id}
+client-secret={mindpshere-client-secret}
+tenant={mindpshere-tenant}
+```
+
+Create a docker-compose file into project root folder
+```
+version: "3.2"
+services:
+   fi-mind:
+      image: rdlabengpa/fi-mind-bridge:latest
+      hostname: fi-mind
+      networks:
+        - hostnet
+      ports:
+        - "8080:8080"
+      volumes:
+        - ./conf/config.properties:/home/tomcat/custom_conf/config.properties
+
+   mongo-db:
+      image: mongo:latest
+      hostname: mongo-db
+      expose:
+        - "27017"
+      networks:
+        - hostnet
+      command: --bind_ip_all
+      volumes:
+        - mongo-db:/data
+
+   orion:
+      image: fiware/orion:latest
+      hostname: orion
+      depends_on:
+        - mongo-db
+      networks:
+        - hostnet
+      ports:
+        - "8126:1026"
+      command: -dbhost mongo-db -logLevel DEBUG
+
+volumes:
+   mongo-db:
+
+networks:
+   hostnet:
+```
+
+Run docker-compose commmand into project root folder:
+```sh
+docker-compose up
+```
+
+### WebServer
+
+Configure MINDSPHERE *config.properties* setting file located in *fi-mind-bridge/src/main/resources/* :
 ```sh
 ocb-url=http://{ocb-host}:{ocb-port}
 client-id={mindpshere-client-id}
 client-secret={mindpshere-client-secret}
 tenant={mindpshere-tenant}
 ```
-## Deploy
+
 Generate WAR file executing into project root folder:
 ```sh
 mvn clean install
 ```
-Deploy WAR file (generated into target folder), as usual, in your web server.
 
+Deploy WAR file (generated into target folder) on the web server of your choice.
 
 ## API
 
