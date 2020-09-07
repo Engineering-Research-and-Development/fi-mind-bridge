@@ -26,7 +26,7 @@ client-secret={mindpshere-client-secret}
 tenant={mindpshere-tenant}
 ```
 
-Create a docker-compose file into project root folder
+Create a "docker-compose.yml" file into project root folder:
 ```
 version: "3.2"
 services:
